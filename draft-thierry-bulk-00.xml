@@ -89,12 +89,15 @@
 	    ill-suited to represent arbitrary data, but notable exceptions include Lisp (where "code
 	    is data") and Javascript, from which a subset has been extracted to exchange data, JSON,
 	    which has seen a tremendous success for this purpose. JSON may lack in generality and
-	    compactness, but its design makes its parsing really straightforward and fast.
+	    compactness, but its design makes its parsing really straightforward and fast. All of
+	    them, though, lack robustness. Some of them make it possible to extend them in a
+	    relatively robust way if some discipline is followed (for example, by naming modules
+	    after domaine names), but the discipline is not mandatory.
 	  </t>
 	  <t>
-	    The SGML/XML family of formats also feature these traits and actually fare way better
-	    than programming languages on the three fronts. XML namespaces also make it robust and
-	    there have been attempts at making it compact (Efficient XML Interchange).
+	    The SGML/XML family of formats also feature these traits and actually fare much better
+	    than programming languages on the three fronts. XML namespaces also make it fairly
+	    robust and there have been attempts at making it compact (Efficient XML Interchange).
 	  </t>
 	  <t>
 	    But all the previously cited formats clearly lack compactness, although just applying
