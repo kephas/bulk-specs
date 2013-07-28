@@ -1,0 +1,111 @@
+* BULK
+  Binary Uniform Language Kit
+
+  - byte-based, big-endian
+  - binary symbolic expressions
+  - expressions: atoms and forms
+    - atoms include:
+      - nil, true, false, arrays, numbers
+      - references
+	- a reference is a namespace identifier followed by a
+          reference identifier
+	- the namespace identifier is an unsigned integer represented
+          either a byte between <some lower bound> and 0x254 or a
+          sequence of one or several Ox255 bytes followed by a byte
+          between 0x0 and Ox254;
+	- reference identifier is an unsigned integer represented by a
+          single byte
+    - forms are series of expressions between Ox1 and Ox2 bytes
+  - namespaces have a UUID
+    - NS defined as part of the BULK specification use a v5 UUID with
+      urn:uuid:abaddeed-face-11e2-9605-74de2b4102f1 as namespace
+
+** stdlib
+   Description template:
+   - M = marker byte
+   - shape
+     - 1B, 2B, etc. = 1 byte, 2 bytes, etc.
+     - nB = dynamic number of bytes
+   - <foo> = placeholder
+     - optionnally <foo>:constraint
+     - constraint can be shape or type
+
+
+   O. nil
+   1. (
+   2. )
+   3. true
+   4. false
+   5. Array: M <dim> <content>:nB
+      - dim = Int | ( Int+ ): dimensions (in bytes)
+      - arrays are used whenever a vector or matrix is needed
+	- an application is free to pack any kind of data
+	- the semantics of the content must be inferred by the
+          application; where ambiguity can appear, an application
+          SHOULD enclose the array in a
+   6. 32 bits word (is a *Word*): M 4B
+   7. 64 bits word (is a *Word*): M 8B
+   8. 128 bits word (is a *Word*): M 16N
+   9. 8 bits unsigned integer (is a *Int*): M 1B
+   10. 32, 64 or 128 bits unsigned integer (is a *Int*): M Word
+   11. 32, 64 or 128 bits signed integer (is a *Int*): M Word
+   12. arbitrary precision signed integer (is a *Int*): M Array
+       - the array MUST be one-dimensional
+       - reader MUST recognize it, but MAY refuse an integer it has no
+         datatype to store
+   13. 
+   14. 
+   15. let
+   16. namespace definition
+
+
+   1. Bulk NSID
+   2. Maths NSID
+   3. 
+
+** BULK core namespace
+   1. version: ( version Int )
+   2. NS declaration: ( ns <id>:Int <uuid>:Word )
+   3. Strings encoding: ( stringenc <id> )
+      - =id= is an encoding designator
+	- an Int designates an encoding among the registered IANA
+          Character Sets, by its MIBenum.
+   4. Windows code page: ( codepage Int )
+      - encoding designator; designates a Windows code page by its
+        identifier
+
+
+   The following forms affect the reader after they appeared: ns,
+   stringenc.
+
+** BULK arithmetic namespace
+   1. ( frac Int Int ): fraction
+   2. ( binary <bits> ): IEEE 754-2008 binary interchange format
+      - bits = Word | Array; if using an array, its size MUST be a
+        multiple of 4
+   3. ( decimal <bits> ): IEEE 754-2008 decimal interchange format
+
+
+   Binary and decimal FP are defined in IEEE 754-2008 3.4−6. They are
+   specified only for multiples of 32 bits (and binary for 16 bits,
+   which is not included here).
+
+** XML Infoset namespace
+   urn:uuid:a2a97ec6-85f9-5aed-89b2-7ca3cafc2093 (BULK
+   http://www.w3.org/TR/2004/REC-xml-infoset-20040204/)
+
+   1. Infoset
+   2. Document
+   3. Element
+   4. Attribute
+   5. Processing instruction
+   6. Unexpanded entity
+   7. Comment
+   8. DTD
+   9. Unparsed entity
+   10. Notation
+   11. NS
+
+** RDF namespace
+   urn:uuid:ed460331-a89b-5742-a8de-907dff727779 (BULK
+   [[http://www.w3.org/1999/02/22-rdf-syntax-ns#]])

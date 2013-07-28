@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="lib/rfc2629.xslt"?>
+<?rfc toc="yes" ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no" ?>
+<?rfc linkmailto="no" ?>
+<?rfc editing="no" ?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc rfcedstyle="yes"?>
+<?rfc-ext allow-markup-in-artwork="yes" ?>
+<?rfc-ext include-index="no" ?>
+
+<rfc ipr="full2026" 
+     category="exp"
+     docName="draft-btme-00" 
+     xmlns:x="http://purl.org/net/xml2rfc/ext">
+  <x:feedback template="mailto:pierre@nothos.net"/>
+  <front>
+    <title abbrev="BULK v1">Binary Uniform Language Kit</title>
+
+    <author initials="P." surname="Thierry" fullname="Pierre Thierry">
+      <organization>Thierry Technologies</organization>
+      <address>
+        <email>pierre@nothos.net</email>
+      </address>
+    </author>
+
+    <date year="2013" />
+    <keyword>binary</keyword>
+
+    <abstract>
+      <t>
+        This specification describes a uniform, decentrally extensible and efficient format for data
+        representation.
+      </t>
+    </abstract>
+
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <section title="Rationale">
+        <t>
+          This specification aims at finding an original trade-off between uniformity, generality,
+          extensibility, robustness, compactness and processing speed for a data format. It is our
+          opinion that every widely used existing format occupy and different position in the
+          solution space for formats, hence this new design. It is also our opinion that most of
+          those existing formats constitute an optimal solution for their specific use case, either
+          in a absolute sense, or at least at the time of their design. But the ever-changing field
+          of IT now faces new challenges that call for a new approach.
+        </t>
+	<section title="Definitions">
+	  <t>
+	    By uniformity, we mean the property of a syntax that can be parsed even by an
+	    application that doesn't understand the semantics of every part of the processed
+	    data. Of course, almost all syntaxes that feature uniformity contain a limited number of
+	    non uniform elements. Also, uniformity really only has value in the face of extension,
+	    as a fixed syntax doesn't need uniformity (it only makes the implementation simpler).
+	  </t>
+	  <t>
+	    Almost all extensible syntaxes have their extensible part uniform to a great degree. In
+	    this specification, uniformity is hence evaluated on two criteria: first, the number of
+	    non uniform elements (and, incidentally, their diversity), second, the fact that the
+	    uniformity of the extensible part is not a limitation to the users (i.e. that the
+	    temptation to extend the language in a non-uniform way is as absent as possible).
+	  </t>
+	  <t>
+	    A good counter-example is found in most programming languages. Adding a new branching
+	    construct cannot be done in a terse way without modifying the underlying
+	    implementation. Such a construct can either not be defined by user code (because of
+	    evaluation rules) or in a terribly verbose and inconvenient way (with lot of boilerplate
+	    code). Notable exceptions are Lisp and Haskell.
+	  </t>
+	  <t>
+	    Also, the canonical example of a non-uniform language is a stack programming language:
+	    each operator takes a number of operands from the stack. Not knowing the arity of an
+	    operator makes it impossible to continue parsing, even when its evaluation was optional
+	    to the final processing.
+	  </t>
+	</section>
+	<section title="State of the art">
+	  <t>
+	    Uniformity, generality and extensibility are usually highly-valued traits in formats
+	    design. Programming languages obviouly feature them foremost, although their generality
+	    usually stops at what they are supposed to express: procedures. Most of them are
+	    ill-suited to represent arbitrary data, but notable exceptions include Lisp (where "code
+	    is data") and Javascript, from which a subset has been extracted to exchange data, JSON,
+	    which has seen a tremendous success for this purpose. JSON may lack in generality and
+	    compactness, but its design makes its parsing really straightforward and fast.
+	  </t>
+	  <t>
+	    The SGML/XML family of formats also feature these traits and actually fare way better
+	    than programming languages on the three fronts. XML namespaces also make it robust and
+	    there have been attempts at making it compact (Efficient XML Interchange).
+	  </t>
+	  <t>
+	    But all the previously cited formats clearly lack compactness, although just applying
+	    standard compression techniques would sacrifice only very little processing time to gain
+	    huge size reductions on most of their intended use cases.
+	  </t>
+	  <t>
+	    So-called binary formats pretty much exhibit the opposite trade-offs. Most of them are
+	    not uniform to achieve better compactness. Some are specifically designed for a great
+	    generality, but many lack extensibility. When they are extensible, it's never in a
+	    robust way, again for reasons that have to do with compactness. They are usually
+	    extremely fast to parse.
+	  </t>
+	</section>
+      </section>
+      <section title="Conventions and Terminology">
+        <t>
+          The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD
+          NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as
+          described in <xref target="RFC2119">RFC 2119</xref>.
+        </t>
+        <t>
+          All numeric values are in network byte order.  Values are unsigned unless otherwise
+          indicated.  Literal values are provided in decimal or hexadecimal as appropriate.
+          Hexadecimal literals are prefixed with <spanx style="verb">0x</spanx> to distinguish them
+          from decimal literals.
+        </t>
+      </section>
+    </section>
+ 
+    <section title="Security Considerations">
+    </section>
+
+    <section title="Privacy Considerations">
+    </section>
+
+    <section title="IANA Considerations">
+    </section>
+
+    <section title="Acknowledgements">
+      <t>
+	I know that I have read <eref
+	target="http://www.schnada.de/grapt/eriknaggum-xmlrant.html">Erik Naggum's famous rant about
+	XML</eref> in the past, and it may well have unconsciouly influenced this design. I happened
+	to stumble upon it again while writing the earliest draft of this specification and it
+	struck me how much it embodies his ideas. In any case, I dedicate this format to him.
+      </t>
+    </section>
+  </middle>
+
+  <back>
+  </back>
+</rfc>
+
