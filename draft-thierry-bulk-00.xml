@@ -45,8 +45,8 @@
       <section title="Rationale">
         <t>
           This specification aims at finding an original trade-off between uniformity, generality,
-          extensibility, robustness, compactness and processing speed for a data format. It is our
-          opinion that every widely used existing format occupy and different position in the
+          extensibility, decentralization, compactness and processing speed for a data format. It is
+          our opinion that every widely used existing format occupy and different position in the
           solution space for formats, hence this new design. It is also our opinion that most of
           those existing formats constitute an optimal solution for their specific use case, either
           in a absolute sense, or at least at the time of their design. But the ever-changing field
@@ -90,14 +90,15 @@
 	    is data") and Javascript, from which a subset has been extracted to exchange data, JSON,
 	    which has seen a tremendous success for this purpose. JSON may lack in generality and
 	    compactness, but its design makes its parsing really straightforward and fast. All of
-	    them, though, lack robustness. Some of them make it possible to extend them in a
-	    relatively robust way if some discipline is followed (for example, by naming modules
-	    after domaine names), but the discipline is not mandatory.
+	    them, though, lack decentralization. Some of them make it possible to extend them in a
+	    relatively decentralized way if some discipline is followed (for example, by naming
+	    modules after domaine names), but the discipline is not mandatory.
 	  </t>
 	  <t>
 	    The SGML/XML family of formats also feature these traits and actually fare much better
 	    than programming languages on the three fronts. XML namespaces also make it fairly
-	    robust and there have been attempts at making it compact (Efficient XML Interchange).
+	    decentralized and there have been attempts at making it compact (Efficient XML
+	    Interchange).
 	  </t>
 	  <t>
 	    But all the previously cited formats clearly lack compactness, although just applying
@@ -108,7 +109,7 @@
 	    So-called binary formats pretty much exhibit the opposite trade-offs. Most of them are
 	    not uniform to achieve better compactness. Some are specifically designed for a great
 	    generality, but many lack extensibility. When they are extensible, it's never in a
-	    robust way, again for reasons that have to do with compactness. They are usually
+	    decentralized way, again for reasons that have to do with compactness. They are usually
 	    extremely fast to parse.
 	  </t>
 	</section>
@@ -137,9 +138,9 @@
 	</t>
 	<t>
 	  A namespace marker in a BULK stream is associated by one or two simple forms to a
-	  namespace identified by a UUID, thus ensuring robust extension. One of the two forms
-	  declares that the stream can be processed even if the application doesn't reckognize the
-	  namespace, thanks to the uniform syntax.
+	  namespace identified by a UUID, thus ensuring decentralized extension. One of the two
+	  forms declares that the stream can be processed even if the application doesn't reckognize
+	  the namespace, thanks to the uniform syntax.
 	</t>
       </section>
       <section title="Conventions and Terminology">
