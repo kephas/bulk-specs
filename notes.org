@@ -123,3 +123,12 @@
    - enumeration attributes become a single reference instead of a
      form enclosing a string
    - macrology may be defined to further compact common use cases
+
+** Asking input
+   - Rivest, author of the S-expressions I-D,
+     http://people.csail.mit.edu/rivest/contact.html
+   - Tatu Saloranta, author of Smile, tsaloranta@gmail.com
+     - cf. http://www.cowtowncoder.com/blog/archives/2011/02/entry_445.html
+
+
+   - test https://github.com/eishay/jvm-serializers?
