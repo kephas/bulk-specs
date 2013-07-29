@@ -46,12 +46,21 @@
         <t>
           This specification aims at finding an original trade-off between uniformity, generality,
           extensibility, decentralization, compactness and processing speed for a data format. It is
-          our opinion that every widely used existing format occupy and different position in the
+          our opinion that every widely used existing format occupy a different position in the
           solution space for formats, hence this new design. It is also our opinion that most of
           those existing formats constitute an optimal solution for their specific use case, either
           in a absolute sense, or at least at the time of their design. But the ever-changing field
           of IT now faces new challenges that call for a new approach.
         </t>
+	<t>
+	  In particular, whereas the previous trend for Internet and Web standards and programming
+	  tools has been to create human-readable syntaxes for data and protocols, the advent of
+	  technologies like protocol buffers, Thrift, the various binary serializations for JSON
+	  like Avro or Smile, or the binary HTTP/2.0 currently in development seem to indicate that
+	  the time is ripe for a generalized use of binary, reserved until now for the low-level
+	  protocols. The lessons about flexibility learnt in the previous switch from binary to
+	  plain text can now be applied to efficient binary syntaxes.
+	</t>
 	<section title="Definitions">
 	  <t>
 	    By uniformity, we mean the property of a syntax that can be parsed even by an
