@@ -57,11 +57,11 @@
 	  tools has been to create human-readable syntaxes for data and protocols, the advent of
 	  technologies like <xref target="protobuf">protocol buffers</xref>, <xref
 	  target="Thrift">Thrift</xref>, the various binary serializations for JSON like <xref
-	  target="Avro">Avro</xref> or <xref target="Smile">Smile</xref>, or the binary HTTP/2.0
-	  currently in development seem to indicate that the time is ripe for a generalized use of
-	  binary, reserved until now for the low-level protocols. The lessons about flexibility
-	  learnt in the previous switch from binary to plain text can now be applied to efficient
-	  binary syntaxes.
+	  target="Avro">Avro</xref> or <xref target="Smile">Smile</xref>, or the binary <xref
+	  target="HTTP2">HTTP/2.0</xref> currently in development seem to indicate that the time is
+	  ripe for a generalized use of binary, reserved until now for the low-level protocols. The
+	  lessons about flexibility learnt in the previous switch from binary to plain text can now
+	  be applied to efficient binary syntaxes.
 	</t>
 	<section title="Definitions">
 	  <t>
@@ -268,6 +268,56 @@
 
 
     <references title="Informative references">
+
+      <reference anchor="HTTP2">
+	<front>
+	  <title>Hypertext Transfer Protocol version 2.0</title>
+	  <author initials="M." surname="Belshe" fullname="Mike Belshe">
+	    <organization>Twist</organization>
+	    <address>
+	      <email>mbelshe@chromium.org</email>
+	    </address>
+	  </author>
+
+	  <author initials="R." surname="Peon" fullname="Roberto Peon">
+	    <organization>Google, Inc</organization>
+	    <address>
+	      <email>fenix@google.com</email>
+	    </address>
+	  </author>
+
+	  <author initials="M." surname="Thomson" fullname="Martin Thomson" role="editor">
+	    <organization>Microsoft</organization>
+	    <address>
+	      <postal>
+		<street>3210 Porter Drive</street>
+		<city>Palo Alto</city>
+		<code>94304</code>
+		<country>US</country>
+	      </postal>
+	      <email>martin.thomson@skype.net</email>
+	    </address>
+	  </author>
+
+	  <author initials="A." surname="Melnikov" fullname="Alexey Melnikov" role="editor">
+	    <organization>Isode Ltd</organization>
+	    <address>
+	      <postal>
+		<street>5 Castle Business Village</street>
+		<street>36 Station Road</street>
+		<city>Hampton</city>
+		<region>Middlesex</region>
+
+		<code>TW12 2BX</code>
+		<country>UK</country>
+	      </postal>
+	      <email>Alexey.Melnikov@isode.com</email>
+	    </address>
+	  </author>
+	  <date month="July" year="2013"/>
+	</front>
+	<seriesInfo name="Internet-Draft" value="draft-ietf-httpbis-http2-04"/>
+      </reference>
       <reference anchor="Avro" target="http://avro.apache.org/docs/1.7.4/spec.html">
 	<front>
 	  <title>Apache Avro™ 1.7.4 Specification</title>
