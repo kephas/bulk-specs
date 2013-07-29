@@ -10,14 +10,14 @@
 	- a reference is a namespace identifier followed by a
           reference identifier
 	- the namespace identifier is an unsigned integer represented
-          either a byte between Ox10 and 0x254 (inclusive) or a
-          sequence of one or several Ox255 bytes followed by a byte
-          between 0x0 and Ox254;
-	  - NSID Ox10 to Ox1F are reserved to be used as standard
+          either a byte between 0x10 and 0x254 (inclusive) or a
+          sequence of one or several 0x255 bytes followed by a byte
+          between 0x0 and 0x254;
+	  - NSID 0x10 to 0x1F are reserved to be used as standard
             namespaces defined by BULK specifications
 	- the reference identifier is an unsigned integer represented
           by a single byte
-    - forms are series of expressions between Ox1 and Ox2 bytes
+    - forms are series of expressions between 0x1 and 0x2 bytes
   - namespaces have a UUID
     - NS defined as part of the BULK specification use a v5 UUID with
       urn:uuid:abaddeed-face-11e2-9605-74de2b4102f1 as namespace
@@ -51,10 +51,10 @@
    9. 32, 64 or 128 bits signed integer (is a *Int*): M Word
 
 
-   OxA−OxF atoms reserved for future major versions of BULK.
+   0xA−0xF atoms reserved for future major versions of BULK.
 
 ** BULK core namespace
-   NSID: Ox10
+   NSID: 0x10
 
    1. ( version Int Int ): version
    2. ( ns <id>:Int <uuid>:Word ): NS declaration
@@ -76,7 +76,7 @@
    BULK stream.
 
 ** BULK arithmetic namespace
-   NSID: Ox11
+   NSID: 0x11
 
    1. ( frac Int Int ): fraction
    2. ( bigint Array ): arbitrary precision signed integer (is a *Int*)
