@@ -55,11 +55,13 @@
 	<t>
 	  In particular, whereas the previous trend for Internet and Web standards and programming
 	  tools has been to create human-readable syntaxes for data and protocols, the advent of
-	  technologies like protocol buffers, Thrift, the various binary serializations for JSON
-	  like Avro or Smile, or the binary HTTP/2.0 currently in development seem to indicate that
-	  the time is ripe for a generalized use of binary, reserved until now for the low-level
-	  protocols. The lessons about flexibility learnt in the previous switch from binary to
-	  plain text can now be applied to efficient binary syntaxes.
+	  technologies like <xref target="protobuf">protocol buffers</xref>, <xref
+	  target="Thrift">Thrift</xref>, the various binary serializations for JSON like <xref
+	  target="Avro">Avro</xref> or <xref target="Smile">Smile</xref>, or the binary HTTP/2.0
+	  currently in development seem to indicate that the time is ripe for a generalized use of
+	  binary, reserved until now for the low-level protocols. The lessons about flexibility
+	  learnt in the previous switch from binary to plain text can now be applied to efficient
+	  binary syntaxes.
 	</t>
 	<section title="Definitions">
 	  <t>
@@ -212,7 +214,16 @@
 	  <t hangText="Optional parameters">none</t>
 	  <t hangText="Encoding considerations">none, content is self-describing</t>
 	  <t hangText="Security considerations">cf. <xref target="sec"/></t>
-	  <t hangText="Interoperability considerations">none</t>
+	  <t hangText="Interoperability considerations">the constraint to start any BULK stream with
+	  a version form has the side-effect that classes of BULK streams can be identified by a
+	  sequence of bytes acting as "magic number":
+	  <list style="hanging">
+	    <t hangText="0x011001">any BULK stream</t>
+	    <t hangText="0x01100107">a BULK stream of any major version beneath 256</t>
+	    <t hangText="0x0110010701">a BULK stream of major version 1</t>
+	    <t hangText="0x0110010701070202">a BULK stream of version 1.2</t>
+	  </list>
+	  </t>
 	  <t hangText="Published specification">this document</t>
 	  <t hangText="Applications that use this media type">none so far</t>
 	  <t hangText="Fragment identifier considerations">this specification defines no semantics for
@@ -254,6 +265,69 @@
         <seriesInfo name="RFC" value="2119"/>
       </reference>
     </references>
+
+
+    <references title="Informative references">
+      <reference anchor="Avro" target="http://avro.apache.org/docs/1.7.4/spec.html">
+	<front>
+	  <title>Apache Avro™ 1.7.4 Specification</title>
+	  <author initials="D." surname ="Cutting" fullname="Doug Cutting">
+            <organization>Cloudera</organization>
+	  </author>
+	  <date month="February" year="2013"/>
+	</front>
+      </reference>
+
+      <reference anchor="protobuf" target="https://developers.google.com/protocol-buffers/">
+	<front>
+	  <title>Protocol Buffers</title>
+	  <date month="July" year="2008"/>
+	</front>
+      </reference>
+
+      <reference anchor="Smile" target="http://wiki.fasterxml.com/SmileFormat">
+	<front>
+	  <title>Smile Data Format</title>
+	  <author initials="T." surname ="Saloranta" fullname="Tatu Saloranta">
+	    <address><email>tsaloranta@gmail.com</email></address>
+	  </author>
+	  <date month="September" year="2010"/>
+	</front>
+      </reference>
+
+      <reference anchor="Thrift" target="http://thrift.apache.org/static/files/thrift-20070401.pdf">
+	<front>
+	  <title>Thrift: Scalable Cross-Language Services Implementation</title>
+	  <author initials="M." surname ="Slee" fullname="Mark Slee">
+	    <organization>Facebook</organization>
+	    <address><email>mcslee@facebook.com</email></address>
+	  </author>
+	  <author initials="A." surname ="Agarwal" fullname="Aditya Agarwal">
+	    <organization>Facebook</organization>
+	    <address><email>aditya@facebook.com</email></address>
+	  </author>
+	  <author initials="M." surname ="Kwiatkowski" fullname="Marc Kwiatkowski">
+	    <organization>Facebook</organization>
+	    <address><email>marc@facebook.com</email></address>
+	  </author>
+	  <date month="April" year="2007"/>
+	</front>
+      </reference>
+
+    </references>
+
+<!--
+      <reference anchor="" target="">
+	<front>
+	  <title></title>
+	  <author initials="" surname ="" fullname="">
+            <organization></organization>
+	    <address><email></email></address>
+	  </author>
+	  <date month="" year=""/>
+	</front>
+      </reference>
+-->
   </back>
 </rfc>
 
