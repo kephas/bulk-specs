@@ -87,7 +87,7 @@
 	    Lisp, Haskell and stack programming languages.
 	  </t>
 	  <t>
-	    On the other hand,a stack programming language is the canonical example of a non-uniform
+	    On the other hand, a stack programming language is the canonical example of a non-uniform
 	    language. Each operator takes a number of operands from the stack. Not knowing the arity
 	    of an operator makes it impossible to continue parsing, even when its evaluation was
 	    optional to the final processing. In the design space, stack programming languages
@@ -140,6 +140,14 @@
 	    generality, but many lack extensibility. When they are extensible, it's never in a
 	    decentralized way, again for reasons that have to do with compactness. They are usually
 	    extremely fast to parse.
+	  </t>
+	  <t>
+	    Actually, many binary formats are not so much formats but formats frameworks, and
+	    exclude extensibility by design. For each use case, an IDL compiler creates a brand new
+	    format that is essentially incompatible with all other formats created by the same
+	    compiler. If the IDL compiler and framework are correctly designed, such a format
+	    usually represent an optimum in compactness and speed of processing, as the compiler can
+	    also automatically generate an ad-hoc optimized parser.
 	  </t>
 	</section>
       </section>
