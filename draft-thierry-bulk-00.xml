@@ -156,13 +156,45 @@
       </section>
     </section>
  
-    <section title="Security Considerations">
-    </section>
-
-    <section title="Privacy Considerations">
+    <section title="Security Considerations" anchor="sec">
+      <t>
+	Parsing a BULK stream is designed to be free of side-effects for the processing application,
+	apart from storing the parsed results.
+      </t>
+      <t>
+	Arrays in BULK carry their size, so as for the application to know in advance the size of
+	the data to read and store, thus making it easier to build robust code. A malicious
+	software, however, may announce an array with a size choosen to get an application to
+	exhaust its available memory. When a BULK stream has been completely received, an array
+	bigger than the remaining data SHOULD trigger an error. When a BULK stream's size is not
+	known in advance, the application SHOULD use a growable data structure.
+      </t>
     </section>
 
     <section title="IANA Considerations">
+      <t>
+	This specification defines a new media type, application/bulk. Here are the informations for
+	its registration to IANA:
+      </t>
+      <t>
+	<list style="hanging">
+	  <t hangText="Type name">application</t>
+	  <t hangText="Subtype name">bulk</t>
+	  <t hangText="Required parameters">none</t>
+	  <t hangText="Optional parameters">none</t>
+	  <t hangText="Encoding considerations">none, content is self-describing</t>
+	  <t hangText="Security considerations">cf. <xref target="sec"/></t>
+	  <t hangText="Interoperability considerations">none</t>
+	  <t hangText="Published specification">this document</t>
+	  <t hangText="Applications that use this media type">none so far</t>
+	  <t hangText="Fragment identifier considerations">this specification defines no semantics for
+	  addressing the data with a fragment identifier; a future specification could define fragment
+	  identifier syntaxes to address the content by byte offset or the parsed results by their
+	  number in the yielded sequence</t>
+	  <t hangText="Additional information">a future specification may define a naming convention
+	  for media types based on bulk with a +bulk suffix, as for XML with +xml</t>
+	</list>
+      </t>
     </section>
 
     <section title="Acknowledgements">
@@ -177,6 +209,22 @@
   </middle>
 
   <back>
+    <references title="Normative References">
+      <reference anchor="RFC2119">
+        <front>
+          <title>
+            Key words for use in RFCs to Indicate Requirement Levels
+          </title>
+          <author initials="S." surname="Bradner" fullname="Scott Bradner">
+            <organization>Harvard University</organization>
+            <address><email>sob@harvard.edu</email></address>
+          </author>
+          <date month="March" year="1997"/>
+        </front>
+        <seriesInfo name="BCP" value="14"/>
+        <seriesInfo name="RFC" value="2119"/>
+      </reference>
+    </references>
   </back>
 </rfc>
 
