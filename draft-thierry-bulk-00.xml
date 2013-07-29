@@ -113,6 +113,35 @@
 	  </t>
 	</section>
       </section>
+      <section title="Format overview">
+	<t>
+	  A BULK stream is a stream of 8-bit bytes, in big-endian order. Parsing a BULK stream
+	  yields a sequence of expressions, which can be either atoms or forms, composed of
+	  atoms. The syntax of forms is entirely uniform, without a single exception: a starting
+	  byte marker, a sequence of atoms and an ending byte marker. Among atoms, only nil (the
+	  null byte), arrays, words and fixed-sized integers have a special syntax, for efficiency
+	  purposes. Even booleans and floating-point numbers follow the uniform syntax that every
+	  other expression follow.
+	</t>
+	<t>
+	  Non uniform atoms start with a marker byte, followed by a static or dynamic number of
+	  bytes, depending on the type (none for nil, static for words and fixed-size integers,
+	  dynamic for arrays).
+	</t>
+	<t>
+	  Any other atom is a reference, which consists of a namespace marker (in most of the cases,
+	  a single byte) followed by a identifier within this namespace (a single byte). All in all,
+	  a very little sacrifice is made in compactness (apart from nil, nothing is smaller than 2
+	  bytes, which means a form is 4 bytes + its content) for the benefit of a very simple
+	  syntax.
+	</t>
+	<t>
+	  A namespace marker in a BULK stream is associated by one or two simple forms to a
+	  namespace identified by a UUID, thus ensuring robust extension. One of the two forms
+	  declares that the stream can be processed even if the application doesn't reckognize the
+	  namespace, thanks to the uniform syntax.
+	</t>
+      </section>
       <section title="Conventions and Terminology">
         <t>
           The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD
