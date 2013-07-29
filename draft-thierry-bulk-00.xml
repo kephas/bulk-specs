@@ -191,6 +191,232 @@
           Hexadecimal literals are prefixed with <spanx style="verb">0x</spanx> to distinguish them
           from decimal literals.
         </t>
+	<t>
+	  In the grammar, types are named by a capitalized word, like "Foo". The text representation
+	  of the BULK stream uses mnemonics for some bytes sequences. Mnemonics are series of
+	  characters, excluding all capital letters and white space, like "this-is-one-mnemonic" or
+	  "what-the-%§!?#-is-that?". They are always separated by white space.
+	</t>
+	<t>
+	  In the grammar, a shape is a pattern of bytes, following the rules of the text
+	  representation for a BULK stream. Apart from mnemonics and types, a shape can contain:
+	  <list style="symbols">
+	    <t>a fixed byte, represented by its value as an unsigned integer (i.e. 0x3F)</t>
+	    <t>an arbitrary sequence of a fixed number of bytes, represented by the number of bytes
+	    in decimal immediately followed by a B uppercase letter (i.e. 4B)</t>
+	  </list>
+	  An arbitrary byte or sequence of bytes can be preceded by a name to make its description
+	  clearer. The name is a series of character between { and } immediately followed by a
+	  semi-colon (i.e. {quux}:4B).
+	</t>
+      </section>
+    </section>
+
+    <section title="BULK syntax">
+      <t>
+	A BULK stream is a sequence of 8-bit bytes. Bits and bytes are in big-endian order. The
+	result of parsing a BULK stream is a sequence of abstract data, called the abstract
+	yield. BULK parsing is injective: a BULK stream has only one abstract yield, but different
+	BULK streams can have the same abstract yield.
+      </t>
+      <t>
+	A processing application is not expected to actually produce the abstract yield, but an
+	adaptation of the abstract yield to its own implementation, called the concrete yield. Also,
+	some expressions in a BULK stream may have the semantics of a transformation of the abstract
+	yield. A processing application may thus not produce or retain the concrete yield but the
+	result of its transformation. This specification deals mainly with the byte sequence and the
+	abstract yield and occasionnally provide guidelines about the concrete yield.
+      </t>
+      <t>
+	The abstract yield is a sequence of expressions. Expressions can be atoms or forms. Forms
+	are sequences of expressions. If a byte sequence is parsed as an expression, this byte
+	sequence is said to denote this expression.
+      </t>
+
+      <section title="Parsing algorithm">
+	<t>
+	  The parser operates with a context, which is a sequence of expressions. Each time an
+	  expression is parsed, it is appended at the end of the context. The initial context is the
+	  abstract yield.
+	</t>
+	<t>
+	  At the beginning of a BULK stream and after having consumed the byte sequence denoting a
+	  complete expression, the parser is at the dispatch stage. At this stage, the next byte is
+	  a marker byte, which tells the parser what kind of expression comes next (the marker byte
+	  is the first byte of the sequence that denotes an expression).
+	</t>
+	<t>
+	  The 0x1 and 0x2 marker bytes are special cases. When the parser reads 0x1, it immediately
+	  appends an empty sequence to the current context. This sequence becomes the new
+	  context. This new context has the previous context as parent. Then the parser returns to
+	  its dispatch stage. When the parser reads 0x2, it appends nothing to the context, but
+	  instead the parent of the current context becomes the new context and the parser returns
+	  to the dispatch stage. Thus it is a parsing error to read 0x2 when the context is the
+	  abstract yield.
+	</t>
+      </section>
+
+      <section title="Forms">
+	<section title="starting marker byte">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="value">0x1</t>
+	      <t hangText="mnemonic">(</t>
+	    </list>
+	  </t>
+	</section>
+	<section title="ending marker byte">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="value">0x2</t>
+	      <t hangText="mnemonic">)</t>
+	    </list>
+	  </t>
+	</section>
+      </section>
+
+      <section title="Atoms">
+	<section title="nil">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="marker">0x0 (mnemonic: nil)</t>
+	      <t hangText="shape">nil</t>
+	    </list>
+	  </t>
+	  <t>
+	    Apart from being a possible short marker value, the fact that the 0x0 byte represents a
+	    valid atom means that a sequence of null bytes is a valid part of a BULK stream, thus
+	    making the format less fragile. In a network communication, nil atoms can also be sent
+	    to keep the channel open.
+	  </t>
+	</section>
+
+	<section title="Array">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="marker">0x3 (mnemonic: #)</t>
+	      <t hangText="shape"># Int …</t>
+	    </list>
+	  </t>
+	  <t>
+	    Arrays have a special parsing rule. After consuming the marker byte, the parser returns
+	    to the dispatch stage. It is a parser error if the parsed expression is not of type Int
+	    or if its value cannot be reckognized. This integer is not added to any context, but the
+	    parser consumes as many bytes as this integer and they constitute the content of this
+	    array.
+	  </t>
+	  <t>Type: Array</t>
+	</section>
+
+	<section title="32 bits word">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="marker">0x4 (mnemonic: word32)</t>
+	      <t hangText="shape">word32 4B</t>
+	    </list>
+	  </t>
+	  <t>Types: Word, Word32</t>
+	</section>
+
+	<section title="64 bits word">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="marker">0x5 (mnemonic: word64)</t>
+	      <t hangText="shape">word64 8B</t>
+	    </list>
+	  </t>
+	  <t>Types: Word, Word64</t>
+	</section>
+
+	<section title="128 bits word">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="marker">0x6 (mnemonic: word128)</t>
+	      <t hangText="shape">word128 16B</t>
+	    </list>
+	  </t>
+	  <t>Types: Word, Word128</t>
+	</section>
+
+	<section title="Unsigned 8 bits integer">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="marker">0x7 (mnemonic: int8)</t>
+	      <t hangText="shape">int8 1B</t>
+	    </list>
+	  </t>
+	  <t>
+	    The value of this integer is the value of its contained byte.
+	  </t>
+	  <t>Type: Int</t>
+	</section>
+
+	<section title="Unsigned 32, 64 and 128 bits integer">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="marker">0x8 (mnemonic: uint)</t>
+	      <t hangText="shape">uint Word</t>
+	    </list>
+	  </t>
+	  <t>
+	    The value of this integer is the value of its contained word.
+	  </t>
+	  <t>Type: Int</t>
+	</section>
+
+	<section title="Signed 32, 64 and 128 bits integer">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="marker">0x9 (mnemonic: sint)</t>
+	      <t hangText="shape">sint Word</t>
+	    </list>
+	  </t>
+	  <t>
+	    The value of its contained word is the value of this integer in two's-complement
+	    notation.
+	  </t>
+	  <t>Type: Int</t>
+	</section>
+
+	<section title="Reserved marker bytes">
+	  <t>
+	    Marker bytes 0xA−0xF are reserved for future major versions of BULK. It is a parser
+	    error if a BULK stream with major version 1 contains such a marker byte.
+	  </t>
+	</section>
+
+	<section title="Reference">
+	  <t><list style="hanging">
+	      <t hangText="marker">0x10−0xFF</t>
+	      <t hangText="shape">{ns}:1B {name}:1B</t>
+	    </list>
+	  </t>
+	  <t>
+	    The {ns} byte is a value associated with a namespace. Values 0x10−0x1F are reserved for
+	    namespaces defined by BULK specifications. Greater values can be associated with
+	    namespaces identified by a UUID.
+	  </t>
+	  <t>
+	    The {name} byte is the name within the namespace. Vocabularies with more than 256 names
+	    thus need to be spread accross several namespaces.
+	  </t>
+	  <t>
+	    The specification of a namespace SHOULD include a mnemonic for the namespace and for
+	    each defined name. When descriptions use several namespaces, the mnemonic of a reference
+	    SHOULD be the concatenation of the namespace mnemonic, ":" and the name mnemonic. For
+	    example, the fp name in namespace math becomes math:fp.
+	  </t>
+	  <section title="Speciale case">
+	    <t>
+	      References have a special parsing rule. In case a BULK stream needs an important
+	      number of namespaces, if the marker byte is 0xFF, the parser continues to read bytes
+	      until it finds a byte different than 0xFF. The value of this sequence of bytes is the
+	      value associated with a namespace. For example, the reference denoted by the bytes
+	      0xFF 0xFF 0x8C 0x1A is the name 26 in the namespace associated with 16777100.
+	    </t>
+	  </section>
+	</section>
+
       </section>
     </section>
  
