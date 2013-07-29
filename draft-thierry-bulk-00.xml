@@ -70,15 +70,33 @@
 	  <t>
 	    A good counter-example is found in most programming languages. Adding a new branching
 	    construct cannot be done in a terse way without modifying the underlying
-	    implementation. Such a construct can either not be defined by user code (because of
-	    evaluation rules) or in a terribly verbose and inconvenient way (with lot of boilerplate
-	    code). Notable exceptions are Lisp and Haskell.
+	    implementation. Such a construct either cannot be defined by user code (because of
+	    evaluation rules) or can in a terribly verbose and inconvenient way (with lot of
+	    boilerplate code). Notable exceptions to this limitation of programming languages are
+	    Lisp, Haskell and stack programming languages.
 	  </t>
 	  <t>
-	    Also, the canonical example of a non-uniform language is a stack programming language:
-	    each operator takes a number of operands from the stack. Not knowing the arity of an
-	    operator makes it impossible to continue parsing, even when its evaluation was optional
-	    to the final processing.
+	    On the other hand,a stack programming language is the canonical example of a non-uniform
+	    language. Each operator takes a number of operands from the stack. Not knowing the arity
+	    of an operator makes it impossible to continue parsing, even when its evaluation was
+	    optional to the final processing. In the design space, stack programming languages
+	    completely sacrifice uniformity to achieve one the highest combination of extensibility,
+	    compactness and speed of processing.
+	  </t>
+	  <t>
+	    By generality, we mean the ability of a syntax to lend itself to describe any kind of
+	    data with a reasonable (or better yet, high) level of compactness and simplicity. For
+	    example, although both arrays and linked lists could be considered very general as they
+	    are both able to store any kind of data, they actually are at the respective cost of
+	    complexity (arrays need the embedding of data structure in the data or in the processing
+	    logic) and size (in-memory linked lists can waste as much as half or two third of the
+	    space for the overhead of the data structure).
+	  </t>
+	  <t>
+	    By decentralization, we mean the ability to extend the syntax in a way that avoid naming
+	    collisions without the use of a central registry. Note that the DNS is NOT decentralized
+	    in this sense, it is distributed (it cannot work without its root servers and not even
+	    without prior knowledge of their location).
 	  </t>
 	</section>
 	<section title="State of the art">
@@ -200,11 +218,12 @@
 
     <section title="Acknowledgements">
       <t>
-	I know that I have read <eref
+	The original author of this specification read <eref
 	target="http://www.schnada.de/grapt/eriknaggum-xmlrant.html">Erik Naggum's famous rant about
-	XML</eref> in the past, and it may well have unconsciouly influenced this design. I happened
-	to stumble upon it again while writing the earliest draft of this specification and it
-	struck me how much it embodies his ideas. In any case, I dedicate this format to him.
+	XML</eref> several years before, and it may well have unconsciouly influenced this
+	design. He happened to stumble upon it again while writing the earliest draft of this
+	specification and it struck him how much it embodies Erik's ideas. In any case, this format
+	is dedicated to Erik.
       </t>
     </section>
   </middle>
