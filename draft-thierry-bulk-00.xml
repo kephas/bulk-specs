@@ -34,7 +34,7 @@
     <abstract>
       <t>
         This specification describes a uniform, decentrally extensible and efficient format for data
-        representation.
+        serialization.
       </t>
     </abstract>
 
@@ -169,15 +169,15 @@
 	<t>
 	  Any other atom is a reference, which consists of a namespace marker (in most of the cases,
 	  a single byte) followed by a identifier within this namespace (a single byte). All in all,
-	  a very little sacrifice is made in compactness (apart from nil, nothing is smaller than 2
-	  bytes, which means a form is 4 bytes + its content) for the benefit of a very simple
-	  syntax.
+	  a very little sacrifice is made in compactness for the benefit of a very simple syntax:
+	  apart from nil, nothing is smaller than 2 bytes, and as most forms involve a reference
+	  followed by some content, a form is 4 bytes + its content.
 	</t>
 	<t>
-	  A namespace marker in a BULK stream is associated by one or two simple forms to a
+	  A namespace marker in a BULK stream is associated by either of two simple forms to a
 	  namespace identified by a UUID, thus ensuring decentralized extension. One of the two
 	  forms declares that the stream can be processed even if the application doesn't reckognize
-	  the namespace, thanks to the uniform syntax.
+	  the namespace. Parsing remains possible thanks to the uniform syntax.
 	</t>
       </section>
       <section title="Conventions and Terminology">
