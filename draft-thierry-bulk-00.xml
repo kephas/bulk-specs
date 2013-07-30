@@ -653,7 +653,7 @@
 
       <section title="Official namespaces">
 	<t>
-	  Extension namespaces defined as part of the official BULK suite MUST be identified by a v4
+	  Extension namespaces defined as part of the official BULK suite MUST be identified by a v5
 	  UUID. The namespace UUID used to generate it MUST be <eref
 	  target="urn:uuid:abaddeed-face-11e2-9605-74de2b4102f1"/>. The name used to generate it
 	  SHOULD be a URI designating the described vocabulary when one exists.
