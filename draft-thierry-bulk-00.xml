@@ -254,6 +254,9 @@
 	  to the dispatch stage. Thus it is a parsing error to read 0x2 when the context is the
 	  abstract yield.
 	</t>
+	<t>
+	  Whenever a parsing error is encountered, parsing of the BULK stream MUST stop.
+	</t>
       </section>
 
       <section title="Forms">
@@ -348,7 +351,7 @@
 	  <t>
 	    The value of this integer is the value of its contained byte.
 	  </t>
-	  <t>Type: Int</t>
+	  <t>Type: Number, Int</t>
 	</section>
 
 	<section title="Unsigned 32, 64 and 128 bits integer">
@@ -361,7 +364,7 @@
 	  <t>
 	    The value of this integer is the value of its contained word.
 	  </t>
-	  <t>Type: Int</t>
+	  <t>Type: Number, Int</t>
 	</section>
 
 	<section title="Signed 32, 64 and 128 bits integer">
@@ -375,7 +378,7 @@
 	    The value of its contained word is the value of this integer in two's-complement
 	    notation.
 	  </t>
-	  <t>Type: Int</t>
+	  <t>Type: Number, Int</t>
 	</section>
 
 	<section title="Reserved marker bytes">
@@ -419,20 +422,275 @@
 
       </section>
     </section>
- 
+
+    <section title="Standard namespaces">
+      <t>
+	Standard namespaces have a fixed namespace value and are not identified by a UUID.
+      </t>
+
+      <section title="BULK core namespace">
+	<t>
+	  <list style="hanging">
+	      <t hangText="marker">0x10 (mnemonic: bulk)</t>
+	  </list>
+	</t>
+
+	<section title="Version">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x1 (mnemonic: version)</t>
+	      <t hangText="shape">( version {major}:Int {minor}:Int )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This form MUST be the first in a BULK stream. It is a parsing error otherwise. This
+	    specification defines BULK 1.0. When writing a BULK stream, a processing application
+	    MUST denote  {major} and {minor} by the smallest byte sequence possible.
+	  </t>
+	  <t>
+	    Two BULK versions with the same major version MUST share the same parsing rules and the
+	    same definitions of marker bytes. Changing the syntax or semantics of existing marker
+	    bytes and using marker bytes in the reserved interval warrants a new major
+	    version. Changing the syntax or semantics of existing names in standard namespaces also.
+	  </t>
+	  <t>
+	    Adding standard namespaces or adding names in existing standard namespaces warrants a
+	    new minor version.
+	  </t>
+	</section>
+
+	<section title="Required namespace">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x2 (mnemonic: ns)</t>
+	      <t hangText="shape">( ns {mark}:Int {uuid}:Word128 )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This associates the namespace identified by {uuid} to the value {mark}. It is a parsing
+	    error if a processin application doesn't reckognise the designated namespace.
+	  </t>
+	</section>
+
+	<section title="Optional namespace">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x3 (mnemonic: ns*)</t>
+	      <t hangText="shape">( ns* {mark}:Int {uuid}:Word128 )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This associates the namespace identified by {uuid} to the value {mark}.
+	  </t>
+	</section>
+
+	<section title="Strings encoding">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x4 (mnemonic: stringenc)</t>
+	      <t hangText="shape">( stringenc {enc}:Encoding )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This tells the processing application that all following expressions in the current
+	    context that are understood by the application as character strings will be encoded with
+	    the encoding designated by {enc}.
+	  </t>
+	  <t>
+	    As the abstract yield doesn't contains strings but expressions that will be used as
+	    strings by the application, it is not a parsing error if the application doesn't
+	    reckognize {enc}. In this situation, it is a parsing error when the application actually
+	    needs to decode a byte sequence as a string. It is not a parsing error when a processing
+	    application only transmits a byte sequence encoding a string, if it can accurately
+	    convey the encoding to the receiving application.
+	  </t>
+	</section>
+
+	<section title="IANA registered character set">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x5 (mnemonic: iana-charset)</t>
+	      <t hangText="shape">( iana-charset {id}:Int )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This designates the string encoding registered among the <xref
+	    target="IANA-Charsets">IANA Character Sets</xref> whose MIBenum is {id}.
+	  </t>
+	  <t>
+	    Type: Encoding.
+	  </t>
+	</section>
+
+	<section title="Windows code page">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x6 (mnemonic: code-page)</t>
+	      <t hangText="shape">( code-page {id}:Int )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This designates the string encoding among Windows code pages whose identifier is {id}.
+	  </t>
+	  <t>
+	    Type: Encoding.
+	  </t>
+	</section>
+
+	<section title="true">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x7 (mnemonic: true)</t>
+	      <t hangText="shape">true</t>
+	    </list>
+	  </t>
+	  <t>
+	    Type: Boolean.
+	  </t>
+	</section>
+
+	<section title="false">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x8 (mnemonic: false)</t>
+	      <t hangText="shape">false</t>
+	    </list>
+	  </t>
+	  <t>
+	    Type: Boolean.
+	  </t>
+	</section>
+
+      </section>
+
+      <section title="arithmetic namespace">
+	<t>
+	  <list style="hanging">
+	      <t hangText="marker">0x11 (mnemonic: math)</t>
+	  </list>
+	</t>
+
+	<t>
+	  A processing application must reckognize the type of all expressions that have the type
+	  Number, but an application MAY consider a number as having an unknown value if it has no
+	  adequate data type to store it.
+	</t>
+
+	<section title="fraction">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x1 (mnemonic: frac)</t>
+	      <t hangText="shape">( frac {num}:Int {div}:Int )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This is the number {num}/{div}.
+	  </t>
+	  <t>
+	    Type: Number.
+	  </t>
+	</section>
+
+	<section title="Arbitrary precision signed integer">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x2 (mnemonic: bigint)</t>
+	      <t hangText="shape">( bigint {bits}:Array )</t>
+	    </list>
+	  </t>
+	  <t>
+	    The bits contained in {bits} is the value of this integer in two's-complement notation.
+	  </t>
+	  <t>
+	    Type: Number, Int.
+	  </t>
+	</section>
+
+	<section title="Binary floating-point number">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x3 (mnemonic: binary)</t>
+	      <t hangText="shape">( binary {bits}:Word )</t>
+	      <t hangText="shape">( binary {bits}:Array )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This is a floating-point number expressed in IEEE 754-2008 binary interchange format. If
+	    {bits} is an Array, the size of its contents must be a multiple of 32 bits, as per IEEE
+	    754-2008 rules.
+	  </t>
+	  <t>
+	    Type: Number.
+	  </t>
+	</section>
+
+	<section title="Decimal floating-point number">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name">0x4 (mnemonic: decimal)</t>
+	      <t hangText="shape">( decimal {bits}:Word )</t>
+	      <t hangText="shape">( decimal {bits}:Array )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This is a floating-point number expressed in IEEE 754-2008 decimal interchange
+	    format. If {bits} is an Array, the size of its contents must be a multiple of 32 bits,
+	    as per IEEE 754-2008 rules.
+	  </t>
+	  <t>
+	    Type: Number.
+	  </t>
+	</section>
+
+      </section>
+    </section>
+
+    <section title="Extension namespaces">
+      <t>
+	Extension namespaces are defined with an identifier UUID, to be associated by a ns or ns*
+	form.
+      </t>
+
+      <section title="Official namespaces">
+	<t>
+	  Extension namespaces defined as part of the official BULK suite MUST be identified by a v4
+	  UUID. The namespace UUID used to generate it MUST be <eref
+	  target="urn:uuid:abaddeed-face-11e2-9605-74de2b4102f1"/>. The name used to generate it
+	  SHOULD be a URI designating the described vocabulary when one exists.
+	</t>
+      </section>
+
+      <section title="User-defined namespaces">
+	<t>
+	  User-defined namespaces are actually no different than official namespaces, apart from the
+	  choice of UUID.
+	</t>
+      </section>
+    </section>
+
     <section title="Security Considerations" anchor="sec">
-      <t>
-	Parsing a BULK stream is designed to be free of side-effects for the processing application,
-	apart from storing the parsed results.
-      </t>
-      <t>
-	Arrays in BULK carry their size, so as for the application to know in advance the size of
-	the data to read and store, thus making it easier to build robust code. A malicious
-	software, however, may announce an array with a size choosen to get an application to
-	exhaust its available memory. When a BULK stream has been completely received, an array
-	bigger than the remaining data SHOULD trigger an error. When a BULK stream's size is not
-	known in advance, the application SHOULD use a growable data structure.
-      </t>
+      <section title="Parsing">
+	<t>
+	  Parsing a BULK stream is designed to be free of side-effects for the processing application,
+	  apart from storing the parsed results.
+	</t>
+	<t>
+	  Arrays in BULK carry their size, so as for the application to know in advance the size of
+	  the data to read and store, thus making it easier to build robust code. A malicious
+	  software, however, may announce an array with a size choosen to get an application to
+	  exhaust its available memory. When a BULK stream has been completely received, an array
+	  bigger than the remaining data SHOULD trigger an error. When a BULK stream's size is not
+	  known in advance, the application SHOULD use a growable data structure.
+	</t>
+      </section>
+      <section title="Forwarding">
+	<t>
+	  When a processing application forwards all or part of the data in a BULK stream to another
+	  application, care must be taken if part of the forwarded data was not entirely
+	  reckognized, as it could be used by an attacker to benefit from the authority the
+	  forwarding application has on the recipient of the data.
+	</t>
+      </section>
     </section>
 
     <section title="IANA Considerations">
@@ -498,6 +756,16 @@
         <seriesInfo name="BCP" value="14"/>
         <seriesInfo name="RFC" value="2119"/>
       </reference>
+
+      <reference anchor="IANA-Charsets" target="http://www.iana.org/assignments/character-sets">
+        <front>
+          <title>
+	    IANA Charset Registry (archived at):
+          </title>
+	  <date/>
+        </front>
+      </reference>
+
     </references>
 
 
