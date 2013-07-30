@@ -468,7 +468,7 @@
 	  </t>
 	  <t>
 	    This associates the namespace identified by {uuid} to the value {mark}. It is a parsing
-	    error if a processin application doesn't reckognise the designated namespace.
+	    error if a processing application doesn't reckognise the designated namespace.
 	  </t>
 	</section>
 
@@ -704,7 +704,7 @@
 
       <section title="Standard profile">
 	<t>
-	  This specification defines the default profile that a processin application MUST use when
+	  This specification defines the default profile that a processing application MUST use when
 	  it is not using a specific profile:
 	</t>
 	<t>
@@ -916,18 +916,6 @@
 
     </references>
 
-<!--
-      <reference anchor="" target="">
-	<front>
-	  <title></title>
-	  <author initials="" surname ="" fullname="">
-            <organization></organization>
-	    <address><email></email></address>
-	  </author>
-	  <date month="" year=""/>
-	</front>
-      </reference>
--->
   </back>
 </rfc>
 
