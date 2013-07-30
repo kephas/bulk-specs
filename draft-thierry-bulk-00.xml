@@ -13,13 +13,13 @@
 <?rfc-ext allow-markup-in-artwork="yes" ?>
 <?rfc-ext include-index="no" ?>
 
-<rfc ipr="full2026" 
+<rfc ipr="trust200902"
      category="exp"
-     docName="draft-btme-00" 
+     docName="draft-thierry-bulk-00"
      xmlns:x="http://purl.org/net/xml2rfc/ext">
   <x:feedback template="mailto:pierre@nothos.net"/>
   <front>
-    <title abbrev="BULK v1">Binary Uniform Language Kit</title>
+    <title abbrev="BULK1">Binary Uniform Language Kit 1.0</title>
 
     <author initials="P." surname="Thierry" fullname="Pierre Thierry">
       <organization>Thierry Technologies</organization>
@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date year="2013" />
+    <date day="1" month="August" year="2013" />
     <keyword>binary</keyword>
 
     <abstract>
