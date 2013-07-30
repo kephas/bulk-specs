@@ -15,7 +15,7 @@
 
 <rfc ipr="trust200902"
      category="exp"
-     docName="draft-thierry-bulk-00"
+     docName="draft-thierry-bulk-01"
      xmlns:x="http://purl.org/net/xml2rfc/ext">
   <x:feedback template="mailto:pierre@nothos.net"/>
   <front>
@@ -571,9 +571,9 @@
 	</t>
 
 	<t>
-	  A processing application must reckognize the type of all expressions that have the type
-	  Number, but an application MAY consider a number as having an unknown value if it has no
-	  adequate data type to store it.
+	  A processing application must reckognize the type of all expressions defined in this
+	  specification that have the type Number, but an application MAY consider a number as
+	  having an unknown value if it has no adequate data type to store it.
 	</t>
 
 	<section title="fraction">
@@ -664,6 +664,54 @@
 	<t>
 	  User-defined namespaces are actually no different than official namespaces, apart from the
 	  choice of UUID.
+	</t>
+      </section>
+    </section>
+
+    <section title="Profiles">
+      <t>
+	A profile is a sequence of expressions used as the initial abstract yield by a processing
+	application. With respect to the BULK stream, the profile is an out-of-band information,
+	usually implicit.
+      </t>
+      <t>
+	A processing application doesn't need to include the profile in the concrete yield, as long
+	as the semantics of the abstract yield are maintained.
+      </t>
+      <t>
+	The same BULK stream might be processed with different profiles.
+      </t>
+      <t>
+	A processing application MUST NOT deduce the profile from the content of a BULK stream.
+      </t>
+
+      <section title="Profile redundancy">
+	<t>
+	  A processing application should only rely on the use of a profile when it is a safe
+	  assumption that the profile is known, for example within a communication where the
+	  protocol dictates the profile.
+	</t>
+	<t>
+	  In particular, long-term storage of a BULK stream should preserve profile information, for
+	  example with a media type that dictates the profile.
+	</t>
+	<t>
+	  Otherwise, an application creating a BULK stream SHOULD include the profile after the
+	  version form. For this reason, the expressions in a profile SHOULD have idempotent
+	  semantics.
+	</t>
+      </section>
+
+      <section title="Standard profile">
+	<t>
+	  This specification defines the default profile that a processin application MUST use when
+	  it is not using a specific profile:
+	</t>
+	<t>
+	  ( bulk:stringenc 106 )
+	</t>
+	<t>
+	  This means that the default string encoding in a BULK stream is UTF-8.
 	</t>
       </section>
     </section>
