@@ -1,100 +1,47 @@
 * BULK
-  Binary Uniform Language Kit
-
-  - byte-based, big-endian
-  - binary symbolic expressions
-  - expressions: atoms and forms
-    - atoms include:
-      - nil, arrays, integers
-      - references
-	- a reference is a namespace identifier followed by a
-          reference identifier
-	- the namespace identifier is an unsigned integer represented
-          either a byte between 0x10 and 0x254 (inclusive) or a
-          sequence of one or several 0x255 bytes followed by a byte
-          between 0x0 and 0x254;
-	  - NSID 0x10 to 0x1F are reserved to be used as standard
-            namespaces defined by BULK specifications
-	- the reference identifier is an unsigned integer represented
-          by a single byte
-    - forms are series of expressions between 0x1 and 0x2 bytes
-  - namespaces have a UUID
-    - NS defined as part of the BULK specification use a v5 UUID with
-      urn:uuid:abaddeed-face-11e2-9605-74de2b4102f1 as namespace
-
 ** stdlib
-   Description template:
-   - M = marker byte
-   - shape
-     - 1B, 2B, etc. = 1 byte, 2 bytes, etc.
-     - nB = dynamic number of bytes
-   - <foo> = placeholder
-     - optionnally <foo>:constraint
-     - constraint can be shape or type
-
+   M = marker byte
 
    O. nil
    1. (
    2. )
-   3. Array: M <dim> <content>:nB
-      - dim = Int | ( Int+ ): dimensions (in bytes)
+   3. Array: M <dim>:Int <content>:nB
       - arrays are used whenever a vector or matrix is needed
 	- an application is free to pack any kind of data
 	- the semantics of the content must be inferred by the
           application; where ambiguity can appear, an application
           SHOULD enclose the array in a type-denoting form
-   4. 32 bits word (is a *Word*): M 4B
-   5. 64 bits word (is a *Word*): M 8B
-   6. 128 bits word (is a *Word*): M 16N
-   7. 8 bits unsigned integer (is a *Int*): M 1B
-   8. 32, 64 or 128 bits unsigned integer (is a *Int*): M Word
-   9. 32, 64 or 128 bits signed integer (is a *Int*): M Word
-
-
-   0xA−0xF atoms reserved for future major versions of BULK.
+   4. 32 bits word: M 4B
+   5. 64 bits word: M 8B
+   6. 128 bits word: M 16N
+   7. 8 bits unsigned integer: M 1B
+   8. 32, 64 or 128 bits unsigned integer: M Word
+   9. 32, 64 or 128 bits signed integer: M Word
 
 ** BULK core namespace
    NSID: 0x10
 
-   1. ( version Int Int ): version
-   2. ( ns <id>:Int <uuid>:Word ): NS declaration
-   3. ( ns* <id>:Int <uuid>:Word ): NS declaration (optional to
-      processing)
-   4. ( stringenc <id> ): strings encoding
-      - =id= is an encoding designator
-	- an Int designates an encoding among the registered IANA
-          Character Sets, by its MIBenum.
-   5. ( codepage Int ): Windows code page
-      - encoding designator; designates a Windows code page by its
-        identifier
-   6. true
-   7. false
-
-
-   The following forms affect the reader after they appeared: =ns=,
-   =ns*=, =stringenc=. =version= MUST be the first expression of a
-   BULK stream.
+   1. ( version Int Int )
+   2. ( ns <id>:Int <uuid>:Word )
+   3. ( ns* <id>:Int <uuid>:Word )
+   4. ( stringenc <id> )
+   5. ( iana-charset Int)
+   6. ( codepage Int )
+   7. true
+   8. false
 
 ** BULK arithmetic namespace
    NSID: 0x11
 
-   1. ( frac Int Int ): fraction
-   2. ( bigint Array ): arbitrary precision signed integer (is a *Int*)
-      - the array MUST be one-dimensional
-      - reader MUST recognize it, but MAY refuse an integer it has no
-        datatype to store
-   3. ( binary <bits> ): IEEE 754-2008 binary interchange format
-      - bits = Word | Array; if using an array, its size MUST be a
-        multiple of 4
-   4. ( decimal <bits> ): IEEE 754-2008 decimal interchange format
+   1. ( frac Int Int )
+   2. ( bigint Array )
+   3. ( binary <bits> )
+   4. ( decimal <bits> )
 
 
    Binary and decimal FP are defined in IEEE 754-2008 3.4−6. They are
    specified only for multiples of 32 bits (and binary for 16 bits,
    which is not included here).
-
-   All number forms MUST be reckognized as numbers, but an application
-   MAY consider them as an unknown value.
 
 ** XML Infoset namespace
    urn:uuid:a2a97ec6-85f9-5aed-89b2-7ca3cafc2093 (BULK
@@ -125,10 +72,4 @@
    - macrology may be defined to further compact common use cases
 
 ** Asking input
-   - Rivest, author of the S-expressions I-D,
-     http://people.csail.mit.edu/rivest/contact.html
-   - Tatu Saloranta, author of Smile, tsaloranta@gmail.com
-     - cf. http://www.cowtowncoder.com/blog/archives/2011/02/entry_445.html
-
-
    - test https://github.com/eishay/jvm-serializers?
