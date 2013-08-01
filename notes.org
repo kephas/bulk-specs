@@ -1,4 +1,7 @@
 * BULK
+  - final abstract yield = abstract yield after application of
+    transformation semantics
+
 ** stdlib
    M = marker byte
 
@@ -11,6 +14,9 @@
 	- the semantics of the content must be inferred by the
           application; where ambiguity can appear, an application
           SHOULD enclose the array in a type-denoting form
+      - because BULK arrays have no end markers, the payload of a BULK
+        stream can constitute the end of the stream
+      - an array can be skipped in constant time and mapped in memory
    4. 32 bits word: M 4B
    5. 64 bits word: M 8B
    6. 128 bits word: M 16N
@@ -22,26 +28,89 @@
    NSID: 0x10
 
    1. ( version Int Int )
-   2. ( ns <id>:Int <uuid>:Word )
-   3. ( ns* <id>:Int <uuid>:Word )
+   2. ( ns <id>:Int <uuid>:Word128 )
+   3. ( ns* <id>:Int <uuid>:Word128 )
    4. ( stringenc <id> )
    5. ( iana-charset Int)
    6. ( codepage Int )
    7. true
    8. false
 
-** BULK arithmetic namespace
-   NSID: 0x11
+*** rearranged NS
+    1. ( version Int Int )
+    2. true
+    3. false
+    4. ( stringenc <id> )
+    5. ( iana-charset Int)
+    6. ( codepage Int )
+    7. ( ns <id>:Int <uuid>:Word128 )
+    8. ( ns* <id>:Int <uuid>:Word128 )
+    9. optional: used in package form
+       - if it is not confusing to spec readers, (option <uuid>) in
+         package forms could be replaced by (ns* <uuid>) to spare a
+         name in Ox10
+    10. ( package <uuid> <namespaces> )
+	- packages are immutable, <uuid> MUST be a v5 UUID with the
+          BULK UUID and the byte sequence <namespaces>
+    11. ( import <base>:Int <uuid> )
+    12. ( define <id> Expr )
+        - <id> = Ref | Int8
+    13. ( let ( <bindings> ) Expr+ )
+        - bindings = Ref Expr [ bindings ]
+    14. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
+        <definitions> )
+        - <uuid> is a v5 UUID generated with <ns-uuid> and <signature>
+        - <signature> is the signature of <definitions>
+        - expressions in <definitions> must have the shape ( define
+          Int8 Expr ) to define something within <uuid>
+          - error if ( define Ref Expr ) in final abstract yield
+    15. ( openpgp <data>:Array )
+    16. ( x509 <data>:Array )
+    17. 
+    18. 
+    19. 
+    20. 
+    21. 
+    22. 
+    23. 
+    24. 
+    25. 
+    26. 
+    27. 
+    28. 
+    29. 
+    30. 
+    31. 
+    32. ( frac Int Int )
+    33. ( bigint Array )
+    34. ( binary <bits> )
+    35. ( decimal <bits> )
 
-   1. ( frac Int Int )
-   2. ( bigint Array )
-   3. ( binary <bits> )
-   4. ( decimal <bits> )
 
+    A NS could be tied to a URL where its reference definition can be
+    found (with an v5 UUID hashing the URL). But if the URL stops being
+    resolvable, the NS cannot be "authenticated" anymore. It seems too
+    fragile.
 
-   Binary and decimal FP are defined in IEEE 754-2008 3.4−6. They are
-   specified only for multiples of 32 bits (and binary for 16 bits,
-   which is not included here).
+    Binary and decimal FP are defined in IEEE 754-2008 3.4−6. They are
+    specified only for multiples of 32 bits (and binary for 16 bits,
+    which is not included here).
+
+    openpgp and x509 may come from a crypto NS instead.
+
+*** import
+    #+BEGIN_src lisp
+      ( package P N1 ( optional N2 ) N3 )
+      ( import k P )
+    #+END_src
+
+    is equivalent to:
+
+    #+BEGIN_src lisp
+      ( ns k N1 )
+      ( ns* k+1 N2 )
+      ( ns k+2 N3 )
+    #+END_src
 
 ** XML Infoset namespace
    urn:uuid:a2a97ec6-85f9-5aed-89b2-7ca3cafc2093 (BULK
