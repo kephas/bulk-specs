@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="lib/rfc2629.xslt"?>
+<?rfc toc="yes" ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no" ?>
+<?rfc linkmailto="no" ?>
+<?rfc editing="no" ?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc rfcedstyle="yes"?>
+<?rfc-ext allow-markup-in-artwork="yes" ?>
+<?rfc-ext include-index="no" ?>
+
+<rfc ipr="trust200902"
+     category="exp"
+     docName="draft-thierry-bulk-rdf-00"
+     xmlns:x="http://purl.org/net/xml2rfc/ext">
+  <x:feedback template="mailto:pierre@nothos.net"/>
+  <front>
+    <title abbrev="BULK-RDF">BULK RDF namespace</title>
+
+    <author initials="P." surname="Thierry" fullname="Pierre Thierry">
+      <organization>Thierry Technologies</organization>
+      <address>
+        <email>pierre@nothos.net</email>
+      </address>
+    </author>
+
+    <date day="1" month="August" year="2013" />
+    <keyword>binary</keyword>
+
+    <abstract>
+      <t>
+        This specification describes a BULK serialization of RDF ontologies and graphs.
+      </t>
+    </abstract>
+
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <section title="Conventions and Terminology">
+        <t>
+          The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD
+          NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as
+          described in <xref target="RFC2119">RFC 2119</xref>.
+        </t>
+        <t>
+          Literal numerical values are provided in decimal or hexadecimal as appropriate.
+          Hexadecimal literals are prefixed with <spanx style="verb">0x</spanx> to distinguish them
+          from decimal literals.
+        </t>
+	<t>
+	  BULK bytes sequences and expressions are described with the same conventions than used in
+	  the <xref target="BULK1">BULK 1.0 specification</xref>
+	</t>
+      </section>
+    </section>
+
+    <section title="Security Considerations" anchor="sec">
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <reference anchor="RFC2119">
+        <front>
+          <title>
+            Key words for use in RFCs to Indicate Requirement Levels
+          </title>
+          <author initials="S." surname="Bradner" fullname="Scott Bradner">
+            <organization>Harvard University</organization>
+            <address><email>sob@harvard.edu</email></address>
+          </author>
+          <date month="March" year="1997"/>
+        </front>
+        <seriesInfo name="BCP" value="14"/>
+        <seriesInfo name="RFC" value="2119"/>
+      </reference>
+
+
+      <reference anchor="BULK1">
+	<front>
+	  <title>Binary Uniform Language Kit 1.0</title>
+	  <date day="1" month="August" year="2013"/>
+	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
+	    <organization>Thierry Technologies</organization>
+	    <address>
+	      <email>pierre@nothos.net</email>
+	    </address>
+	  </author>
+	</front>
+	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-01"/>
+      </reference>
+
+    </references>
+
+
+    <references title="Informative references">
+    </references>
+
+  </back>
+</rfc>
+
