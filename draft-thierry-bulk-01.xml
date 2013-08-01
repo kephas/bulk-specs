@@ -459,28 +459,28 @@
 	  </t>
 	</section>
 
-	<section title="Required namespace">
+
+	<section title="true">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name">0x2 (mnemonic: ns)</t>
-	      <t hangText="shape">( ns {mark}:Int {uuid}:Word128 )</t>
+	      <t hangText="name">0x2 (mnemonic: true)</t>
+	      <t hangText="shape">true</t>
 	    </list>
 	  </t>
 	  <t>
-	    This associates the namespace identified by {uuid} to the value {mark}. It is a parsing
-	    error if a processing application doesn't reckognise the designated namespace.
+	    Type: Boolean.
 	  </t>
 	</section>
 
-	<section title="Optional namespace">
+	<section title="false">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name">0x3 (mnemonic: ns*)</t>
-	      <t hangText="shape">( ns* {mark}:Int {uuid}:Word128 )</t>
+	      <t hangText="name">0x3 (mnemonic: false)</t>
+	      <t hangText="shape">false</t>
 	    </list>
 	  </t>
 	  <t>
-	    This associates the namespace identified by {uuid} to the value {mark}.
+	    Type: Boolean.
 	  </t>
 	</section>
 
@@ -537,118 +537,150 @@
 	  </t>
 	</section>
 
-	<section title="true">
+	<section title="Namespaces">
 	  <t>
-	    <list style="hanging">
-	      <t hangText="name">0x7 (mnemonic: true)</t>
-	      <t hangText="shape">true</t>
-	    </list>
+	    The semantic of some expressions is to make a namespace required. It is a parsing error
+	    if a processing application doesn't reckognise this namespace.
 	  </t>
-	  <t>
-	    Type: Boolean.
-	  </t>
+
+	  <section title="Required namespace">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0x7 (mnemonic: ns)</t>
+		<t hangText="shape">( ns {mark}:Int {uuid}:Word128 )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This associates the namespace identified by {uuid} to the value {mark}. It makes this
+	      namespace required.
+	    </t>
+	  </section>
+
+	  <section title="Optional namespace">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0x8 (mnemonic: ns*)</t>
+		<t hangText="shape">( ns* {mark}:Int {uuid}:Word128 )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This associates the namespace identified by {uuid} to the value {mark}.
+	    </t>
+	  </section>
+
+	  <section title="Package">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0x9 (mnemonic: package)</t>
+		<t hangText="shape">( package {uuid}:Word128 {namespaces} )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This creates a package identified by {uuid}. Packages are immutable, {uuid} MUST be a
+	      v5 UUID generated with the BULK UUID and the byte sequence {namespaces}. {namespaces}
+	      must be a sequence of expressions. They can be either expressions of type Word128 or
+	      have the shape ( ns* Word128 ), which means that the designated namespace is optional
+	      to this package.
+	    </t>
+	  </section>
+
+	  <section title="Import">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0xA (mnemonic: import)</t>
+		<t hangText="shape">( import {base}:Int {uuid}:Word128 )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This associates the namespaces in the package identified by {uuid} with a continuous
+	      range of values starting at {base}. If the namespace is not optional to this package,
+	      it make the namespace required. It is a parsing error if a processing application
+	      doesn't reckognize the package.
+	    </t>
+	  </section>
 	</section>
 
-	<section title="false">
+	<section title="arithmetic">
 	  <t>
-	    <list style="hanging">
-	      <t hangText="name">0x8 (mnemonic: false)</t>
-	      <t hangText="shape">false</t>
-	    </list>
+	    A processing application must reckognize the type of all expressions defined in this
+	    specification that have the type Number, but an application MAY consider a number as
+	    having an unknown value if it has no adequate data type to store it.
 	  </t>
-	  <t>
-	    Type: Boolean.
-	  </t>
+
+	  <section title="fraction">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0x20 (mnemonic: frac)</t>
+		<t hangText="shape">( frac {num}:Int {div}:Int )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This is the number {num}/{div}.
+	    </t>
+	    <t>
+	      Type: Number.
+	    </t>
+	  </section>
+
+	  <section title="Arbitrary precision signed integer">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0x21 (mnemonic: bigint)</t>
+		<t hangText="shape">( bigint {bits}:Array )</t>
+	      </list>
+	    </t>
+	    <t>
+	      The bits contained in {bits} is the value of this integer in two's-complement notation.
+	    </t>
+	    <t>
+	      Type: Number, Int.
+	    </t>
+	  </section>
+
+	  <section title="Binary floating-point number">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0x22 (mnemonic: binary)</t>
+		<t hangText="shape">( binary {bits}:Word )</t>
+		<t hangText="shape">( binary {bits}:Array )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This is a floating-point number expressed in IEEE 754-2008 binary interchange format. If
+	      {bits} is an Array, the size of its contents must be a multiple of 32 bits, as per IEEE
+	      754-2008 rules.
+	    </t>
+	    <t>
+	      Type: Number.
+	    </t>
+	  </section>
+
+	  <section title="Decimal floating-point number">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0x23 (mnemonic: decimal)</t>
+		<t hangText="shape">( decimal {bits}:Word )</t>
+		<t hangText="shape">( decimal {bits}:Array )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This is a floating-point number expressed in IEEE 754-2008 decimal interchange
+	      format. If {bits} is an Array, the size of its contents must be a multiple of 32 bits,
+	      as per IEEE 754-2008 rules.
+	    </t>
+	    <t>
+	      Type: Number.
+	    </t>
+	  </section>
+
 	</section>
-
-      </section>
-
-      <section title="arithmetic namespace">
-	<t>
-	  <list style="hanging">
-	      <t hangText="marker">0x11 (mnemonic: math)</t>
-	  </list>
-	</t>
-
-	<t>
-	  A processing application must reckognize the type of all expressions defined in this
-	  specification that have the type Number, but an application MAY consider a number as
-	  having an unknown value if it has no adequate data type to store it.
-	</t>
-
-	<section title="fraction">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="name">0x1 (mnemonic: frac)</t>
-	      <t hangText="shape">( frac {num}:Int {div}:Int )</t>
-	    </list>
-	  </t>
-	  <t>
-	    This is the number {num}/{div}.
-	  </t>
-	  <t>
-	    Type: Number.
-	  </t>
-	</section>
-
-	<section title="Arbitrary precision signed integer">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="name">0x2 (mnemonic: bigint)</t>
-	      <t hangText="shape">( bigint {bits}:Array )</t>
-	    </list>
-	  </t>
-	  <t>
-	    The bits contained in {bits} is the value of this integer in two's-complement notation.
-	  </t>
-	  <t>
-	    Type: Number, Int.
-	  </t>
-	</section>
-
-	<section title="Binary floating-point number">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="name">0x3 (mnemonic: binary)</t>
-	      <t hangText="shape">( binary {bits}:Word )</t>
-	      <t hangText="shape">( binary {bits}:Array )</t>
-	    </list>
-	  </t>
-	  <t>
-	    This is a floating-point number expressed in IEEE 754-2008 binary interchange format. If
-	    {bits} is an Array, the size of its contents must be a multiple of 32 bits, as per IEEE
-	    754-2008 rules.
-	  </t>
-	  <t>
-	    Type: Number.
-	  </t>
-	</section>
-
-	<section title="Decimal floating-point number">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="name">0x4 (mnemonic: decimal)</t>
-	      <t hangText="shape">( decimal {bits}:Word )</t>
-	      <t hangText="shape">( decimal {bits}:Array )</t>
-	    </list>
-	  </t>
-	  <t>
-	    This is a floating-point number expressed in IEEE 754-2008 decimal interchange
-	    format. If {bits} is an Array, the size of its contents must be a multiple of 32 bits,
-	    as per IEEE 754-2008 rules.
-	  </t>
-	  <t>
-	    Type: Number.
-	  </t>
-	</section>
-
       </section>
     </section>
 
     <section title="Extension namespaces">
       <t>
-	Extension namespaces are defined with an identifier UUID, to be associated by a ns or ns*
-	form.
+	Extension namespaces are defined with an identifier UUID, to be associated to a marker
+	value.
       </t>
 
       <section title="Official namespaces">

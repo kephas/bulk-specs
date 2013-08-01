@@ -50,8 +50,6 @@
          package forms could be replaced by (ns* <uuid>) to spare a
          name in Ox10
     10. ( package <uuid> <namespaces> )
-	- packages are immutable, <uuid> MUST be a v5 UUID with the
-          BULK UUID and the byte sequence <namespaces>
     11. ( import <base>:Int <uuid> )
     12. ( define <id> Expr )
         - <id> = Ref | Int8
@@ -92,10 +90,6 @@
     resolvable, the NS cannot be "authenticated" anymore. It seems too
     fragile.
 
-    Binary and decimal FP are defined in IEEE 754-2008 3.4−6. They are
-    specified only for multiples of 32 bits (and binary for 16 bits,
-    which is not included here).
-
     openpgp and x509 may come from a crypto NS instead.
 
 *** import
@@ -111,6 +105,31 @@
       ( ns* k+1 N2 )
       ( ns k+2 N3 )
     #+END_src
+
+*** definitions
+    To define a reference is to associate an expression to this name
+    in its namespace (as identified by its UUID, not NSID). The scope
+    of a definition is the part of its context that follows the
+    definition.
+
+    The semantics of an association are entirely
+    application-dependent, but the default semantics is that wherever
+    the reference appears in the definition's scope, the expression
+    that has been associated can be substituted to the reference in
+    the abstract yield.
+
+    After the third expression in the following stream, the name 0x1
+    in namespace Ox21 is associated with 42:
+
+    #+BEGIN_src lisp
+      (ns Ox20 0xa2a97ec685f95aed89b27ca3cafc2093)
+      (ns Ox21 0xa2a97ec685f95aed89b27ca3cafc2093)
+      (define Ox20 Ox1 42)
+    #+END_src
+
+*** sealed namespaces
+    A specification or an application-specific logic MAY declare a
+    namespace as sealed. I
 
 ** XML Infoset namespace
    urn:uuid:a2a97ec6-85f9-5aed-89b2-7ca3cafc2093 (BULK
@@ -128,10 +147,37 @@
    10. Notation
    11. NS
 
+** URI namespace
+   1. ( uriref Array )
+   2. ( base Array )
+   3. ( prefix Ref Array )
+
 ** RDF namespace
    urn:uuid:ed460331-a89b-5742-a8de-907dff727779 (BULK
    [[http://www.w3.org/1999/02/22-rdf-syntax-ns#]])
 
+   1. ( triple <subj> <pred> <obj> )
+   2. ( triples <triples> )
+   3. ( turtle <statements )
+
+
+*** Differences between complete triples (3s) and turtle-like (Tl)
+    In 3s, a single triple cannot cost less than 8 bytes:
+
+    : (:A:B:C)
+
+    Adding another triple cannot cost less than adding 8 bytes:
+
+    : (:A:B:C)(:A:B:D)
+
+    In Tl, a standalone triple cannot cost less than 12 bytes:
+
+    : (:A(:B(:C)))
+
+    Adding another triple can cost as few as 2 bytes:
+
+    : (:A(:B(:C:D)))
+ 
 ** Efficient XML/BULK transformation
    BULK equivalent to XML Schema, used by an application to compact
    XML to the fullest.
