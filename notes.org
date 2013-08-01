@@ -57,11 +57,7 @@
         - bindings = Ref Expr [ bindings ]
     14. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
         <definitions> )
-        - <uuid> is a v5 UUID generated with <ns-uuid> and <signature>
-        - <signature> is the signature of <definitions>
-        - expressions in <definitions> must have the shape ( define
-          Int8 Expr ) to define something within <uuid>
-          - error if ( define Ref Expr ) in final abstract yield
+	- error if ( define Ref Expr ) in *final abstract yield*
     15. ( openpgp <data>:Array )
     16. ( x509 <data>:Array )
     17. 
@@ -107,17 +103,6 @@
     #+END_src
 
 *** definitions
-    To define a reference is to associate an expression to this name
-    in its namespace (as identified by its UUID, not NSID). The scope
-    of a definition is the part of its context that follows the
-    definition.
-
-    The semantics of an association are entirely
-    application-dependent, but the default semantics is that wherever
-    the reference appears in the definition's scope, the expression
-    that has been associated can be substituted to the reference in
-    the abstract yield.
-
     After the third expression in the following stream, the name 0x1
     in namespace Ox21 is associated with 42:
 

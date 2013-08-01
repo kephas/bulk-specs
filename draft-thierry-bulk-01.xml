@@ -600,6 +600,74 @@
 	  </section>
 	</section>
 
+	<section title="Definitions">
+	  <t>
+	    To define a reference is to associate an expression to this name in its namespace (as
+	    identified by its UUID, not the marker value). The scope of a definition is the part of
+	    its context that follows the definition.
+	  </t>
+	  <t>
+	    The semantics of an association are entirely application-dependent, but the default
+	    semantics are that wherever the reference appears in the definition's scope, the
+	    expression that has been associated can be substituted to the reference in the abstract
+	    yield.
+	  </t>
+
+	  <section title="Simple definition">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0xB (mnemonic: define)</t>
+		<t hangText="shape">( define {ref}:Ref Expr )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This defines the reference {ref}.
+	    </t>
+	  </section>
+
+	  <section title="Open definition">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0xC (mnemonic: define)</t>
+		<t hangText="shape">( define* {ref}:Int8 Expr )</t>
+	      </list>
+	    </t>
+	    <t>
+	      This form only has meaning inside some specific forms.
+	    </t>
+	  </section>
+
+	  <section title="Limited definitions">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0xD (mnemonic: let)</t>
+		<t hangText="shape">( let ( {bindings} ) {body} )</t>
+	      </list>
+	    </t>
+	    <t>
+	      TODO
+	    </t>
+	  </section>
+
+	  <section title="Signed namespace">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name">0xE (mnemonic: signed-ns)</t>
+		<t hangText="shape">( signed-ns {uuid}:Word128 {ns-uuid}:Word128 {signature}
+		{definitions} )</t>
+	      </list>
+	    </t>
+	    <t>
+	      {uuid} is a v5 UUID generated with {ns-uuid} and {signature}. {signature} is the
+	      cryptographic signature of the byte sequence {definitions}. The type and content of
+	      {signature} is dependent of the cryptographic protocol used and its BULK format.
+
+	      Open definitions in {definitions} have the semantics to associate an expression to a
+	      name in {uuid}. It is a parsing error if {definitions} contain simple definitions.
+	    </t>
+	  </section>
+	</section>
+
 	<section title="arithmetic">
 	  <t>
 	    A processing application must reckognize the type of all expressions defined in this
