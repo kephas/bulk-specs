@@ -317,6 +317,71 @@
 
     </references>
 
+    <section title="Example: RDF Schema vocabulary">
+      <figure>
+	<preamble>Here is the text notation of a BULK stream defining references for each element in
+	the RDF Schema vocabulary. The whole stream is 429 bytes in length.</preamble>
+	<artwork>
+( bulk:version 1 0 )
+( bulk:ns 32 rdf )
+( bulk:ns* 33 rdfs )
+( prefix rdfs:schema "http://www.w3.org/2000/01/rdf-schema#" )
+( define rdfs:resource ( rdfs:schema "Resource" ) )
+( define rdfs:class ( rdfs:schema "Class" ) )
+( define rdfs:subclassof ( rdfs:schema "subClassOf" ) )
+( define rdfs:subpropertyof (rdfs:schema "subPropertyOf" ) )
+( define rdfs:comment (rdfs:schema "comment" ) )
+( define rdfs:label (rdfs:schema "label" ) )
+( define rdfs:domain (rdfs:schema "domain" ) )
+( define rdfs:range (rdfs:schema "range" ) )
+( define rdfs:seealso (rdfs:schema "seeAlso" ) )
+( define rdfs:isdefinedby (rdfs:schema "isDefinedBy" ) )
+( define rdfs:literal (rdfs:schema "Literal" ) )
+( define rdfs:container (rdfs:schema "Container" ) )
+( define rdfs:containermembershipproperty (rdfs:schema "ContainerMembershipProperty" ) )
+( define rdfs:member (rdfs:schema "member" ) )
+( define rdfs:datatype (rdfs:schema "Datatype" ) )
+	</artwork>
+      </figure>
+
+      <figure>
+	<preamble>Here is the text notation of a BULK stream containg a small part of the RDF Schema
+	ontology. The whole stream is 352 bytes in length (the corresponding RDF/XML document would
+	be 1525 bytes in length).</preamble>
+	<artwork>
+( bulk:version 1 0 )
+( bulk:ns 32 rdf )
+( bulk:ns 33 rdfs )
+( turtle
+  ( rdfs:resource
+    ( rdf:type rdfs:class )
+    ( rdfs:isdefinedby rdfs:schema )
+    ( rdfs:label "Resource" )
+    ( rdfs:comment "The class resource, everything." ) )
+  ( rdfs:class
+    ( rdf:type rdfs:class )
+    ( rdfs:isdefinedby rdfs:schema )
+    ( rdfs:label "Class" )
+    ( rdfs:comment "The class of classes." )
+    ( rdfs:subclassof rdfs:resource ) )
+  ( rdfs:subclassof
+    ( rdf:type rdf:property )
+    ( rdfs:isdefinedby rdfs:schema )
+    ( rdfs:label "subClassOf" )
+    ( rdfs:comment "The subject is a subclass of a class." )
+    ( rdfs:range rdfs:class )
+    ( rdfs:domain rdfs:class ) )
+  ( rdfs:subpropertyof
+    ( rdf:type rdf:property )
+    ( rdfs:isdefinedby rdfs:schema )
+    ( rdfs:label "subPropertyOf" )
+    ( rdfs:comment "The subject is a subproperty of a property." )
+    ( rdfs:range rdf:property )
+    ( rdfs:domain rdf:property ) ) )
+	</artwork>
+      </figure>
+    </section>
+
   </back>
 </rfc>
 
