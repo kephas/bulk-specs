@@ -280,8 +280,8 @@
 
       <reference anchor="BULK-XML">
 	<front>
-	  <title>BULK XML Namespace</title>
-	  <date day="2" month="August" year="2013"/>
+	  <title>BULK XML Infoset namespace</title>
+	  <date month="August" year="2013"/>
 	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
 	    <organization>Thierry Technologies</organization>
 	    <address>
