@@ -144,11 +144,15 @@
 	  note that their BULK serialization doesn't need to denote the string of their lexical
 	  form.
 	</t>
+	<t>
+	  Any array used as object in an RDF triple has the semantics of a plain literal without
+	  language tag.
+	</t>
 	<section title="Plain literal">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">type</spanx> )</t>
-	      <t hangText="shape"><spanx style="verb">( plain {lang}:Array {literal} )</spanx></t>
+	      <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">plain</spanx> )</t>
+	      <t hangText="shape"><spanx style="verb">( plain {lang}:Array {literal}:Array )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
@@ -168,23 +172,24 @@
 	    <spanx style="verb">{literal}</spanx>.
 	  </t>
 	</section>
-      </section>
 
-      <section title="XMLLiteral">
-	<t>
-	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">xmlliteral</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">xmlliteral</spanx></t>
-	  </list>
-	</t>
-	<t>
-	  The expression denoted by <spanx style="verb">( uriref
-	  "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral" )</spanx> is associated to this
-	  name.
-	</t>
-	<t>
-	  A literal with this type SHOULD contain an XML Infoset (cf. <xref target="BULK-XML"/>).
-	</t>
+	<section title="XMLLiteral">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">xmlliteral</spanx> )</t>
+	      <t hangText="shape"><spanx style="verb">xmlliteral</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    The expression denoted by <spanx style="verb">( uriref
+	    "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral" )</spanx> is associated to this
+	    name.
+	  </t>
+	  <t>
+	    A literal with this type SHOULD contain an XML Infoset (cf. <xref target="BULK-XML"/>).
+	  </t>
+	</section>
+
       </section>
 
       <section title="Triples">
