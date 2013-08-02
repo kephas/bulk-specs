@@ -205,5 +205,42 @@
        element
      - for MIME, order of parts
 
+** Dates namespace
+   - Int3 := Int | Int Int | Int Int Int
+   - Time = Date | TimeOfDay
+   - Duration := Int* ( Float | Int )
+
+
+   1. ( calendar Int3 )
+   2. ( weekdate Int3 )
+   3. ( ordinal Int Int )
+   4. ( time Duration )
+   5. ( point Date TimeOfDay )
+   6. ( zulu Time )
+   7. ( offset TimeOfDay Time )
+   8. ( years Duration )
+   9. ( months Duration )
+   10. ( days Duration )
+   11. ( hours Duration )
+   12. ( minutes Duration )
+   13. ( seconds Duration )
+   14. ( interval {exprs} )
+       - {exprs} = Time Time | Duration Time | Time Duration |
+         Duration
+   15. ( repeat Int Interval ) / ( repeat Interval )
+   16. ( julian Number )
+       - Int = day, Float = date
+   17. ( unix-time SInt )
+   18. ( unix-microtime SInt )
+   19. ( unix-nanotime SInt )
+   20. ( tng-stardate Int Int )
+
+
+   BULK serializations of single points in time are notably bigger
+   than a string containing their ISO 8601 notation. Such times SHOULD
+   be serialized as offsets against an epoch, except where simplicity
+   of implementation is wanted.
+
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
+
