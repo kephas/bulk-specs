@@ -138,23 +138,42 @@
 	</t>
       </section>
 
-      <section title="Typed literals">
+      <section title="RDF literals">
 	<t>
-	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">type</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( type {id}:URIRef {literal} )</spanx></t>
-	  </list>
+	  Literals are arbitrary data that can be an object in an RDF triple. It is important to
+	  note that their BULK serialization doesn't need to denote the string of their lexical
+	  form.
 	</t>
-	<t>
-	  This is a typed RDF literal. Each type defines what is legal as <spanx
-	  style="verb">{literal}</spanx>.
-	</t>
+	<section title="Plain literal">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">type</spanx> )</t>
+	      <t hangText="shape"><spanx style="verb">( plain {lang}:Array {literal} )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This is a plain RDF literal. {lang} is the language tag.
+	  </t>
+	</section>
+
+	<section title="Typed literal">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">type</spanx> )</t>
+	      <t hangText="shape"><spanx style="verb">( type {id}:URIRef {literal} )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This is a typed RDF literal. {id} is the datatype URI. Each type defines what is legal as
+	    <spanx style="verb">{literal}</spanx>.
+	  </t>
+	</section>
       </section>
 
       <section title="XMLLiteral">
 	<t>
 	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">xmlliteral</spanx> )</t>
+	    <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">xmlliteral</spanx> )</t>
 	    <t hangText="shape"><spanx style="verb">xmlliteral</spanx></t>
 	  </list>
 	</t>
@@ -171,7 +190,7 @@
       <section title="Triples">
 	<t>
 	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">triples</spanx> )</t>
+	    <t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">triples</spanx> )</t>
 	    <t hangText="shape"><spanx style="verb">( triples {triples} )</spanx></t>
 	  </list>
 	</t>
@@ -184,7 +203,7 @@
       <section title="Turtle-like statements">
 	<t>
 	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">turtle</spanx> )</t>
+	    <t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">turtle</spanx> )</t>
 	    <t hangText="shape"><spanx style="verb">( turtle {statements} )</spanx></t>
 	  </list>
 	</t>
