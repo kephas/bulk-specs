@@ -119,6 +119,43 @@
 
     : ( define ?rfc ( subst ( pi "rfc" ( rest 0 ) ) ) )
 
+** XPath namespace
+   urn:uuid:2cdad14a-4e46-5f2d-b3e2-e105ebafa5f8 (BULK
+   http://www.w3.org/TR/1999/REC-xpath-19991116)
+
+   1. ( xpath {expr} )
+      - {expr} is a sequence of Step
+      - as a Step, {name}:QName ⇔ ( step child {name} )
+   2. ( | {exprs} )
+   3. ( step {axis} {test} {preds} )
+      - ( step {axis} ) ⇔ ( step {axis} node() )
+   4. . / ( step . {rest} )
+      - . ⇔ ( step self node() )
+   5. .. / ( step .. {rest} )
+      - .. ⇔ ( step parent node() )
+   6. //
+      - // ⇔  ( step // node() )
+   7. ancestor
+   8. ancestor-or-self
+   9. attribute
+   10. child
+   11. descendant
+   12. following
+   13. following-sibling
+   14. namespace
+   15. preceding
+   16. preceding-sibling
+   17. * / ( * {ns}:URIRef )
+   18. node()
+   19. text()
+   20. comment()
+   21. pi() / ( pi() {literal}:Array )
+
+*** QName
+    To maximize reuse between namespaces, URIRef and URIString
+    expressions also have the type QName. Any Array whose content
+    satisfy the NCName production also has.
+
 ** RDF namespace
    urn:uuid:ed460331-a89b-5742-a8de-907dff727779 (BULK
    [[http://www.w3.org/1999/02/22-rdf-syntax-ns#]])
