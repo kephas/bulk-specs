@@ -132,18 +132,18 @@
    10. Notation
    11. NS
 
-** URI namespace
-   1. ( uriref Array )
-   2. ( base Array )
-   3. ( prefix Ref Array )
-
 ** RDF namespace
    urn:uuid:ed460331-a89b-5742-a8de-907dff727779 (BULK
    [[http://www.w3.org/1999/02/22-rdf-syntax-ns#]])
 
-   1. ( triple <subj> <pred> <obj> )
-   2. ( triples <triples> )
-   3. ( turtle <statements )
+   1. ( uriref Array )
+   2. ( base Array )
+   3. ( prefix <pre>:Ref # Int <begin> )
+   4. blank
+   5. ( datatype <id>:URIRef <literal> )
+   6. xmlliteral
+   7. ( triples <triples> )
+   8. ( turtle <statements> )
 
 
 *** Differences between complete triples (3s) and turtle-like (Tl)
@@ -151,18 +151,25 @@
 
     : (:A:B:C)
 
+    For big graphs of mostly known references, this can already be a
+    valuable improvement. <triples> could be a packed sequence without
+    markers around triples, but that would mean that a single missing
+    or superfluous expression would wreck everything that's after
+    it. The fact that a triple is still a form limits the savings but
+    keeps a level of robustness.
+
     Adding another triple cannot cost less than adding 8 bytes:
 
     : (:A:B:C)(:A:B:D)
 
-    In Tl, a standalone triple cannot cost less than 12 bytes:
+    In Tl, a standalone triple cannot cost less than 10 bytes:
 
-    : (:A(:B(:C)))
+    : (:A(:B:C))
 
-    Adding another triple can cost as few as 2 bytes:
+    But adding another triple can cost as few as 2 bytes:
 
-    : (:A(:B(:C:D)))
- 
+    : (:A(:B:C:D))
+
 ** Efficient XML/BULK transformation
    BULK equivalent to XML Schema, used by an application to compact
    XML to the fullest.

@@ -59,6 +59,145 @@
       </section>
     </section>
 
+    <section title="BULK RDF namespace">
+      <t>
+	The RDF namespace is an official namespace identified by the UUID <eref
+	target="urn:uuid:ed460331-a89b-5742-a8de-907dff727779"/> (BULK,
+	"http://www.w3.org/1999/02/22-rdf-syntax-ns#"). Its first purpose is to serialize both RDF
+	ontologies and graphs, but as RDF is deeply rooted in the World Wide Web and the REST
+	architecture, some of the names and forms defined in this specification are intended to be
+	used in applications related to those.
+      </t>
+      <t>
+	This specification defines the type <spanx style="verb">URIString</spanx>, which is an array
+	whose content is a string conforming to the "URI-reference" production in <xref
+	target="RFC3986"/> (section 4.1).
+      </t>
+
+      <section title="URI reference">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x1</spanx> (mnemonic: <spanx
+	    style="verb">uriref</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( uriref URIString )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This form makes it possible to differentiate a string containing a URI from a URI
+	  reference itself.
+	</t>
+	<t>Type: <spanx style="verb">URIRef</spanx></t>
+      </section>
+
+      <section title="Base URI">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x2</spanx> (mnemonic: <spanx style="verb">base</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( base URIString )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This forms changes the current base URI for URI resolution. If the given URI is relative,
+	  it must be resolved with the current base URI.
+	</t>
+      </section>
+
+      <section title="URI prefix">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x3</spanx> (mnemonic: <spanx style="verb">prefix</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( prefix {ref}:Ref {uri} )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  The semantics of this form is that, first, the reference is now associated to the given
+	  URI reference and, second, within this expression's scope, a form <spanx style="verb">(
+	  {ref} {uri1}:URIString )</spanx> is equivalent to <spanx style="verb">( uriref {uri2}
+	  )</spanx>, where <spanx style="verb">{uri2}</spanx> is the concatenation of <spanx
+	  style="verb">{uri}</spanx> and <spanx style="verb">{uri1}</spanx>.
+	</t>
+	<t>
+	  {uri} can be of type <spanx style="verb">URIString</spanx> or <spanx
+	  style="verb">URIRef</spanx>. If it is of type URIRef, the above description should be
+	  taken as if the form is of shape <spanx style="verb">( prefix {ref}:Ref ( uriref {uri} )
+	  )</spanx>.
+	</t>
+      </section>
+
+      <section title="blank">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">blank</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">blank</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  Each occurrence of <spanx style="verb">blank</spanx> has the semantics of a new blank
+	  node. If a same blank node must be used in several forms, it should be associated to a
+	  reference.
+	</t>
+      </section>
+
+      <section title="Typed literals">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">type</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( type {id}:URIRef {literal} )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This is a typed RDF literal. Each type defines what is legal as <spanx
+	  style="verb">{literal}</spanx>.
+	</t>
+      </section>
+
+      <section title="XMLLiteral">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">xmlliteral</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">xmlliteral</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  The expression denoted by <spanx style="verb">( uriref
+	  "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral" )</spanx> is associated to this
+	  name.
+	</t>
+	<t>
+	  A literal with this type SHOULD contain an XML Infoset (cf. <xref target="BULK-XML"/>).
+	</t>
+      </section>
+
+      <section title="Triples">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">triples</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( triples {triples} )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  <spanx style="verb">{triples}</spanx> must be a sequnce of <spanx style="verb">(
+	  {subj}:URIRef {pred}:URIRef {obj} )</spanx>.
+	</t>
+      </section>
+
+      <section title="Turtle-like statements">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">turtle</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( turtle {statements} )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  <spanx style="verb">{statements}</spanx> MUST be a sequnce of <spanx style="verb">(
+	  {subj}:URIRef {preds} )</spanx>, where <spanx style="verb">{preds}</spanx> MUST be a
+	  sequence of <spanx style="verb">( {pred}:URIRef {objs} )</spanx>, where <spanx
+	  style="verb">{objs}</spanx> is a sequence.
+	</t>
+      </section>
+
+    </section>
+
     <section title="Security Considerations" anchor="sec">
     </section>
   </middle>
@@ -80,6 +219,26 @@
         <seriesInfo name="RFC" value="2119"/>
       </reference>
 
+      <reference anchor="RFC3986">
+        <front>
+          <title>
+	    Uniform Resource Identifiers (URI): Generic Syntax
+          </title>
+          <author initials="T." surname="Berners-Lee" fullname="Tim Berners-Lee">
+            <organization>W3C/MIT</organization>
+          </author>
+          <author initials="R." surname="Fielding" fullname="Roy T. Fielding">
+            <organization>Day Software</organization>
+          </author>
+          <author initials="L." surname="Masinter" fullname="L. Masinter">
+            <organization>Adobe Systems</organization>
+          </author>
+          <date month="January" year="2005"/>
+        </front>
+        <seriesInfo name="RFC" value="3986"/>
+        <seriesInfo name="STD" value="66"/>
+      </reference>
+
 
       <reference anchor="BULK1">
 	<front>
@@ -95,10 +254,43 @@
 	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-01"/>
       </reference>
 
+      <reference anchor="BULK-XML">
+	<front>
+	  <title>BULK XML Namespace</title>
+	  <date day="2" month="August" year="2013"/>
+	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
+	    <organization>Thierry Technologies</organization>
+	    <address>
+	      <email>pierre@nothos.net</email>
+	    </address>
+	  </author>
+	</front>
+	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-xml-00"/>
+      </reference>
+
     </references>
 
 
     <references title="Informative references">
+      <reference anchor="RDF-CONCEPTS" target="http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/">
+	<front>
+	  <title>Resource Description Framework (RDF): Concepts and Abstract Syntax</title>
+	  <date day="10" month="February" year="2004"/>
+	  <author initials="G." surname="Klyne" fullname="Graham Klyne">
+	    <organization>Nine by Nine</organization>
+	    <address>
+	      <email>GK@NineByNine.org</email>
+	    </address>
+	  </author>
+	  <author initials="J.J." surname="Carroll" fullname="Jeremy J. Carroll">
+	    <organization>Hewlett Packard Labs</organization>
+	    <address>
+	      <email>jjc@hpl.hp.com</email>
+	    </address>
+	  </author>
+	</front>
+      </reference>
+
     </references>
 
   </back>

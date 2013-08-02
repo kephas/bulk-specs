@@ -192,22 +192,25 @@
           from decimal literals.
         </t>
 	<t>
-	  In the grammar, types are named by a capitalized word, like "Foo". The text representation
-	  of the BULK stream uses mnemonics for some bytes sequences. Mnemonics are series of
-	  characters, excluding all capital letters and white space, like "this-is-one-mnemonic" or
-	  "what-the-%§!?#-is-that?". They are always separated by white space.
+	  In the grammar, types are named by a capitalized word, like <spanx
+	  style="verb">Foo</spanx>. The text notation of the BULK stream uses mnemonics for some
+	  bytes sequences. Mnemonics are series of characters, excluding all capital letters and
+	  white space, like <spanx style="verb">this-is-one-mnemonic</spanx> or <spanx
+	  style="verb">what-the-%§!?#-is-that?</spanx>. They are always separated by white space.
 	</t>
 	<t>
 	  In the grammar, a shape is a pattern of bytes, following the rules of the text
 	  representation for a BULK stream. Apart from mnemonics and types, a shape can contain:
 	  <list style="symbols">
-	    <t>a fixed byte, represented by its value as an unsigned integer (i.e. 0x3F)</t>
+	    <t>a fixed byte, represented by its value as an unsigned integer (i.e. <spanx
+	    style="verb">0x3F</spanx>)</t>
 	    <t>an arbitrary sequence of a fixed number of bytes, represented by the number of bytes
-	    in decimal immediately followed by a B uppercase letter (i.e. 4B)</t>
+	    in decimal immediately followed by a B uppercase letter (i.e. <spanx
+	    style="verb">4B</spanx>)</t>
 	  </list>
 	  An arbitrary byte or sequence of bytes can be preceded by a name to make its description
 	  clearer. The name is a series of character between { and } immediately followed by a
-	  semi-colon (i.e. {quux}:4B).
+	  semi-colon (i.e. <spanx style="verb">{quux}:4B</spanx>).
 	</t>
       </section>
     </section>
@@ -246,13 +249,17 @@
 	  is the first byte of the sequence that denotes an expression).
 	</t>
 	<t>
-	  The 0x1 and 0x2 marker bytes are special cases. When the parser reads 0x1, it immediately
+	  The <spanx style="verb">0x1</spanx> and <spanx style="verb">0x2</spanx> marker bytes are
+	  special cases. When the parser reads <spanx style="verb">0x1</spanx>, it immediately
 	  appends an empty sequence to the current context. This sequence becomes the new
 	  context. This new context has the previous context as parent. Then the parser returns to
-	  its dispatch stage. When the parser reads 0x2, it appends nothing to the context, but
-	  instead the parent of the current context becomes the new context and the parser returns
-	  to the dispatch stage. Thus it is a parsing error to read 0x2 when the context is the
-	  abstract yield.
+	  its dispatch stage. When the parser reads <spanx style="verb">0x2</spanx>, it appends
+	  nothing to the context, but instead the parent of the current context becomes the new
+	  context and the parser returns to the dispatch stage. Thus it is a parsing error to read
+	  <spanx style="verb">0x2</spanx> when the context is the abstract yield.
+	</t>
+	<t>
+	  The scope of an expression is the part of its context that follows the expression.
 	</t>
 	<t>
 	  Whenever a parsing error is encountered, parsing of the BULK stream MUST stop.
@@ -263,16 +270,16 @@
 	<section title="starting marker byte">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="value">0x1</t>
-	      <t hangText="mnemonic">(</t>
+	      <t hangText="value"><spanx style="verb">0x1</spanx></t>
+	      <t hangText="mnemonic"><spanx style="verb">(</spanx></t>
 	    </list>
 	  </t>
 	</section>
 	<section title="ending marker byte">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="value">0x2</t>
-	      <t hangText="mnemonic">)</t>
+	      <t hangText="value"><spanx style="verb">0x2</spanx></t>
+	      <t hangText="mnemonic"><spanx style="verb">)</spanx></t>
 	    </list>
 	  </t>
 	</section>
@@ -282,23 +289,24 @@
 	<section title="nil">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker">0x0 (mnemonic: nil)</t>
-	      <t hangText="shape">nil</t>
+	      <t hangText="marker"><spanx style="verb">0x0</spanx> (mnemonic: <spanx style="verb">nil</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">nil</spanx></t>
 	    </list>
 	  </t>
 	  <t>
-	    Apart from being a possible short marker value, the fact that the 0x0 byte represents a
-	    valid atom means that a sequence of null bytes is a valid part of a BULK stream, thus
-	    making the format less fragile. In a network communication, nil atoms can also be sent
-	    to keep the channel open.
+	    Apart from being a possible short marker value, the fact that the <spanx
+	    style="verb">0x0</spanx> byte represents a valid atom means that a sequence of null bytes
+	    is a valid part of a BULK stream, thus making the format less fragile. In a network
+	    communication, nil atoms can also be sent to keep the channel open. They can also be
+	    used as padding at the end of a form.
 	  </t>
 	</section>
 
 	<section title="Array">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker">0x3 (mnemonic: #)</t>
-	      <t hangText="shape"># Int …</t>
+	      <t hangText="marker"><spanx style="verb">0x3</spanx> (mnemonic: <spanx style="verb">#</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb"># Int {content}</spanx></t>
 	    </list>
 	  </t>
 	  <t>
@@ -308,114 +316,127 @@
 	    parser consumes as many bytes as this integer and they constitute the content of this
 	    array.
 	  </t>
-	  <t>Type: Array</t>
+	  <t>
+	    If two arrays have the shapes <spanx style="verb"># {s1} {c1}</spanx> and <spanx
+	    style="verb"># {s2} {c2}</spanx> and if <spanx style="verb">{s1+s2}</spanx> denotes the sum
+	    of <spanx style="verb">{s1} </spanx>and <spanx style="verb">{s2}</spanx>, then their
+	    concatenation is <spanx style="verb"># {s1+s2} {c1} {c2}</spanx>.
+	  </t>
+	  <t>
+	    In the text notation, a quoted string represent an array containing the encoding of that
+	    string in the current encoding.
+	  </t>
+	  <t>Type: <spanx style="verb">Array</spanx></t>
 	</section>
 
 	<section title="32 bits word">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker">0x4 (mnemonic: word32)</t>
-	      <t hangText="shape">word32 4B</t>
+	      <t hangText="marker"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">word32</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">word32 4B</spanx></t>
 	    </list>
 	  </t>
-	  <t>Types: Word, Word32</t>
+	  <t>Types: <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx></t>
 	</section>
 
 	<section title="64 bits word">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker">0x5 (mnemonic: word64)</t>
-	      <t hangText="shape">word64 8B</t>
+	      <t hangText="marker"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">word64</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">word64 8B</spanx></t>
 	    </list>
 	  </t>
-	  <t>Types: Word, Word64</t>
+	  <t>Types: <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx></t>
 	</section>
 
 	<section title="128 bits word">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker">0x6 (mnemonic: word128)</t>
-	      <t hangText="shape">word128 16B</t>
+	      <t hangText="marker"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">word128</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">word128 16B</spanx></t>
 	    </list>
 	  </t>
-	  <t>Types: Word, Word128</t>
+	  <t>Types: <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx></t>
 	</section>
 
 	<section title="Unsigned 8 bits integer">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker">0x7 (mnemonic: int8)</t>
-	      <t hangText="shape">int8 1B</t>
+	      <t hangText="marker"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">int8</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">int8 1B</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    The value of this integer is the value of its contained byte.
 	  </t>
-	  <t>Type: Number, Int</t>
+	  <t>Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx></t>
 	</section>
 
 	<section title="Unsigned 32, 64 and 128 bits integer">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker">0x8 (mnemonic: uint)</t>
-	      <t hangText="shape">uint Word</t>
+	      <t hangText="marker"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">uint</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">uint Word</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    The value of this integer is the value of its contained word.
 	  </t>
-	  <t>Type: Number, Int</t>
+	  <t>Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx></t>
 	</section>
 
 	<section title="Signed 32, 64 and 128 bits integer">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker">0x9 (mnemonic: sint)</t>
-	      <t hangText="shape">sint Word</t>
+	      <t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">sint</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">sint Word</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    The value of its contained word is the value of this integer in two's-complement
 	    notation.
 	  </t>
-	  <t>Type: Number, Int</t>
+	  <t>Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx></t>
 	</section>
 
 	<section title="Reserved marker bytes">
 	  <t>
-	    Marker bytes 0xA−0xF are reserved for future major versions of BULK. It is a parser
-	    error if a BULK stream with major version 1 contains such a marker byte.
+	    Marker bytes <spanx style="verb">0xA−0xF</spanx> are reserved for future major versions of
+	    BULK. It is a parser error if a BULK stream with major version 1 contains such a marker
+	    byte.
 	  </t>
 	</section>
 
 	<section title="Reference">
 	  <t><list style="hanging">
-	      <t hangText="marker">0x10−0xFF</t>
-	      <t hangText="shape">{ns}:1B {name}:1B</t>
+	      <t hangText="marker"><spanx style="verb">0x10−0xFF</spanx></t>
+	      <t hangText="shape"><spanx style="verb">{ns}:1B {name}:1B</spanx></t>
 	    </list>
 	  </t>
 	  <t>
-	    The {ns} byte is a value associated with a namespace. Values 0x10−0x1F are reserved for
-	    namespaces defined by BULK specifications. Greater values can be associated with
-	    namespaces identified by a UUID.
+	    The <spanx style="verb">{ns}</spanx> byte is a value associated with a namespace. Values
+	    <spanx style="verb">0x10−0x1F</spanx> are reserved for namespaces defined by BULK
+	    specifications. Greater values can be associated with namespaces identified by a UUID.
 	  </t>
 	  <t>
-	    The {name} byte is the name within the namespace. Vocabularies with more than 256 names
-	    thus need to be spread accross several namespaces.
+	    The <spanx style="verb">{name}</spanx> byte is the name within the namespace. Vocabularies
+	    with more than 256 names thus need to be spread accross several namespaces.
 	  </t>
 	  <t>
 	    The specification of a namespace SHOULD include a mnemonic for the namespace and for
 	    each defined name. When descriptions use several namespaces, the mnemonic of a reference
 	    SHOULD be the concatenation of the namespace mnemonic, ":" and the name mnemonic. For
-	    example, the fp name in namespace math becomes math:fp.
+	    example, the <spanx style="verb">fp</spanx> name in namespace <spanx
+	    style="verb">math</spanx> becomes <spanx style="verb">math:fp</spanx>.
 	  </t>
 	  <section title="Speciale case">
 	    <t>
 	      References have a special parsing rule. In case a BULK stream needs an important
-	      number of namespaces, if the marker byte is 0xFF, the parser continues to read bytes
-	      until it finds a byte different than 0xFF. The value of this sequence of bytes is the
-	      value associated with a namespace. For example, the reference denoted by the bytes
-	      0xFF 0xFF 0x8C 0x1A is the name 26 in the namespace associated with 16777100.
+	      number of namespaces, if the marker byte is <spanx style="verb">0xFF</spanx>, the parser
+	      continues to read bytes until it finds a byte different than 0xFF. The value of this
+	      sequence of bytes is the value associated with a namespace. For example, the reference
+	      denoted by the bytes <spanx style="verb">0xFF 0xFF 0x8C 0x1A</spanx> is the name 26 in
+	      the namespace associated with 16777100.
 	    </t>
 	  </section>
 	</section>
@@ -431,21 +452,21 @@
       <section title="BULK core namespace">
 	<t>
 	  <list style="hanging">
-	      <t hangText="marker">0x10 (mnemonic: bulk)</t>
+	      <t hangText="marker"><spanx style="verb">0x10</spanx> (mnemonic: <spanx style="verb">bulk</spanx>)</t>
 	  </list>
 	</t>
 
 	<section title="Version">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name">0x1 (mnemonic: version)</t>
-	      <t hangText="shape">( version {major}:Int {minor}:Int )</t>
+	      <t hangText="name"><spanx style="verb">0x1</spanx> (mnemonic: <spanx style="verb">version</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">( version {major}:Int {minor}:Int )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    This form MUST be the first in a BULK stream. It is a parsing error otherwise. This
 	    specification defines BULK 1.0. When writing a BULK stream, a processing application
-	    MUST denote  {major} and {minor} by the smallest byte sequence possible.
+	    MUST denote {major} and {minor} by the smallest byte sequence possible.
 	  </t>
 	  <t>
 	    Two BULK versions with the same major version MUST share the same parsing rules and the
@@ -463,38 +484,38 @@
 	<section title="true">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name">0x2 (mnemonic: true)</t>
-	      <t hangText="shape">true</t>
+	      <t hangText="name"><spanx style="verb">0x2</spanx> (mnemonic: <spanx style="verb">true</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">true</spanx></t>
 	    </list>
 	  </t>
 	  <t>
-	    Type: Boolean.
+	    Type: <spanx style="verb">Boolean</spanx>.
 	  </t>
 	</section>
 
 	<section title="false">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name">0x3 (mnemonic: false)</t>
-	      <t hangText="shape">false</t>
+	      <t hangText="name"><spanx style="verb">0x3</spanx> (mnemonic: <spanx style="verb">false</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">false</spanx></t>
 	    </list>
 	  </t>
 	  <t>
-	    Type: Boolean.
+	    Type: <spanx style="verb">Boolean</spanx>.
 	  </t>
 	</section>
 
 	<section title="Strings encoding">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name">0x4 (mnemonic: stringenc)</t>
-	      <t hangText="shape">( stringenc {enc}:Encoding )</t>
+	      <t hangText="name"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">stringenc</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">( stringenc {enc}:Encoding )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
-	    This tells the processing application that all following expressions in the current
-	    context that are understood by the application as character strings will be encoded with
-	    the encoding designated by {enc}.
+	    This tells the processing application that, in the scope of this expression, all
+	    expressions that are understood by the application as character strings will be encoded
+	    with the encoding designated by {enc}.
 	  </t>
 	  <t>
 	    As the abstract yield doesn't contains strings but expressions that will be used as
@@ -509,8 +530,8 @@
 	<section title="IANA registered character set">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name">0x5 (mnemonic: iana-charset)</t>
-	      <t hangText="shape">( iana-charset {id}:Int )</t>
+	      <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">iana-charset</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">( iana-charset {id}:Int )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
@@ -518,22 +539,22 @@
 	    target="IANA-Charsets">IANA Character Sets</xref> whose MIBenum is {id}.
 	  </t>
 	  <t>
-	    Type: Encoding.
+	    Type: <spanx style="verb">Encoding</spanx>.
 	  </t>
 	</section>
 
 	<section title="Windows code page">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name">0x6 (mnemonic: code-page)</t>
-	      <t hangText="shape">( code-page {id}:Int )</t>
+	      <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">code-page</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">( code-page {id}:Int )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    This designates the string encoding among Windows code pages whose identifier is {id}.
 	  </t>
 	  <t>
-	    Type: Encoding.
+	    Type: <spanx style="verb">Encoding</spanx>.
 	  </t>
 	</section>
 
@@ -546,8 +567,8 @@
 	  <section title="Required namespace">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0x7 (mnemonic: ns)</t>
-		<t hangText="shape">( ns {mark}:Int {uuid}:Word128 )</t>
+		<t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">ns</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( ns {mark}:Int {uuid}:Word128 )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -559,8 +580,8 @@
 	  <section title="Optional namespace">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0x8 (mnemonic: ns*)</t>
-		<t hangText="shape">( ns* {mark}:Int {uuid}:Word128 )</t>
+		<t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">ns*</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( ns* {mark}:Int {uuid}:Word128 )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -571,24 +592,24 @@
 	  <section title="Package">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0x9 (mnemonic: package)</t>
-		<t hangText="shape">( package {uuid}:Word128 {namespaces} )</t>
+		<t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">package</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( package {uuid}:Word128 {namespaces} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This creates a package identified by {uuid}. Packages are immutable, {uuid} MUST be a
-	      v5 UUID generated with the BULK UUID and the byte sequence {namespaces}. {namespaces}
-	      must be a sequence of expressions. They can be either expressions of type Word128 or
-	      have the shape ( ns* Word128 ), which means that the designated namespace is optional
-	      to this package.
+	      v5 UUID generated with the BULK UUID and the byte sequence {namespaces}. <spanx
+	      style="verb">{namespaces}</spanx> must be a sequence of expressions. They can be
+	      either expressions of type Word128 or have the shape <spanx style="verb">( ns* Word128
+	      )</spanx>, which means that the designated namespace is optional to this package.
 	    </t>
 	  </section>
 
 	  <section title="Import">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0xA (mnemonic: import)</t>
-		<t hangText="shape">( import {base}:Int {uuid}:Word128 )</t>
+		<t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">import</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( import {base}:Int {uuid}:Word128 )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -603,8 +624,7 @@
 	<section title="Definitions">
 	  <t>
 	    To define a reference is to associate an expression to this name in its namespace (as
-	    identified by its UUID, not the marker value). The scope of a definition is the part of
-	    its context that follows the definition.
+	    identified by its UUID, not the marker value).
 	  </t>
 	  <t>
 	    The semantics of an association are entirely application-dependent, but the default
@@ -616,8 +636,8 @@
 	  <section title="Simple definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0xB (mnemonic: define)</t>
-		<t hangText="shape">( define {ref}:Ref Expr )</t>
+		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( define {ref}:Ref Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -628,8 +648,8 @@
 	  <section title="Open definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0xC (mnemonic: define)</t>
-		<t hangText="shape">( define* {ref}:Int8 Expr )</t>
+		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( define* {ref}:Int8 Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -640,8 +660,8 @@
 	  <section title="Limited definitions">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0xD (mnemonic: let)</t>
-		<t hangText="shape">( let ( {bindings} ) {body} )</t>
+		<t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">let</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( let ( {bindings} ) {body} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -652,18 +672,13 @@
 	  <section title="Signed namespace">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0xE (mnemonic: signed-ns)</t>
-		<t hangText="shape">( signed-ns {uuid}:Word128 {ns-uuid}:Word128 {signature}
-		{definitions} )</t>
+		<t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx style="verb">signed-ns</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( signed-ns {uuid}:Word128 {ns-uuid}:Word128 {signature}
+		{definitions} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      {uuid} is a v5 UUID generated with {ns-uuid} and {signature}. {signature} is the
-	      cryptographic signature of the byte sequence {definitions}. The type and content of
-	      {signature} is dependent of the cryptographic protocol used and its BULK format.
-
-	      Open definitions in {definitions} have the semantics to associate an expression to a
-	      name in {uuid}. It is a parsing error if {definitions} contain simple definitions.
+	      TODO
 	    </t>
 	  </section>
 	</section>
@@ -674,43 +689,49 @@
 	    specification that have the type Number, but an application MAY consider a number as
 	    having an unknown value if it has no adequate data type to store it.
 	  </t>
+	  <t>
+	    In the text notation of a BULK stream, a decimal integer represent the smallest byte
+	    sequence that is represented by this integer. For example, <spanx style="verb">( 31 256
+	    )</spanx> is a notation for the bytes <spanx style="verb">0x1 0x7 0x1F 0x8 0x0 0x0 0x1 0x0
+	    0x2</spanx>.
+	  </t>
 
 	  <section title="fraction">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0x20 (mnemonic: frac)</t>
-		<t hangText="shape">( frac {num}:Int {div}:Int )</t>
+		<t hangText="name"><spanx style="verb">0x20</spanx> (mnemonic: <spanx style="verb">frac</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( frac {num}:Int {div}:Int )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This is the number {num}/{div}.
 	    </t>
 	    <t>
-	      Type: Number.
+	      Type: <spanx style="verb">Number</spanx>.
 	    </t>
 	  </section>
 
 	  <section title="Arbitrary precision signed integer">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0x21 (mnemonic: bigint)</t>
-		<t hangText="shape">( bigint {bits}:Array )</t>
+		<t hangText="name"><spanx style="verb">0x21</spanx> (mnemonic: <spanx style="verb">bigint</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( bigint {bits}:Array )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      The bits contained in {bits} is the value of this integer in two's-complement notation.
 	    </t>
 	    <t>
-	      Type: Number, Int.
+	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx>.
 	    </t>
 	  </section>
 
 	  <section title="Binary floating-point number">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0x22 (mnemonic: binary)</t>
-		<t hangText="shape">( binary {bits}:Word )</t>
-		<t hangText="shape">( binary {bits}:Array )</t>
+		<t hangText="name"><spanx style="verb">0x22</spanx> (mnemonic: <spanx style="verb">binary</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( binary {bits}:Word )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( binary {bits}:Array )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -719,16 +740,16 @@
 	      754-2008 rules.
 	    </t>
 	    <t>
-	      Type: Number.
+	      Type: <spanx style="verb">Number</spanx>.
 	    </t>
 	  </section>
 
 	  <section title="Decimal floating-point number">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name">0x23 (mnemonic: decimal)</t>
-		<t hangText="shape">( decimal {bits}:Word )</t>
-		<t hangText="shape">( decimal {bits}:Array )</t>
+		<t hangText="name"><spanx style="verb">0x23</spanx> (mnemonic: <spanx style="verb">decimal</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( decimal {bits}:Word )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( decimal {bits}:Array )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -737,7 +758,7 @@
 	      as per IEEE 754-2008 rules.
 	    </t>
 	    <t>
-	      Type: Number.
+	      Type: <spanx style="verb">Number</spanx>.
 	    </t>
 	  </section>
 
@@ -808,7 +829,7 @@
 	  it is not using a specific profile:
 	</t>
 	<t>
-	  ( bulk:stringenc 106 )
+	  <spanx style="verb">( bulk:stringenc 106 )</spanx>
 	</t>
 	<t>
 	  This means that the default string encoding in a BULK stream is UTF-8.
