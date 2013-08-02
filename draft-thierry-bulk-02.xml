@@ -15,7 +15,7 @@
 
 <rfc ipr="trust200902"
      category="exp"
-     docName="draft-thierry-bulk-01"
+     docName="draft-thierry-bulk-02"
      xmlns:x="http://purl.org/net/xml2rfc/ext">
   <x:feedback template="mailto:pierre@nothos.net"/>
   <front>
@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date day="1" month="August" year="2013" />
+    <date day="2" month="August" year="2013" />
     <keyword>binary</keyword>
 
     <abstract>

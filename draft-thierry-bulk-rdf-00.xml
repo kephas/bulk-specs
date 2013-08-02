@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date day="1" month="August" year="2013" />
+    <date day="2" month="August" year="2013" />
     <keyword>binary</keyword>
 
     <abstract>
@@ -243,7 +243,7 @@
       <reference anchor="BULK1">
 	<front>
 	  <title>Binary Uniform Language Kit 1.0</title>
-	  <date day="1" month="August" year="2013"/>
+	  <date day="2" month="August" year="2013"/>
 	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
 	    <organization>Thierry Technologies</organization>
 	    <address>
@@ -251,7 +251,7 @@
 	    </address>
 	  </author>
 	</front>
-	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-01"/>
+	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-02"/>
       </reference>
 
       <reference anchor="BULK-XML">
