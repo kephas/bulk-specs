@@ -680,7 +680,7 @@
 	  <section title="Open definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( define* {ref}:Int8 Expr )</spanx></t>
 	      </list>
 	    </t>
@@ -692,7 +692,7 @@
 	  <section title="Limited definitions">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">let</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">let</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( let ( {bindings} ) {body} )</spanx></t>
 	      </list>
 	    </t>
@@ -704,7 +704,7 @@
 	  <section title="Signed namespace">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx style="verb">signed-ns</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">signed-ns</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( signed-ns {uuid}:Word128 {ns-uuid}:Word128 {signature}
 		{definitions} )</spanx></t>
 	      </list>

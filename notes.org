@@ -44,21 +44,18 @@
     6. ( codepage Int )
     7. ( ns <id>:Int <uuid>:Word128 )
     8. ( ns* <id>:Int <uuid>:Word128 )
-    9. optional: used in package form
-       - if it is not confusing to spec readers, (option <uuid>) in
-         package forms could be replaced by (ns* <uuid>) to spare a
-         name in Ox10
-    10. ( package <uuid> <namespaces> )
-    11. ( import <base>:Int <uuid> )
-    12. ( define <id> Expr )
+    9. ( package <uuid> <namespaces> )
+    10. ( import <base>:Int <uuid> )
+    11. ( define <id> Expr )
         - <id> = Ref | Int8
-    13. ( let ( <bindings> ) Expr+ )
+    12. ( let ( <bindings> ) Expr+ )
         - bindings = Ref Expr [ bindings ]
-    14. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
+    13. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
         <definitions> )
 	- error if ( define Ref Expr ) in *final abstract yield*
-    15. ( openpgp <data>:Array )
-    16. ( x509 <data>:Array )
+    14. ( openpgp <data>:Array )
+    15. ( x509 <data>:Array )
+    16. 
     17. 
     18. 
     19. 
