@@ -657,6 +657,13 @@
 	    expression that has been associated can be substituted to the reference in the abstract
 	    yield.
 	  </t>
+	  <t>
+	    When a BULK stream containing definitions for a namespace comes from a trusted source
+	    (i.e. in configuration files of the application, or in the communication with an agent
+	    that has been granted the relevant authority), an application MAY give those definitions
+	    long-lasting semantics. This is the preferred mechanism for bulk namespace definition
+	    when the semantics of the defined expressions can be expressed completely by BULK forms.
+	  </t>
 
 	  <section title="Simple definition">
 	    <t>
@@ -885,6 +892,14 @@
 	  application has on the recipient of the data.
 	</t>
       </section>
+      <section title="Definitions">
+	<t>
+	  The architecture of a processing application SHOULD ensure that a malicious agent cannot
+	  abuse authority given to it to define a namespace in order to modify associations in other
+	  namespaces. Depending on the use of data structures storing BULK expressions, this could
+	  amount to giving an attacker a way to manipulate the application state. See <xref
+	  target="robustNS"/> for an example of architecture that is resistant to that kind of
+	  attack.
 	</t>
       </section>
     </section>
@@ -1063,6 +1078,9 @@
       </reference>
 
     </references>
+
+    <section anchor="robustNS" title="Robust namespace definition">
+    </section>
 
   </back>
 </rfc>
