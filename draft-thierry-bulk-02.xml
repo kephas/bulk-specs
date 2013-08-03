@@ -176,7 +176,7 @@
 	<t>
 	  A namespace marker in a BULK stream is associated by either one of two simple forms to a
 	  namespace identified by a UUID, thus ensuring decentralized extensibility. One of the two
-	  forms declares that the stream can be processed even if the application doesn't reckognize
+	  forms declares that the stream can be processed even if the application doesn't recognize
 	  the namespace. Parsing remains possible thanks to the uniform syntax.
 	</t>
 	<t>
@@ -336,7 +336,7 @@
 	  <t>
 	    Arrays have a special parsing rule. After consuming the marker byte, the parser returns
 	    to the dispatch stage. It is a parser error if the parsed expression is not of type Int
-	    or if its value cannot be reckognized. This integer is not added to any context, but the
+	    or if its value cannot be recognized. This integer is not added to any context, but the
 	    parser consumes as many bytes as this integer and they constitute the content of this
 	    array.
 	  </t>
@@ -545,7 +545,7 @@
 	  <t>
 	    As the abstract yield doesn't contains strings but expressions that will be used as
 	    strings by the application, it is not a parsing error if the application doesn't
-	    reckognize {enc}. In this situation, it is a parsing error when the application actually
+	    recognize {enc}. In this situation, it is a parsing error when the application actually
 	    needs to decode a byte sequence as a string. It is not a parsing error when a processing
 	    application only transmits a byte sequence encoding a string, if it can accurately
 	    convey the encoding to the receiving application.
@@ -586,7 +586,7 @@
 	<section title="Namespaces">
 	  <t>
 	    The semantic of some expressions is to make a namespace required. It is a parsing error
-	    if a processing application doesn't reckognise this namespace.
+	    if a processing application doesn't recognise this namespace.
 	  </t>
 
 	  <section title="Required namespace">
@@ -641,7 +641,7 @@
 	      This associates the namespaces in the package identified by {uuid} with a continuous
 	      range of values starting at {base}. If the namespace is not optional to this package,
 	      it make the namespace required. It is a parsing error if a processing application
-	      doesn't reckognize the package.
+	      doesn't recognize the package.
 	    </t>
 	  </section>
 	</section>
@@ -710,7 +710,7 @@
 
 	<section title="arithmetic">
 	  <t>
-	    A processing application must reckognize the type of all expressions defined in this
+	    A processing application must recognize the type of all expressions defined in this
 	    specification that have the type Number, but an application MAY consider a number as
 	    having an unknown value if it has no adequate data type to store it.
 	  </t>
@@ -880,9 +880,11 @@
       <section title="Forwarding">
 	<t>
 	  When a processing application forwards all or part of the data in a BULK stream to another
-	  application, care must be taken if part of the forwarded data was not entirely
-	  reckognized, as it could be used by an attacker to benefit from the authority the
-	  forwarding application has on the recipient of the data.
+	  application, care must be taken if part of the forwarded data was not entirely recognized,
+	  as it could be used by an attacker to benefit from the authority the forwarding
+	  application has on the recipient of the data.
+	</t>
+      </section>
 	</t>
       </section>
     </section>
