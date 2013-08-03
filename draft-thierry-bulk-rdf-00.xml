@@ -370,7 +370,7 @@
 
       <figure>
 	<preamble>Here is the text notation of a BULK stream containg a small part of the RDF Schema
-	ontology. The whole stream is 352 bytes in length (the corresponding RDF/XML document would
+	ontology. The whole stream is 375 bytes in length (the corresponding RDF/XML document would
 	be 1525 bytes in length).</preamble>
 	<artwork>
 ( bulk:version 1 0 )
