@@ -244,6 +244,20 @@
 	</list>
       </section>
 
+      <section title="RDF embedding">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x20</spanx> (mnemonic: <spanx style="verb">this-resource</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">this-resource</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This expression is intended to help embedding RDF metadata alongside or within a
+	  resource. It has the semantics of a blank node that designates this resource. What makes a
+	  resource the current described resource is application-dependent.
+	</t>
+      </section>
+
     </section>
 
     <section title="Security Considerations" anchor="sec">
