@@ -140,10 +140,25 @@
    2. ( base Array )
    3. ( prefix <pre>:Ref # Int <begin> )
    4. blank
-   5. ( datatype <id>:URIRef <literal> )
-   6. xmlliteral
-   7. ( triples <triples> )
-   8. ( turtle <statements> )
+   5. ( plain <lang> <literal )
+   6. ( datatype <id>:URIRef <literal> )
+   7. xmlliteral
+   8. ( triples <triples> )
+   9. ( turtle <statements> )
+   10. type
+   11. Property
+   12. Statement
+   13. subject
+   14. predicate
+   15. object
+   16. Bag
+   17. Seq
+   18. Alt
+   19. value
+   20. List
+   21. nil
+   22. first
+   23. rest
 
 
 *** Differences between complete triples (3s) and turtle-like (Tl)

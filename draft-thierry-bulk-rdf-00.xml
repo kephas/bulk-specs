@@ -220,6 +220,30 @@
 	</t>
       </section>
 
+      <section title="RDF vocabulary">
+	<t>
+	  The following names are associated with <spanx style="verb">uriref</spanx> forms, with a
+	  base URI of <eref target="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>. Their mnemonic
+	  is the lowercased URI reference.
+	</t>
+	<list style="hanging">
+	  <t hangText="0xA">type</t>
+	  <t hangText="0xB">Property</t>
+	  <t hangText="0xC">Statement</t>
+	  <t hangText="0xD">subject</t>
+	  <t hangText="0xE">predicate</t>
+	  <t hangText="0xF">object</t>
+	  <t hangText="0x10">Bag</t>
+	  <t hangText="0x11">Seq</t>
+	  <t hangText="0x12">Alt</t>
+	  <t hangText="0x13">value</t>
+	  <t hangText="0x14">List</t>
+	  <t hangText="0x15">nil</t>
+	  <t hangText="0x16">first</t>
+	  <t hangText="0x17">rest</t>
+	</list>
+      </section>
+
     </section>
 
     <section title="Security Considerations" anchor="sec">
