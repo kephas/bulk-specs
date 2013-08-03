@@ -235,6 +235,66 @@
    20. ( anno-mundi Int123 )
    21. ( anno-hegirae Int123 )
 
+** BARF: BULK Archive Format
+   1. ( pack {metadata} {entries} )
+      - {metadata}
+	- nil
+	- ( Metadatum+ )
+	- any other BULK expression suited as metadata
+      - {entries} can be one or several arrays instead of BULK
+   2. ( describe {metadata} {entries-metadata} ) {entries}
+      - to make BULK-unaware append possible
+      - {entries-metadata} means {entries} can be a single Array and
+        the content of the entry is the end of the BULK file
+   3. ( entry {metadata} {content} )
+      - {metadata} as in pack
+      - {content} can be an Array (e.g. a file's content) or BULK
+   4. ( bulk-stream {stream} )
+      - to include a BULK stream in a pack without a surrounding array
+   5. ( compressed {method} Array )
+   6. --- Metadatum ---
+   7. ( path {components} )
+      - by design, there is no way to express an absolute FS path
+	- an application is free to define insecure forms to express
+          absolute paths and links
+	- TODO: what if a component contain "/"?
+	  - implementation should not resolve the name but look it up
+            in the directory entries (that takes care of "/" but not
+            of a ".." entry, this still needs checking, shame on Unix)
+   8. ( user {name} )
+      - {name} can be anything, incl. string and Int
+	- multiple entries (e.g. "pierre"/1000)
+   9. ( group {name} )
+   10. ( dev-major {num} )
+       - redundant with a xxx-dev form as entry content?
+   11. ( dev-minor {num} )
+       - idem
+   12. contiguous
+       - tar semantics
+   13. ( access {time} )
+   14. ( modification {time} )
+   15. ( change {time} )
+   16. ( mode {mode} )
+   17. ( posix-acl {acls} )
+       - ( user {id} {mode} {default?} )
+       - ( group {id} {mode} {defaults?} )
+       - ( other {mode} {defaults?} )
+       - ( mask {mode} {defaults?} )
+   18. ( xattr {xattr} )
+       - {xattrs} = ( {name} {value} )+
+   19. ( offsets Int+ )
+       - base is the first byte after {metadata}
+   20. ---
+   21. ( hard-link Path )
+   22. ( sym-link Path )
+   23. ( char-dev {??} )
+   24. ( block-dev {??} )
+   25. ( directory {name} )
+   26. ( known-size {size}:Int {bulk} )
+       - {size} is number of bytes in {bulk}
+       - kind of an explicitly parseable array
+       - alternative to =offsets=
+
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
 
