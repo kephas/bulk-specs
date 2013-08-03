@@ -241,6 +241,7 @@
 	  <t hangText="0x15">nil</t>
 	  <t hangText="0x16">first</t>
 	  <t hangText="0x17">rest</t>
+	  <t hangText="0x18">PlainLiteral</t>
 	</list>
       </section>
 

@@ -146,7 +146,7 @@
    21. nil
    22. first
    23. rest
-   24. 
+   24. PlainLiteral
    25. 
    26. 
    27. 
