@@ -10,7 +10,6 @@
    2. )
    3. Array: M <dim>:Int <content>:nB
       - arrays are used whenever a vector or matrix is needed
-	- an application is free to pack any kind of data
 	- the semantics of the content must be inferred by the
           application; where ambiguity can appear, an application
           SHOULD enclose the array in a type-denoting form

@@ -156,10 +156,10 @@
 	  A BULK stream is a stream of 8-bit bytes, in big-endian order. Parsing a BULK stream
 	  yields a sequence of expressions, which can be either atoms or forms, composed of
 	  atoms. The syntax of forms is entirely uniform, without a single exception: a starting
-	  byte marker, a sequence of atoms and an ending byte marker. Among atoms, only nil (the
-	  null byte), arrays, words and fixed-sized integers have a special syntax, for efficiency
-	  purposes. Even booleans and floating-point numbers follow the uniform syntax that every
-	  other expression follow.
+	  byte marker, a sequence of expressions and an ending byte marker. Among atoms, only nil
+	  (the null byte), arrays, words and fixed-sized integers have a special syntax, for
+	  efficiency purposes. Even booleans and floating-point numbers follow the uniform syntax
+	  that every other expression follow.
 	</t>
 	<t>
 	  Non uniform atoms start with a marker byte, followed by a static or dynamic number of
@@ -174,10 +174,34 @@
 	  followed by some content, a form is 4 bytes + its content.
 	</t>
 	<t>
-	  A namespace marker in a BULK stream is associated by either of two simple forms to a
-	  namespace identified by a UUID, thus ensuring decentralized extension. One of the two
+	  A namespace marker in a BULK stream is associated by either one of two simple forms to a
+	  namespace identified by a UUID, thus ensuring decentralized extensibility. One of the two
 	  forms declares that the stream can be processed even if the application doesn't reckognize
 	  the namespace. Parsing remains possible thanks to the uniform syntax.
+	</t>
+	<t>
+	  Furthermore, combination of BULK namespaces, BULK streams and even other formats doesn't
+	  need any content transformation to work. Here are some examples:
+	  <list style="symbols">
+	    <t>
+	      The content of a BULK stream, enclosed in 0x1 and 0x2 bytes markers, constitute a
+	      valid BULK expression. Thus BULK streams can be packed or annotated within a BULK
+	      stream without modification. Annotation use cases include adding metadata and
+	      cryptographic signature.
+	    </t>
+	    <t>
+	      A BULK format could specify in its syntax the place for an expression holding
+	      metadata. Whether the specification provides its own metadata forms or not, an
+	      application could use a BULK serialization for MARC, TEI Header, XML or RDF for this
+	      metadata expression. The vocabulary selected would be univocally expressed by the
+	      namespace and every vocabulary would be parsed by the same mechanisms.
+	    </t>
+	    <t>
+	      Whether a content must be stored as-is instead of serialized or a highly-optimized ad
+	      hoc serialization exists for some data, anything can always be stored within an
+	      array. They can contain arbitray bytes and there is no limit to their size.
+	    </t>
+	  </list>
 	</t>
       </section>
       <section title="Conventions and Terminology">
@@ -464,9 +488,10 @@
 	    </list>
 	  </t>
 	  <t>
-	    This form MUST be the first in a BULK stream. It is a parsing error otherwise. This
-	    specification defines BULK 1.0. When writing a BULK stream, a processing application
-	    MUST denote {major} and {minor} by the smallest byte sequence possible.
+	    This form MUST be the first in a BULK stream. In any other place, this form has no
+	    semantics attached to it. This specification defines BULK 1.0. When writing a BULK
+	    stream, a processing application MUST denote {major} and {minor} by the smallest byte
+	    sequence possible.
 	  </t>
 	  <t>
 	    Two BULK versions with the same major version MUST share the same parsing rules and the
