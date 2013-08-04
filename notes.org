@@ -53,24 +53,18 @@
     13. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
         <definitions> )
 	- error if ( define Ref Expr ) in *final abstract yield*
-    14. ( openpgp <data>:Array )
-    15. ( x509 <data>:Array )
-    16. 
-    17. 
-    18. 
-    19. 
-    20. 
-    21. 
-    22. 
-    23. 
-    24. 
-    25. 
-    26. 
-    27. 
-    28. 
-    29. 
-    30. 
-    31. 
+    14. ---
+    15. ( named Ref Expr )
+    16. ( named* Ref Expr )
+	- allows recursive definition
+    17. ( subst {code} )
+    18. ( arg Int )
+    19. ( rest Int )
+    20. ---
+    21. ( openpgp <data>:Array )
+    22. ( x509 <data>:Array )
+
+
     32. ( frac Int Int )
     33. ( bigint Array )
     34. ( binary <bits> )
@@ -112,21 +106,35 @@
     A specification or an application-specific logic MAY declare a
     namespace as sealed. I
 
-** XML Infoset namespace
-   urn:uuid:a2a97ec6-85f9-5aed-89b2-7ca3cafc2093 (BULK
-   http://www.w3.org/TR/2004/REC-xml-infoset-20040204/)
+** XML
+   XML is pretty complex, but most of it is unused (some even advised
+   not to be used, i.e. unparsed entity). The vocabulary can be split
+   into loosely coupled parts:
 
-   1. Infoset
-   2. Document
-   3. Element
-   4. Attribute
-   5. Processing instruction
-   6. Unexpanded entity
-   7. Comment
-   8. DTD
-   9. Unparsed entity
-   10. Notation
-   11. NS
+   - document
+   - DTD
+   - schema
+   - Relax NG
+
+*** Document
+    "urn:uuid:8e9fbe9c-2b0c-5307-bb81-edb1a7727563" (BULK,
+    http://www.w3.org/XML/Core/)
+
+    XML content, not notation: no support for entities or
+    CDATA. =stringenc= can be used everywhere.
+
+    - ( xml1.0 {content} )
+    - ( xml1.1 {content} )
+    - ( pi {target} {content} )
+    - ( comment {content} )
+    - ( element {name} {content} )
+    - ( attribute {name} {value} )
+    - xml: ⇔ ( prefix xml: "http://www.w3.org/XML/1998/namespace" )
+    - xmlns: ⇔ ( prefix xml: "http://www.w3.org/2000/xmlns/" )
+    - preserve ⇔ ( define preserve ( attribute ( xml: "space" )
+      "preserve" ) )
+
+    : ( define ?rfc ( subst ( pi "rfc" ( rest 0 ) ) ) )
 
 ** RDF namespace
    urn:uuid:ed460331-a89b-5742-a8de-907dff727779 (BULK
@@ -189,14 +197,6 @@
     But adding another triple can cost as few as 2 bytes:
 
     : (:A(:B:C:D))
-
-** Efficient XML/BULK transformation
-   BULK equivalent to XML Schema, used by an application to compact
-   XML to the fullest.
-
-   - enumeration attributes become a single reference instead of a
-     form enclosing a string
-   - macrology may be defined to further compact common use cases
 
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
