@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date day="2" month="August" year="2013" />
+    <date day="5" month="August" year="2013" />
     <keyword>binary</keyword>
 
     <abstract>
@@ -309,6 +309,33 @@
 	<t>
 	  Whenever a parsing error is encountered, parsing of the BULK stream MUST stop.
 	</t>
+	<section title="Evaluation">
+	  <t>
+	    A processing application MAY implement evaluation of BULK expressions and streams. When
+	    evaluating a BULK stream, when the parser gets to the dispatch stage and the context is
+	    the abstract yield, the last expression in the context is replaced by what it evaluates
+	    to.
+	  </t>
+	  <t>
+	    The default evaluation rule is that an expression evaluates to itself. A name within a
+	    namespace can have a value, which is what a reference associated to this name evaluates
+	    to. A reference whose marker value is associated to no namespace or whose name has no
+	    value evaluates to itself. How self-evaluating BULK expressions are represented in the
+	    concrete yield is application-dependent, but future specifications may define a standard
+	    API to access it, similar to the Document Object Model for XML.
+	  </t>
+	  <t>
+	    The evaluation of a sequence obeys a special rule, though: if the first expression of
+	    the sequence has type <spanx style="verb">Function</spanx>, that function is called with
+	    an argument list and the sequence evaluates to the return value. If the function has
+	    type <spanx style="verb">LazyFunction</spanx>, the argument list is the rest of the
+	    sequence. If the function has type <spanx style="verb">EagerFunction</spanx>, the
+	    argument list is the rest of the sequence, where each expression is replaced by what it
+	    evaluates to. Any expression that has type <spanx style="verb">LazyFunction</spanx> or
+	    <spanx style="verb">EagerFunction</spanx> also has type <spanx
+	    style="verb">Function</spanx>.
+	  </t>
+	</section>
       </section>
 
       <section title="Forms">
@@ -470,10 +497,11 @@
 	  <t>
 	    The specification of a namespace SHOULD include a mnemonic for the namespace and for
 	    each defined name. When descriptions use several namespaces, the mnemonic of a reference
-	    SHOULD be the concatenation of the namespace mnemonic, ":" and the name mnemonic. For
-	    example, the <spanx style="verb">fp</spanx> name in namespace <spanx
-	    style="verb">math</spanx> becomes <spanx style="verb">math:fp</spanx>.
+	    SHOULD be the concatenation of the namespace mnemonic, ":" and the name mnemonic if
+	    there can be an ambiguity. For example, the <spanx style="verb">fp</spanx> name in
+	    namespace <spanx style="verb">math</spanx> becomes <spanx style="verb">math:fp</spanx>.
 	  </t>
+	  <t>Type: <spanx style="verb">Ref</spanx></t>
 	  <section title="Speciale case">
 	    <t>
 	      References have a special parsing rule. In case a BULK stream needs an important
@@ -669,21 +697,20 @@
 
 	<section title="Definitions">
 	  <t>
-	    To define a reference is to associate an expression to this name in its namespace (as
-	    identified by its UUID, not the marker value).
+	    To define a reference is to change the the value of its name in its namespace (as
+	    identified by its UUID, not the marker value) within a certain scope.
 	  </t>
 	  <t>
-	    The semantics of an association are entirely application-dependent, but the default
-	    semantics are that wherever the reference appears in the definition's scope, the
-	    expression that has been associated can be substituted to the reference in the abstract
-	    yield.
+	    If a BULK stream is not evaluated, the semantics of an definition are entirely
+	    application-dependent.
 	  </t>
 	  <t>
 	    When a BULK stream containing definitions for a namespace comes from a trusted source
 	    (i.e. in configuration files of the application, or in the communication with an agent
 	    that has been granted the relevant authority), an application MAY give those definitions
-	    long-lasting semantics. This is the preferred mechanism for bulk namespace definition
-	    when the semantics of the defined expressions can be expressed completely by BULK forms.
+	    long-lasting semantics (i.e. keep the values of the names at the end of parsing). This
+	    is the preferred mechanism for bulk namespace definition when the semantics of the
+	    defined expressions can be expressed completely by BULK forms.
 	  </t>
 
 	  <section title="Simple definition">
@@ -694,44 +721,64 @@
 	      </list>
 	    </t>
 	    <t>
-	      This defines the reference {ref}.
+	      This defines the reference {ref} in the scope of this expression.
 	    </t>
 	  </section>
+	</section>
 
-	  <section title="Open definition">
+	<section title="Substituton">
+	  <section title="Substitution function">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">define*</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( define* {ref}:Int8 Expr )</spanx></t>
+		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">subst</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This form only has meaning inside some specific forms.
+	      <spanx style="verb">subst</spanx>'s value is a function of type <spanx
+	      style="verb">LazyFunction</spanx>. It returns a substitution function of type <spanx
+	      style="verb">EagerFunction</spanx>.
 	    </t>
+	    <t>
+	      The return value of this substitution function is the value of {code}. Within {code}'s
+	      specific yield, the names <spanx style="verb">arg</spanx> and <spanx
+	      style="verb">rest</spanx> are defined:
+	    </t>
+	    <section title="Argument">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">arg</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( arg {n}:Int )</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		 <spanx style="verb">arg</spanx>'s value is a function that returns the element
+		 number {n} (starting at zero) of the substitution function's arguments list.
+	      </t>
+	    </section>
+	    <section title="Rest of arguments list">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx style="verb">rest</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( rest {n}:Int )</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		<spanx style="verb">rest</spanx>'s value is a function that returns the substitution
+		function's arguments list without its first {n} elements.
+	      </t>
+	    </section>
 	  </section>
 
-	  <section title="Limited definitions">
+	  <section title="Named expression">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">let</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( let ( {bindings} ) {body} )</spanx></t>
+		<t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx style="verb">named</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( named {ref}:Ref {expr}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      TODO
-	    </t>
-	  </section>
-
-	  <section title="Signed namespace">
-	    <t>
-	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">signed-ns</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( signed-ns {uuid}:Word128 {ns-uuid}:Word128 {signature}
-		{definitions} )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      TODO
+	      This form defines {ref} as {expr} in its scope. This form evaluates to {expr}.
 	    </t>
 	  </section>
 	</section>
@@ -1101,6 +1148,54 @@
     </references>
 
     <section anchor="robustNS" title="Robust namespace definition">
+      <t>
+	This constitutes a suggestion of architecture for a BULK processing application. It has the
+	advantage that an agent cannot modify the values of names to which it has not specifically
+	be given authority. This architecture doesn't ensure this property by checking the validity
+	of definitions but by adhering to the Principle Of Least Authority, thus ensuring no false
+	positives or TOCTOU race conditions.
+      </t>
+      <t>
+	For each new context (including the abstract yield when parsing starts), the parser creates
+	a new copy of each known namespace. These copies are available in this context to retrieve
+	and define values. It implements the lexical scoping of definitions on top of providing the
+	robustness properties discussed here.
+      </t>
+      <t>
+	By default, all namespaces created in a context are discarded at the end of this context.
+      </t>
+      <t>
+	Of course, an implementation of the architecture presented here can be optimized compared to
+	the abstract algorithm, for example by using copy-on-demand.
+      </t>
+      <t>
+	Any namespace that is not a copy for its context but the object retained by the application
+	afterwards, gives authority to make long-lasting definitions. Such a namespace is called
+	lasting here.
+      </t>
+      <section title="Selective authority">
+	<t>
+	  A number of lasting namespaces are included for the abstract yield. Their UUIDs are agreed
+	  out-of-band. The disadvantage of this solution is that it needs prior agreement on the
+	  definable namespaces.
+	</t>
+      </section>
+      <section title="Open authority">
+	<t>
+	  Any <spanx style="verb">ns*</spanx> form for a UUID unknown to the processing application
+	  triggers the creation a lasting namespace.
+	</t>
+	<t>
+	  The disadvantage of this solution is that it opens a denial of service vulnerability. If
+	  Bob is a processing application and Carol and Dave are agents communicating with Bob with
+	  an open authority, Dave can prevent Carol from defining a namespace if it manages to know
+	  the UUID and starting a communication with Bob before Carol.
+	</t>
+	<t>
+	  If an agent uses a secure way to create UUIDs and protects their secrecy, this solution is
+	  both flexible and safe.
+	</t>
+      </section>
     </section>
 
   </back>

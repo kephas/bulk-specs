@@ -27,84 +27,67 @@
    NSID: 0x10
 
    1. ( version Int Int )
-   2. ( ns <id>:Int <uuid>:Word128 )
-   3. ( ns* <id>:Int <uuid>:Word128 )
+   2. true
+   3. false
    4. ( stringenc <id> )
    5. ( iana-charset Int)
    6. ( codepage Int )
-   7. true
-   8. false
-
-*** rearranged NS
-    1. ( version Int Int )
-    2. true
-    3. false
-    4. ( stringenc <id> )
-    5. ( iana-charset Int)
-    6. ( codepage Int )
-    7. ( ns <id>:Int <uuid>:Word128 )
-    8. ( ns* <id>:Int <uuid>:Word128 )
-    9. ( package <uuid> <namespaces> )
-    10. ( import <base>:Int <uuid> )
-    11. ( define <id> Expr )
-        - <id> = Ref | Int8
-    12. ( let ( <bindings> ) Expr+ )
-        - bindings = Ref Expr [ bindings ]
-    13. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
-        <definitions> )
-	- error if ( define Ref Expr ) in *final abstract yield*
-    14. ---
-    15. ( named Ref Expr )
-    16. ( named* Ref Expr )
-	- allows recursive definition
-    17. ( subst {code} )
-    18. ( arg Int )
-    19. ( rest Int )
-    20. ---
-    21. ( openpgp <data>:Array )
-    22. ( x509 <data>:Array )
+   7. ( ns <id>:Int <uuid>:Word128 )
+   8. ( ns* <id>:Int <uuid>:Word128 )
+   9. ( package <uuid> <namespaces> )
+   10. ( import <base>:Int <uuid> )
+   11. ( define <id> Expr )
+       - <id> = Ref | Int8
+   12. ( subst {code} )
+   13. ( arg Int )
+   14. ( rest Int )
+   15. ( named Ref Expr )
+   16. ---
+   17. ( let ( <bindings> ) Expr+ )
+       - bindings = Ref Expr [ bindings ]
+   18. ( named* Ref Expr )
+       - allows recursive definition
+   19. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
+       <definitions> )
+       - error if ( define Ref Expr ) in *final abstract yield*
+   20. ( openpgp <data>:Array )
+   21. ( x509 <data>:Array )
 
 
-    32. ( frac Int Int )
-    33. ( bigint Array )
-    34. ( binary <bits> )
-    35. ( decimal <bits> )
+   32. ( frac Int Int )
+   33. ( bigint Array )
+   34. ( binary <bits> )
+   35. ( decimal <bits> )
 
 
-    A NS could be tied to a URL where its reference definition can be
-    found (with an v5 UUID hashing the URL). But if the URL stops being
-    resolvable, the NS cannot be "authenticated" anymore. It seems too
-    fragile.
+   A NS could be tied to a URL where its reference definition can be
+   found (with an v5 UUID hashing the URL). But if the URL stops being
+   resolvable, the NS cannot be "authenticated" anymore. It seems too
+   fragile.
 
-    openpgp and x509 may come from a crypto NS instead.
+   openpgp and x509 may come from a crypto NS instead.
 
-*** import
-    #+BEGIN_src lisp
-      ( package P N1 ( optional N2 ) N3 )
-      ( import k P )
-    #+END_src
-
-    is equivalent to:
-
-    #+BEGIN_src lisp
-      ( ns k N1 )
-      ( ns* k+1 N2 )
-      ( ns k+2 N3 )
-    #+END_src
-
-*** definitions
-    After the third expression in the following stream, the name 0x1
-    in namespace Ox21 is associated with 42:
-
-    #+BEGIN_src lisp
-      (ns Ox20 0xa2a97ec685f95aed89b27ca3cafc2093)
-      (ns Ox21 0xa2a97ec685f95aed89b27ca3cafc2093)
-      (define Ox20 Ox1 42)
-    #+END_src
-
-*** sealed namespaces
-    A specification or an application-specific logic MAY declare a
-    namespace as sealed. I
+** Mobile code
+   - language = namespace
+   - language-agnostic encoding
+     - 1 lexeme = 1 ref
+       - not for Python
+     - preprocessor macros
+   - AST encoding
+   - LA/AST
+     - could embed macrology if BULK reader supports it
+     - separate debug symbols
+       - ref ↔ name
+       - BULK offset ↔ source code position
+   - general use of macrology coupled with C/S content negociation
+     - client advertises known namespaces
+       - but only relevant, security risk otherwise
+     - server disk is cheaper than bandwidth: BULK stream with
+       macrology is preprocessed to get rid of macrology, both
+       versions available (small w/ macros, bigger w/o)
+       - possibly on-demand w/ cache
+       - selective evaluation: only evaluate what the client doesn't
+         support
 
 ** XML
    XML is pretty complex, but most of it is unused (some even advised
