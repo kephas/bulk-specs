@@ -680,7 +680,7 @@
 	  <section title="Open definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">define*</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( define* {ref}:Int8 Expr )</spanx></t>
 	      </list>
 	    </t>
