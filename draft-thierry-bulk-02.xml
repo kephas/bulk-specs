@@ -82,7 +82,7 @@
 	    A good counter-example is found in most programming languages. Adding a new branching
 	    construct cannot be done in a terse way without modifying the underlying
 	    implementation. Such a construct either cannot be defined by user code (because of
-	    evaluation rules) or can in a terribly verbose and inconvenient way (with lot of
+	    evaluation rules) or can in a terribly verbose and inconvenient way (with lots of
 	    boilerplate code). Notable exceptions to this limitation of programming languages are
 	    Lisp, Haskell and stack programming languages.
 	  </t>
@@ -125,12 +125,12 @@
 	  </t>
 	  <t>
 	    The SGML/XML family of formats also feature these traits and actually fare much better
-	    than programming languages on the three fronts. XML namespaces also make it fairly
-	    decentralized and there have been attempts at making it compact (Efficient XML
-	    Interchange).
+	    than programming languages on the three fronts. XML namespaces also make it relatively
+	    decentralized and there have been attempts at making it compact (e.g. EXI from W3C, Fast
+	    Infoset from ISO/ITU or EBML).
 	  </t>
 	  <t>
-	    But all the previously cited formats clearly lack compactness, although just applying
+	    All the previously cited formats clearly lack compactness, although just applying
 	    standard compression techniques would sacrifice only very little processing time to gain
 	    huge size reductions on most of their intended use cases.
 	  </t>
@@ -145,21 +145,22 @@
 	    Actually, many binary formats are not so much formats but formats frameworks, and
 	    exclude extensibility by design. For each use case, an IDL compiler creates a brand new
 	    format that is essentially incompatible with all other formats created by the same
-	    compiler. If the IDL compiler and framework are correctly designed, such a format
-	    usually represent an optimum in compactness and speed of processing, as the compiler can
-	    also automatically generate an ad-hoc optimized parser.
+	    compiler (EBML specifically cites this property among its own disadvantages). If the IDL
+	    compiler and framework are correctly designed, such a format usually represent an
+	    optimum in compactness and speed of processing, as the compiler can also automatically
+	    generate an ad-hoc optimized parser.
 	  </t>
 	</section>
       </section>
       <section title="Format overview">
 	<t>
 	  A BULK stream is a stream of 8-bit bytes, in big-endian order. Parsing a BULK stream
-	  yields a sequence of expressions, which can be either atoms or forms, composed of
-	  atoms. The syntax of forms is entirely uniform, without a single exception: a starting
-	  byte marker, a sequence of expressions and an ending byte marker. Among atoms, only nil
-	  (the null byte), arrays, words and fixed-sized integers have a special syntax, for
-	  efficiency purposes. Even booleans and floating-point numbers follow the uniform syntax
-	  that every other expression follow.
+	  yields a sequence of expressions, which can be either atoms or forms, which are sequences
+	  of expressions. The syntax of forms is entirely uniform, without a single exception: a
+	  starting byte marker, a sequence of expressions and an ending byte marker. Among atoms,
+	  only nil (the null byte), arrays, words and fixed-sized integers have a special syntax,
+	  for efficiency purposes. Even booleans and floating-point numbers follow the uniform
+	  syntax that every other expression follow.
 	</t>
 	<t>
 	  Non uniform atoms start with a marker byte, followed by a static or dynamic number of
@@ -180,8 +181,8 @@
 	  the namespace. Parsing remains possible thanks to the uniform syntax.
 	</t>
 	<t>
-	  Furthermore, combination of BULK namespaces, BULK streams and even other formats doesn't
-	  need any content transformation to work. Here are some examples:
+	  Combination of BULK namespaces, BULK streams and even other formats doesn't need any
+	  content transformation to work. Here are some examples:
 	  <list style="symbols">
 	    <t>
 	      The content of a BULK stream, enclosed in 0x1 and 0x2 bytes markers, constitute a
@@ -203,6 +204,12 @@
 	    </t>
 	  </list>
 	</t>
+	<t>
+	  Furthermore, BULK expressions can be evaluated. Most expressions evaluate to themselves,
+	  but some evaluate by default to the result of a function call, making it possible to
+	  serialize data in an even more compact form, by elimination boilerplate data and repeated
+	  patterns.
+	</t>
       </section>
       <section title="Conventions and Terminology">
         <t>
@@ -216,25 +223,37 @@
           from decimal literals.
         </t>
 	<t>
-	  In the grammar, types are named by a capitalized word, like <spanx
-	  style="verb">Foo</spanx>. The text notation of the BULK stream uses mnemonics for some
-	  bytes sequences. Mnemonics are series of characters, excluding all capital letters and
-	  white space, like <spanx style="verb">this-is-one-mnemonic</spanx> or <spanx
-	  style="verb">what-the-%§!?#-is-that?</spanx>. They are always separated by white space.
+	   The text notation of the BULK stream uses mnemonics for some bytes sequences. Mnemonics
+	   are series of characters, excluding all capital letters and white space, like <spanx
+	   style="verb">this-is-one-mnemonic</spanx> or <spanx
+	   style="verb">what-the-%§!?#-is-that?</spanx>. They are always separated by white
+	   space. Outside the use of mnemonics, a sequence of bytes (of one or more bytes) can be
+	   represented by its hexadecimal value as an unsigned integer (e.g. <spanx
+	   style="verb">0x3F</spanx> or <spanx style="verb">0x3A0B770F</spanx>). Some types in this
+	   specification define a special syntax for their representation in the text notation.
 	</t>
 	<t>
-	  In the grammar, a shape is a pattern of bytes, following the rules of the text
-	  representation for a BULK stream. Apart from mnemonics and types, a shape can contain:
+	  In the grammar, a shape is a pattern of bytes, following the rules of the text notation
+	  for a BULK stream. Apart from mnemonics and fixed sequences of bytes, a shape can contain:
 	  <list style="symbols">
-	    <t>a fixed byte, represented by its value as an unsigned integer (i.e. <spanx
-	    style="verb">0x3F</spanx>)</t>
-	    <t>an arbitrary sequence of a fixed number of bytes, represented by the number of bytes
-	    in decimal immediately followed by a B uppercase letter (i.e. <spanx
+	    <t>an arbitrary sequence of a fixed number of bytes, represented by its size, i.e. a
+	    number of bytes in decimal immediately followed by a B uppercase letter (e.g. <spanx
 	    style="verb">4B</spanx>)</t>
+	    <t>a typed sequence of bytes, represented by the name of its type, a capitalized word
+	    (e.g.  <spanx style="verb">Foo</spanx>); this means a sequence of bytes whose specific
+	    yield (cf. <xref target="parsing"/>) has this type</t>
+	    <t>a named sequence of bytes (of zero or more bytes), represented by a series of any
+	    character excluding '{}' between '{' and '}' (e.g. <spanx style="verb">{quux}</spanx>);
+	    a named sequence can be typed or sized, in which case it is immediately followed by ':'
+	    and a type or size (e.g. <spanx style="verb">{quux}:Bar</spanx> or <spanx
+	    style="verb">{quux}:12B</spanx>)</t>
 	  </list>
-	  An arbitrary byte or sequence of bytes can be preceded by a name to make its description
-	  clearer. The name is a series of character between { and } immediately followed by a
-	  semi-colon (i.e. <spanx style="verb">{quux}:4B</spanx>).
+	</t>
+	<t>
+	  When an entire shape describes the byte sequence of an atom, it is the normative
+	  specification for parsing it, but shapes of forms are only normative with respect to their
+	  evaluation. A reference defined with a form shape can be used in different shapes, albeit
+	  with different semantics and value.
 	</t>
       </section>
     </section>
@@ -260,7 +279,7 @@
 	sequence is said to denote this expression.
       </t>
 
-      <section title="Parsing algorithm">
+      <section anchor="parsing" title="Parsing algorithm">
 	<t>
 	  The parser operates with a context, which is a sequence of expressions. Each time an
 	  expression is parsed, it is appended at the end of the context. The initial context is the
@@ -270,7 +289,9 @@
 	  At the beginning of a BULK stream and after having consumed the byte sequence denoting a
 	  complete expression, the parser is at the dispatch stage. At this stage, the next byte is
 	  a marker byte, which tells the parser what kind of expression comes next (the marker byte
-	  is the first byte of the sequence that denotes an expression).
+	  is the first byte of the sequence that denotes an expression). The expression appended to
+	  the context after reading a byte sequence is called the specific yield of the byte
+	  sequence.
 	</t>
 	<t>
 	  The <spanx style="verb">0x1</spanx> and <spanx style="verb">0x2</spanx> marker bytes are
