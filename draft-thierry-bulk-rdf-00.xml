@@ -186,7 +186,8 @@
 	    </list>
 	  </t>
 	  <t>
-	    A literal with this type SHOULD contain an XML Infoset (cf. <xref target="BULK-XML"/>).
+	    A literal with this type SHOULD contain a BULK serialization of XML (cf. <xref
+	    target="BULK-XML"/>).
 	  </t>
 	</section>
 
@@ -317,20 +318,6 @@
 	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-02"/>
       </reference>
 
-      <reference anchor="BULK-XML">
-	<front>
-	  <title>BULK XML Infoset namespace</title>
-	  <date month="August" year="2013"/>
-	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
-	    <organization>Thierry Technologies</organization>
-	    <address>
-	      <email>pierre@nothos.net</email>
-	    </address>
-	  </author>
-	</front>
-	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-xml-00"/>
-      </reference>
-
     </references>
 
 
@@ -352,6 +339,20 @@
 	    </address>
 	  </author>
 	</front>
+      </reference>
+
+      <reference anchor="BULK-XML">
+	<front>
+	  <title>BULK Simple XML namespace</title>
+	  <date day="6" month="August" year="2013"/>
+	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
+	    <organization>Thierry Technologies</organization>
+	    <address>
+	      <email>pierre@nothos.net</email>
+	    </address>
+	  </author>
+	</front>
+	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-xml-00"/>
       </reference>
 
     </references>
