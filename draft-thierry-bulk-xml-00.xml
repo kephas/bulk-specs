@@ -78,8 +78,8 @@
 	An application writing Simple XML data SHOULD use <spanx style="verb">rdf:prefix</spanx> to
 	denote element and attribute prefixed names and arrays for unprefixed names. The semantics
 	of the <spanx style="verb">rdf:prefix</spanx> form are application-dependent; an application
-	could choose its default semantics, thus using expanded names (cf. <xref
-	target="XML-NAMES10"/> and <xref target="XML-NAMES11"/>), or follow the <xref
+	could choose to evaluate it without changing its value beforehand, thus using expanded names
+	(cf. <xref target="XML-NAMES10"/> and <xref target="XML-NAMES11"/>), or follow the <xref
 	target="XML-INFOSET">XML Infoset</xref> principle of keeping the namespace and local part of
 	the name separate.
       </t>
@@ -174,61 +174,36 @@
 	    <t hangText="shape"><spanx style="verb">( attribute {name} {value} )</spanx></t>
 	  </list>
 	</t>
-	<t>
-	  This form denotes an entity (document entity or external entity) whose XML version is
-	  xxx.
-	</t>
 	<t>Type: <spanx style="verb">Attribute</spanx></t>
       </section>
 
       <section title="xml: namespace">
 	<t>
 	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx
+	    <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx
 	    style="verb">xml:</spanx> )</t>
+	    <t hangText="value"><spanx style="verb">( prefix "http://www.w3.org/XML/1998/namespace" )</spanx></t>
 	  </list>
-	</t>
-	<t>
-	  This name is defined by the following form:
-	  <figure>
-	    <artwork>
-( prefix xml: "http://www.w3.org/XML/1998/namespace" )
-	    </artwork>
-	  </figure>
 	</t>
       </section>
 
       <section title="xmlns: namespace">
 	<t>
 	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx
+	    <t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx
 	    style="verb">xmlns:</spanx> )</t>
+	    <t hangText="value"><spanx style="verb">( prefix "http://www.w3.org/2000/xmlns/" )</spanx></t>
 	  </list>
-	</t>
-	<t>
-	  This name is defined by the following form:
-	  <figure>
-	    <artwork>
-( prefix xmlns: "http://www.w3.org/2000/xmlns/" )
-	    </artwork>
-	  </figure>
 	</t>
       </section>
 
       <section title="space preservation">
 	<t>
 	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx
+	    <t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx
 	    style="verb">preserve</spanx> )</t>
+	    <t hangText="value"><spanx style="verb">( attribute ( xml: "space" ) "preserve" )</spanx></t>
 	  </list>
-	</t>
-	<t>
-	  This name is defined by the following form:
-	  <figure>
-	    <artwork>
-( define preserve ( attribute ( xml: "space" ) "preserve" ) )
-	    </artwork>
-	  </figure>
 	</t>
       </section>
 
@@ -423,5 +398,27 @@
       </reference>
     </references>
 
+    <section title="Shorthand examples">
+      <t>
+	Here are a couple of examples of the kind of definitions that can be used to increase
+	compactness in an XML serialization.
+      </t>
+      <t>
+	First, this specification defines general forms for XML data. But namespaces can be
+	dedicated to XML formats, with names for each element, attribute or PI:
+	<list style="symbols">
+	  <t><spanx style="verb">( define ?rfc ( subst ( pi "rfc" ( rest 0 ) ) ) )</spanx></t>
+	  <t><spanx style="verb">( define t ( subst ( element "t" ( rest 0 ) ) ) )</spanx></t>
+	</list>
+      </t>
+      <t>
+	Secondly, recurring patterns can be abbreviated:
+	<list style="symbols">
+	  <t><spanx style="verb">( define thang ( subst ( t ( attribute "hangText" ( arg 0 ) ) (
+	  rest 1 )</spanx></t>
+	  <t><spanx style="verb">( define verb ( subst ( spanx ( attribute "verb" ) ( rest 0 ) ) ) )</spanx></t>
+	</list>
+      </t>
+    </section>
   </back>
 </rfc>
