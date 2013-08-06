@@ -540,10 +540,21 @@
 	    </list>
 	  </t>
 	  <t>
-	    This form MUST be the first in a BULK stream. In any other place, this form has no
-	    semantics attached to it. This specification defines BULK 1.0. When writing a BULK
-	    stream, a processing application MUST denote {major} and {minor} by the smallest byte
-	    sequence possible.
+	    When parsing a BULK stream, a processing application MUST determine explicitely the
+	    major and minor version of the BULK specification that the stream obeys. This
+	    information MAY be exchanged out-of-band, if BULK is used to exchange a number a very
+	    small messages, where repeated headers of 8 bytes might become too big a overhead. A
+	    processing application MUST NOT assume a default version.
+	  </t>
+	  <t>
+	    If the version is expressed within a BULK stream, this form MUST be the first in the
+	    stream. In any other place, this form has no semantics attached to it. This
+	    specification defines BULK 1.0. When writing a BULK stream, an application MUST denote
+	    {major} and {minor} by the smallest byte sequence possible.
+	  </t>
+	  <t>
+	    An application writing a BULK stream to long-term storage (e.g. in a file or a database
+	    record) SHOULD include a <spanx style="verb">version</spanx> form.
 	  </t>
 	  <t>
 	    Two BULK versions with the same major version MUST share the same parsing rules and the
@@ -901,9 +912,11 @@
 
     <section title="Profiles">
       <t>
-	A profile is a sequence of expressions used as the initial abstract yield by a processing
-	application. With respect to the BULK stream, the profile is an out-of-band information,
-	usually implicit.
+	A profile is a byte sequence parsed by a processing application just after the <spanx
+	style="verb">version</spanx> form or before the first expression if there is no <spanx
+	style="verb">version</spanx> form. Thus a parser SHOULD look ahead at the beginning of a
+	stream to see if the first three bytes are <spanx style="verb">( bulk:version</spanx>. With
+	respect to the BULK stream, the profile is an out-of-band information, usually implicit.
       </t>
       <t>
 	A processing application doesn't need to include the profile in the concrete yield, as long
@@ -927,9 +940,9 @@
 	  example with a media type that dictates the profile.
 	</t>
 	<t>
-	  Otherwise, an application creating a BULK stream SHOULD include the profile after the
-	  version form. For this reason, the expressions in a profile SHOULD have idempotent
-	  semantics.
+	  Otherwise, an application writing a BULK stream in a long-term storage SHOULD include the
+	  profile after the version form. For this reason, the expressions in a profile SHOULD have
+	  idempotent semantics.
 	</t>
       </section>
 
@@ -975,7 +988,7 @@
 	  The architecture of a processing application SHOULD ensure that a malicious agent cannot
 	  abuse authority given to it to define a namespace in order to modify associations in other
 	  namespaces. Depending on the use of data structures storing BULK expressions, this could
-	  amount to giving an attacker a way to manipulate the application state. See <xref
+	  amount to giving an attacker a way to manipulate the application's state. See <xref
 	  target="robustNS"/> for an example of architecture that is resistant to that kind of
 	  attack.
 	</t>
