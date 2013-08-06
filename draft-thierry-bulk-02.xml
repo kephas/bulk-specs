@@ -87,12 +87,12 @@
 	    Lisp, Haskell and stack programming languages.
 	  </t>
 	  <t>
-	    On the other hand, a stack programming language is the canonical example of a non-uniform
-	    language. Each operator takes a number of operands from the stack. Not knowing the arity
-	    of an operator makes it impossible to continue parsing, even when its evaluation was
-	    optional to the final processing. In the design space, stack programming languages
-	    completely sacrifice uniformity to achieve one the highest combination of extensibility,
-	    compactness and speed of processing.
+	    On the other hand, a stack programming language is the canonical example of a
+	    non-uniform language. Each operator takes a number of operands from the stack. Not
+	    knowing the arity of an operator makes it impossible to continue parsing, even when its
+	    evaluation was optional to the final processing. In the design space, stack programming
+	    languages completely sacrifice uniformity to achieve one of the highest combination of
+	    extensibility, compactness and speed of processing.
 	  </t>
 	  <t>
 	    By generality, we mean the ability of a syntax to lend itself to describe any kind of
@@ -105,9 +105,9 @@
 	  </t>
 	  <t>
 	    By decentralization, we mean the ability to extend the syntax in a way that avoid naming
-	    collisions without the use of a central registry. Note that the DNS is NOT decentralized
-	    in this sense, it is distributed (it cannot work without its root servers and not even
-	    without prior knowledge of their location).
+	    collisions without the use of a central registry. Note that the DNS, as we use it, is
+	    NOT decentralized in this sense, but distributed, as it cannot work without its root
+	    servers and not even without prior knowledge of their location.
 	  </t>
 	</section>
 	<section title="State of the art">
@@ -158,14 +158,14 @@
 	  yields a sequence of expressions, which can be either atoms or forms, which are sequences
 	  of expressions. The syntax of forms is entirely uniform, without a single exception: a
 	  starting byte marker, a sequence of expressions and an ending byte marker. Among atoms,
-	  only nil (the null byte), arrays, words and fixed-sized integers have a special syntax,
-	  for efficiency purposes. Even booleans and floating-point numbers follow the uniform
-	  syntax that every other expression follow.
+	  only nil (the null byte), arrays and fixed-sized binary words have a special syntax, for
+	  efficiency purposes. Even booleans and floating-point numbers follow the uniform syntax
+	  that every other expression follow.
 	</t>
 	<t>
 	  Non uniform atoms start with a marker byte, followed by a static or dynamic number of
-	  bytes, depending on the type (none for nil, static for words and fixed-size integers,
-	  dynamic for arrays).
+	  bytes, depending on the type (none for nil, static for fixed-size binary words, dynamic
+	  for arrays).
 	</t>
 	<t>
 	  Any other atom is a reference, which consists of a namespace marker (in most of the cases,
@@ -207,7 +207,7 @@
 	<t>
 	  Furthermore, BULK expressions can be evaluated. Most expressions evaluate to themselves,
 	  but some evaluate by default to the result of a function call, making it possible to
-	  serialize data in an even more compact form, by elimination boilerplate data and repeated
+	  serialize data in an even more compact form, by eliminating boilerplate data and repeated
 	  patterns.
 	</t>
       </section>
