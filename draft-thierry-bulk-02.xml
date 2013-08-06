@@ -861,7 +861,7 @@
 	      754-2008 rules. {bits} MUST NOT have type Word8.
 	    </t>
 	    <t>
-	      Type: <spanx style="verb">Number</spanx>.
+	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Float</spanx>.
 	    </t>
 	  </section>
 
@@ -879,7 +879,7 @@
 	      as per IEEE 754-2008 rules. {bits} MUST NOT have type Word8.
 	    </t>
 	    <t>
-	      Type: <spanx style="verb">Number</spanx>.
+	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Float</spanx>.
 	    </t>
 	  </section>
 
