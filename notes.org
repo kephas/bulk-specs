@@ -16,11 +16,11 @@
       - because BULK arrays have no end markers, the payload of a BULK
         stream can constitute the end of the stream
       - an array can be skipped in constant time and mapped in memory
-   4. 32 bits word: M 4B
-   5. 64 bits word: M 8B
-   6. 128 bits word: M 16N
-   7. 8 bits unsigned integer: M 1B
-   8. 32, 64 or 128 bits unsigned integer: M Word
+   4. 8 bits word: M 1B
+   5. 16 bits word: M 2B
+   6. 32 bits word: M 4B
+   7. 64 bits word: M 8B
+   8. 128 bits word: M 16N
    9. 32, 64 or 128 bits signed integer: M Word
 
 ** BULK core namespace

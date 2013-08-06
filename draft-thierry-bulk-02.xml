@@ -401,63 +401,66 @@
 	  <t>Type: <spanx style="verb">Array</spanx></t>
 	</section>
 
-	<section title="32 bits word">
+	<section title="Binary words">
 	  <t>
-	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">word32</spanx>)</t>
-	      <t hangText="shape"><spanx style="verb">word32 4B</spanx></t>
-	    </list>
+	    A word can be interpreted either as a bits sequence or as an unsigned integer in binary
+	    notation. The choice depends on the context and the application. Actually, many
+	    processing applications may not need make any choice, as most programming language
+	    implementations actually also confuse unsigned integers and bits sequences to some
+	    extent.
 	  </t>
-	  <t>Types: <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx></t>
+	  <section title="8 bits word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">w8</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">w8 1B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word8</spanx></t>
+	  </section>
+
+	  <section title="16 bits word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">w16</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">w16 2B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word16</spanx></t>
+	  </section>
+
+	  <section title="32 bits word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">w32</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">w32 4B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx></t>
+	  </section>
+
+	  <section title="64 bits word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">w64</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">w64 8B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx></t>
+	  </section>
+
+	  <section title="128 bits word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">w128</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">w128 16B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx></t>
+	  </section>
 	</section>
 
-	<section title="64 bits word">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">word64</spanx>)</t>
-	      <t hangText="shape"><spanx style="verb">word64 8B</spanx></t>
-	    </list>
-	  </t>
-	  <t>Types: <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx></t>
-	</section>
-
-	<section title="128 bits word">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">word128</spanx>)</t>
-	      <t hangText="shape"><spanx style="verb">word128 16B</spanx></t>
-	    </list>
-	  </t>
-	  <t>Types: <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx></t>
-	</section>
-
-	<section title="Unsigned 8 bits integer">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">int8</spanx>)</t>
-	      <t hangText="shape"><spanx style="verb">int8 1B</spanx></t>
-	    </list>
-	  </t>
-	  <t>
-	    The value of this integer is the value of its contained byte.
-	  </t>
-	  <t>Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx></t>
-	</section>
-
-	<section title="Unsigned 32, 64 and 128 bits integer">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">uint</spanx>)</t>
-	      <t hangText="shape"><spanx style="verb">uint Word</spanx></t>
-	    </list>
-	  </t>
-	  <t>
-	    The value of this integer is the value of its contained word.
-	  </t>
-	  <t>Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx></t>
-	</section>
-
-	<section title="Signed 32, 64 and 128 bits integer">
+	<section title="Signed fixed-size integer">
 	  <t>
 	    <list style="hanging">
 	      <t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">sint</spanx>)</t>
@@ -837,7 +840,7 @@
 	    <t>
 	      This is a floating-point number expressed in IEEE 754-2008 binary interchange format. If
 	      {bits} is an Array, the size of its contents must be a multiple of 32 bits, as per IEEE
-	      754-2008 rules.
+	      754-2008 rules. {bits} MUST NOT have type Word8.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Number</spanx>.
@@ -855,7 +858,7 @@
 	    <t>
 	      This is a floating-point number expressed in IEEE 754-2008 decimal interchange
 	      format. If {bits} is an Array, the size of its contents must be a multiple of 32 bits,
-	      as per IEEE 754-2008 rules.
+	      as per IEEE 754-2008 rules. {bits} MUST NOT have type Word8.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Number</spanx>.
@@ -990,9 +993,9 @@
 	  sequence of bytes acting as "magic number":
 	  <list style="hanging">
 	    <t hangText="0x011001">any BULK stream</t>
-	    <t hangText="0x01100107">a BULK stream of any major version beneath 256</t>
-	    <t hangText="0x0110010701">a BULK stream of major version 1</t>
-	    <t hangText="0x0110010701070202">a BULK stream of version 1.2</t>
+	    <t hangText="0x01100104">a BULK stream of any major version beneath 256</t>
+	    <t hangText="0x0110010401">a BULK stream of major version 1</t>
+	    <t hangText="0x0110010401040202">a BULK stream of version 1.2</t>
 	  </list>
 	  </t>
 	  <t hangText="Published specification">this document</t>
