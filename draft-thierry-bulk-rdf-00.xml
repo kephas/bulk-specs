@@ -106,21 +106,22 @@
 	<t>
 	  <list style="hanging">
 	    <t hangText="name"><spanx style="verb">0x3</spanx> (mnemonic: <spanx style="verb">prefix</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( prefix {ref}:Ref {uri} )</spanx></t>
+	    <t hangText="shape"><spanx style="verb">( prefix {uri} )</spanx></t>
 	  </list>
 	</t>
 	<t>
-	  The default semantics of this form are that, first, the reference is now associated to the
-	  given URI reference and, second, within this expression's scope, a form <spanx
-	  style="verb">( {ref} {uri1}:URIString )</spanx> is equivalent to <spanx style="verb">(
-	  uriref {uri2} )</spanx>, where <spanx style="verb">{uri2}</spanx> is the concatenation of
-	  <spanx style="verb">{uri}</spanx> and <spanx style="verb">{uri1}</spanx>.
+	  <list style="hanging">
+	    <t hangText="Name's type">EagerFunction</t>
+	    <t hangText="Form's type">EagerFunction</t>
+	    <t hangText="Form's value">a function that returns a URIRef whose content is the
+	    concatenation of {uri} and its only argument (or returns {uri} if called without
+	    arguments)</t>
+	  </list>
 	</t>
 	<t>
 	  {uri} can be of type <spanx style="verb">URIString</spanx> or <spanx
 	  style="verb">URIRef</spanx>. If it is of type URIRef, the above description should be
-	  taken as if the form is of shape <spanx style="verb">( prefix {ref}:Ref ( uriref {uri} )
-	  )</spanx>.
+	  taken as if the form is of shape <spanx style="verb">( prefix ( uriref {uri} ) )</spanx>.
 	</t>
       </section>
 
@@ -128,13 +129,16 @@
 	<t>
 	  <list style="hanging">
 	    <t hangText="name"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">blank</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">blank</spanx></t>
+	    <t hangText="shape"><spanx style="verb">( blank )</spanx></t>
 	  </list>
 	</t>
 	<t>
-	  Each occurrence of <spanx style="verb">blank</spanx> has the semantics of a new blank
-	  node. If a same blank node must be used in several forms, it should be associated to a
-	  reference.
+	  <list style="hanging">
+	    <t hangText="Name's type">EagerFunction</t>
+	    <t hangText="Form's type">Expr</t>
+	    <t hangText="Form's value">a new blank node. If a same blank node must be used in
+	    several forms, it should be made the value of a name.</t>
+	  </list>
 	</t>
       </section>
 
@@ -177,13 +181,9 @@
 	  <t>
 	    <list style="hanging">
 	      <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">xmlliteral</spanx> )</t>
-	      <t hangText="shape"><spanx style="verb">xmlliteral</spanx></t>
+	      <t hangText="value"><spanx style="verb">( uriref
+	      "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral" )</spanx></t>
 	    </list>
-	  </t>
-	  <t>
-	    The expression denoted by <spanx style="verb">( uriref
-	    "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral" )</spanx> is associated to this
-	    name.
 	  </t>
 	  <t>
 	    A literal with this type SHOULD contain an XML Infoset (cf. <xref target="BULK-XML"/>).

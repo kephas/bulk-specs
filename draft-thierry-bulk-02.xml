@@ -342,7 +342,7 @@
 	<section title="starting marker byte">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="value"><spanx style="verb">0x1</spanx></t>
+	      <t hangText="marker"><spanx style="verb">0x1</spanx></t>
 	      <t hangText="mnemonic"><spanx style="verb">(</spanx></t>
 	    </list>
 	  </t>
@@ -350,7 +350,7 @@
 	<section title="ending marker byte">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="value"><spanx style="verb">0x2</spanx></t>
+	      <t hangText="marker"><spanx style="verb">0x2</spanx></t>
 	      <t hangText="mnemonic"><spanx style="verb">)</spanx></t>
 	    </list>
 	  </t>
@@ -738,14 +738,13 @@
 	      </list>
 	    </t>
 	    <t>
-	      <spanx style="verb">subst</spanx>'s value is a function of type <spanx
-	      style="verb">LazyFunction</spanx>. It returns a substitution function of type <spanx
-	      style="verb">EagerFunction</spanx>.
-	    </t>
-	    <t>
-	      The return value of this substitution function is the value of {code}. Within {code}'s
-	      specific yield, the names <spanx style="verb">arg</spanx> and <spanx
-	      style="verb">rest</spanx> are defined:
+	      <list style="hanging">
+		<t hangText="Name's type">LazyFunction</t>
+		<t hangText="Form's type">EagerFunction</t>
+		<t hangText="Form's value">A substitution function whose return value is the value
+		of {code}. Within {code}'s specific yield, the names <spanx style="verb">arg</spanx>
+		and <spanx style="verb">rest</spanx> are defined:</t>
+	      </list>
 	    </t>
 	    <section title="Argument">
 	      <t>
@@ -755,8 +754,12 @@
 		</list>
 	      </t>
 	      <t>
-		 <spanx style="verb">arg</spanx>'s value is a function that returns the element
-		 number {n} (starting at zero) of the substitution function's arguments list.
+		<list style="hanging">
+		  <t hangText="Name's type">EagerFunction</t>
+		  <t hangText="Form's type">Expr</t>
+		  <t hangText="Form's value">the element number {n} (starting at zero) of the
+		  substitution function's arguments list</t>
+		</list>
 	      </t>
 	    </section>
 	    <section title="Rest of arguments list">
@@ -767,8 +770,12 @@
 		</list>
 	      </t>
 	      <t>
-		<spanx style="verb">rest</spanx>'s value is a function that returns the substitution
-		function's arguments list without its first {n} elements.
+		<list style="hanging">
+		  <t hangText="Name's type">EagerFunction</t>
+		  <t hangText="Form's type">Expr</t>
+		  <t hangText="Form's value">the substitution function's arguments list without its
+		  first {n} elements.</t>
+		</list>
 	      </t>
 	    </section>
 	  </section>
