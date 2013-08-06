@@ -119,6 +119,9 @@
 
     : ( define ?rfc ( subst ( pi "rfc" ( rest 0 ) ) ) )
 
+*** Package?
+    RDF + Simple XML ( + XPath )
+
 ** XPath namespace
    urn:uuid:2cdad14a-4e46-5f2d-b3e2-e105ebafa5f8 (BULK
    http://www.w3.org/TR/1999/REC-xpath-19991116)
