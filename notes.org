@@ -181,5 +181,29 @@
 
     : (:A(:B:C:D))
 
+** MeTOD: Media type Optimal Description
+   - type as UUID
+     - Type = w128 UUID
+   - atomic type
+     - html
+     - jpeg
+   - composite type
+     - syntax
+       - ( xml xhtml )
+	 - multiple vocabularies
+	   - ( xml xhtml mathml )
+     - encoding
+       - ( gzip tar )
+       - ( base64 zip )
+   - complex structures
+     - ( s/mime ( multipart ( alt txt html ) zip ) openpgp )
+   - accept patterns
+     - ( xml * )
+     - ( xml xhtml * )
+   - semantics dictated by type
+     - for xml, the first subtype MUST be the type for the document
+       element
+     - for MIME, order of parts
+
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
