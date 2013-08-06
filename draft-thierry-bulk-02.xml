@@ -355,6 +355,21 @@
 	    </list>
 	  </t>
 	</section>
+
+	<section title="Difference between sequence and form">
+	  <t>
+	    Beware that although the specific yield of a form is a sequence of expressions, it is
+	    not the same thing as a byte sequence described as a sequence of expressions. Let's
+	    examine several forms of the shape <spanx style="verb">( foo {seq} )</spanx>.
+	  </t>
+	  <t>
+	    In the first form, {seq} is a sequence of 3 expressions: <spanx style="verb">( foo nil
+	    nil nil )</spanx>. In the second form, {seq} is a single expression, and that expression
+	    is an atom: <spanx style="verb">( foo nil )</spanx>. But in the third form, {seq} is
+	    also a single expression, and that expression is a form: <spanx style="verb">( foo ( nil
+	    nil nil ) )</spanx>.
+	  </t>
+	</section>
       </section>
 
       <section title="Atoms">
