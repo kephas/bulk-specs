@@ -187,7 +187,9 @@
 	  </t>
 	  <t>
 	    A literal with this type SHOULD contain a BULK serialization of XML (cf. <xref
-	    target="BULK-XML"/>).
+	    target="BULK-XML"/>). An application MUST NOT use an array for this literal for anyhting
+	    else than a string that belongs to the lexical space defined for <eref
+	    target="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"/>.
 	  </t>
 	</section>
 
@@ -201,7 +203,7 @@
 	  </list>
 	</t>
 	<t>
-	  <spanx style="verb">{triples}</spanx> must be a sequnce of <spanx style="verb">(
+	  <spanx style="verb">{triples}</spanx> must be a sequence of <spanx style="verb">(
 	  {subj}:URIRef {pred}:URIRef {obj} )</spanx>.
 	</t>
       </section>
@@ -360,27 +362,28 @@
     <section title="Example: RDF Schema vocabulary">
       <figure>
 	<preamble>Here is the text notation of a BULK stream defining references for each element in
-	the RDF Schema vocabulary. The whole stream is 429 bytes in length.</preamble>
+	the RDF Schema vocabulary. The whole stream is 444 bytes in length.</preamble>
 	<artwork>
 ( bulk:version 1 0 )
 ( bulk:ns 32 rdf )
 ( bulk:ns* 33 rdfs )
-( prefix rdfs:schema "http://www.w3.org/2000/01/rdf-schema#" )
+( define rdfs:schema ( prefix "http://www.w3.org/2000/01/rdf-schema#" ) )
 ( define rdfs:resource ( rdfs:schema "Resource" ) )
 ( define rdfs:class ( rdfs:schema "Class" ) )
 ( define rdfs:subclassof ( rdfs:schema "subClassOf" ) )
-( define rdfs:subpropertyof (rdfs:schema "subPropertyOf" ) )
-( define rdfs:comment (rdfs:schema "comment" ) )
-( define rdfs:label (rdfs:schema "label" ) )
-( define rdfs:domain (rdfs:schema "domain" ) )
-( define rdfs:range (rdfs:schema "range" ) )
-( define rdfs:seealso (rdfs:schema "seeAlso" ) )
-( define rdfs:isdefinedby (rdfs:schema "isDefinedBy" ) )
-( define rdfs:literal (rdfs:schema "Literal" ) )
-( define rdfs:container (rdfs:schema "Container" ) )
-( define rdfs:containermembershipproperty (rdfs:schema "ContainerMembershipProperty" ) )
-( define rdfs:member (rdfs:schema "member" ) )
-( define rdfs:datatype (rdfs:schema "Datatype" ) )
+( define rdfs:subpropertyof ( rdfs:schema "subPropertyOf" ) )
+( define rdfs:comment ( rdfs:schema "comment" ) )
+( define rdfs:label ( rdfs:schema "label" ) )
+( define rdfs:domain ( rdfs:schema "domain" ) )
+( define rdfs:range ( rdfs:schema "range" ) )
+( define rdfs:seealso ( rdfs:schema "seeAlso" ) )
+( define rdfs:isdefinedby ( rdfs:schema "isDefinedBy" ) )
+( define rdfs:literal ( rdfs:schema "Literal" ) )
+( define rdfs:container ( rdfs:schema "Container" ) )
+( define rdfs:containermembershipproperty ( rdfs:schema "ContainerMembershipProperty" ) )
+( define rdfs:member ( rdfs:schema "member" ) )
+( define rdfs:datatype ( rdfs:schema "Datatype" ) )
+( define rdfs:schema* ( rdfs:schema ) )
 	</artwork>
       </figure>
 
@@ -395,25 +398,25 @@
 ( turtle
   ( rdfs:resource
     ( rdf:type rdfs:class )
-    ( rdfs:isdefinedby rdfs:schema )
+    ( rdfs:isdefinedby rdfs:schema* )
     ( rdfs:label "Resource" )
     ( rdfs:comment "The class resource, everything." ) )
   ( rdfs:class
     ( rdf:type rdfs:class )
-    ( rdfs:isdefinedby rdfs:schema )
+    ( rdfs:isdefinedby rdfs:schema* )
     ( rdfs:label "Class" )
     ( rdfs:comment "The class of classes." )
     ( rdfs:subclassof rdfs:resource ) )
   ( rdfs:subclassof
     ( rdf:type rdf:property )
-    ( rdfs:isdefinedby rdfs:schema )
+    ( rdfs:isdefinedby rdfs:schema* )
     ( rdfs:label "subClassOf" )
     ( rdfs:comment "The subject is a subclass of a class." )
     ( rdfs:range rdfs:class )
     ( rdfs:domain rdfs:class ) )
   ( rdfs:subpropertyof
     ( rdf:type rdf:property )
-    ( rdfs:isdefinedby rdfs:schema )
+    ( rdfs:isdefinedby rdfs:schema* )
     ( rdfs:label "subPropertyOf" )
     ( rdfs:comment "The subject is a subproperty of a property." )
     ( rdfs:range rdf:property )
