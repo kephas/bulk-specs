@@ -206,40 +206,34 @@
      - for MIME, order of parts
 
 ** Dates namespace
-   - Int3 := Int | Int Int | Int Int Int
+   - Int123 := Int | Int Int | Int Int Int
+   - IntsF := Int* ( Float | Int )
    - Time = Date | TimeOfDay
-   - Duration := Int* ( Float | Int )
 
 
-   1. ( calendar Int3 )
-   2. ( weekdate Int3 )
+   1. ( calendar Int123 )
+   2. ( weekdate Int123 )
    3. ( ordinal Int Int )
-   4. ( time Duration )
+   4. ( time IntsF )
    5. ( point Date TimeOfDay )
    6. ( zulu Time )
    7. ( offset TimeOfDay Time )
-   8. ( years Duration )
-   9. ( months Duration )
-   10. ( days Duration )
-   11. ( hours Duration )
-   12. ( minutes Duration )
-   13. ( seconds Duration )
-   14. ( interval {exprs} )
+   8. ( years IntsF )
+   9. ( months IntsF )
+   10. ( days IntsF )
+   11. ( hours IntsF )
+   12. ( minutes IntsF )
+   13. ( seconds IntsF )
+   14. ( weeks Int )
+   15. ( interval {exprs} )
        - {exprs} = Time Time | Duration Time | Time Duration |
          Duration
-   15. ( repeat Int Interval ) / ( repeat Interval )
-   16. ( julian Number )
-       - Int = day, Float = date
-   17. ( unix-time SInt )
-   18. ( unix-microtime SInt )
-   19. ( unix-nanotime SInt )
-   20. ( tng-stardate Int Int )
-
-
-   BULK serializations of single points in time are notably bigger
-   than a string containing their ISO 8601 notation. Such times SHOULD
-   be serialized as offsets against an epoch, except where simplicity
-   of implementation is wanted.
+   16. ( repeat Int Interval ) / ( repeat Interval )
+   17. ( julian Number )
+   18. ( unix-time SInt )
+   19. ( tng-stardate Int Int )
+   20. ( anno-mundi Int123 )
+   21. ( anno-hegirae Int123 )
 
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
