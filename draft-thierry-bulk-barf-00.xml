@@ -69,7 +69,7 @@
 	  Some of these formats have a few fixed- or limited-length fields that became or will
 	  become obsolete in time. The ar format, for example, suffers from the Year 2038 problem
 	  and cannot store long file names. Various implementations have used different incompatible
-	  extensions to store long file name.
+	  extensions to store long file names.
 	</t>
 	<t>
 	  So we propose yet another archive format, that uses an efficient but extensible syntax, so
@@ -80,15 +80,16 @@
       <section title="Format overview">
 	<t>
 	  A BARF file is basically a set of metadata fields followed by data entries. Each entry
-	  consist of a set of metadata fields followed by its content. The interesting property of
-	  using BULK is that any portion of that structure is dynamic (not fixed metadata fields,
-	  any archive or entry can even have a single null byte as its set of metadata when no
-	  metadata is needed) and can be enclosed in a BULK structure to add features.
+	  consists of a set of metadata fields followed by its content. The interesting property of
+	  using BULK is that any portion of that structure is dynamic (no fixed metadata fields, and
+	  an entry without metadata is serialized as its content, as with BULK, the entry and its
+	  content cannot be confused with each other) and anything can be enclosed in a BULK
+	  structure to add features.
 	</t>
 	<t>
 	  Metadata fields are just a BULK expression, which means that any ad hoc or standard BULK
 	  vocabulary can be used in an efficient way as metadata. Mutually incompatible metadata
-	  vocabulary could even be stored alongside each other for legacy support, if need be.
+	  vocabularies could even be stored alongside each other for legacy support, if need be.
 	</t>
 	<t>
 	  The archive file can be compressed or encrypted by an outside tool (producing a
@@ -104,8 +105,8 @@
 	  from a simple format to a full-featured one, whereas existing formats usually add complex
 	  extensions that fail to be widely adopted (to add support for layers, transparency,
 	  different compression or metadata). Although BARF would probably be ill-suited for
-	  playable audio and video, it would still provide a perfect fit for the storage a raw audio
-	  and video for editing programs.
+	  playable audio and video, it would still provide a perfect fit for the storage of raw
+	  audio and video for editing programs.
 	</t>
       </section>
 
