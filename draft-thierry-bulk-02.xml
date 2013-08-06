@@ -1221,6 +1221,49 @@
       </section>
     </section>
 
+    <section title="Semantic leeway">
+      <t>
+	Atoms and forms have semantics and sometimes evaluation rules defined by this specification,
+	but as long as parsing rules are maintained, a processing application MAY use any form and
+	atom with different semantics and evaluation rules, as long as it is within the confines of
+	a form that makes this semantics change explicit.
+      </t>
+      <t>
+	For example, if an application needs to store a big number of unsigned integers and the
+	overhead of the two marker bytes is too big, the application SHOULD bypass the default
+	semantics of words and define a form in which they are taken as two's-complement
+	notation. The following form could be interpreted as the sequence of integers (-1358102763
+	35467 -100237):
+	<figure>
+	  <artwork>
+( foo:sints w32 0xAF0CFF15 w16 0x8A8B w32 0xFFFE7873 )
+	  </artwork>
+	</figure>
+      </t>
+      <t>
+	If an overhead of one byte per integer is still too big and the integers all have the same
+	size, an application MAY pack them into an array. The sequence of integers (-14376 -235 4567
+	-31299 42) could be serialized as:
+	<figure>
+	  <artwork>
+( foo:array16 # w8 0xA 0xC7D8FF1511D785BD002A )
+	  </artwork>
+	</figure>
+      </t>
+      <t>
+	BULK's syntax also enables hybrid solutions, for example by packing together into an array
+	the sequences of same-size integers, among a sequence of words. So the sequence of integers
+	(-1358102763 35467 -100237 -14376 -235 4567 -31299 42 -8449839282860229000) could be
+	serialized as:
+	<figure>
+	  <artwork>
+( foo:flatten w32 0xAF0CFF15 w16 0x8A8B w32 0xFFFE7873 ( foo:array16 # w8 0xA 0xC7D8FF1511D785BD002A
+) w64 0x8ABC23F0FFF98283 )
+	  </artwork>
+	</figure>
+      </t>
+    </section>
+
   </back>
 </rfc>
 
