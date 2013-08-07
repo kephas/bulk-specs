@@ -191,6 +191,15 @@
 	  the expression number N in {entries-metadata} describes the expression number N in
 	  {entries}.
 	</t>
+	<t>
+	  When the stack form is in the abstract yield, this has the property that if the last entry
+	  is an Array, the actual payload constitutes the end of the BULK stream. This can make it
+	  possible for BULK-unaware programs to read and/or write that payload easily.
+	</t>
+	<t>
+	  Stacking also makes the addition of a metadata-carrying entry or a metadata-less entry an
+	  append-only operation.
+	</t>
       </section>
 
       <section title="Payload with metadata">
