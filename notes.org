@@ -286,11 +286,11 @@
    20. ( offsets Int+ )
        - base is the first byte after {metadata}
    21. ---
-   22. ( hard-link Path )
-   23. ( sym-link Path )
-   24. ( char-dev {??} )
-   25. ( block-dev {??} )
-   26. ( directory {name} )
+   22. ( hard-link Path nil )
+   23. ( sym-link Path nil )
+   24. ( char-dev {??} nil )
+   25. ( block-dev {??} nil )
+   26. ( directory {name} nil )
    27. ( known-size {size}:Int {bulk} )
        - {size} is number of bytes in {bulk}
        - kind of an explicitly parseable array
