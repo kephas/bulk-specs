@@ -156,6 +156,59 @@
 	elements together with metadata.
       </t>
 
+      <section title="Packing">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x1</spanx> (mnemonic: <spanx
+	    style="verb">pack</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( pack {metadata}:Expr {entries} )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This packs archive entries together as a form. {metadata} holds metadata about the whole
+	  pack. In the context of {metadata}, <spanx style="verb">rdf:this-resource</spanx>
+	  designates the whole pack.
+	</t>
+      </section>
+
+      <section title="Stacking">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x2</spanx> (mnemonic: <spanx
+	    style="verb">stack</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( stack {metadata}:Expr {entries-metadata} ) {entries}</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This stacks archive entries together as a sequence, for the cases where it is not
+	  appropriate for entries to belong to a single expression. {metadata} holds metadata about
+	  the whole stack. In the context of {metadata}, <spanx
+	  style="verb">rdf:this-resource</spanx> designates the whole stack. {entries-metadata} MUST
+	  be a sequence of expressions of length equal or inferior to the number of expressions in
+	  {entries}. Each expression in {entries-metadata} holds metadata about a single entry of
+	  the stack. In the context of such a metadata expression, <spanx
+	  style="verb">rdf:this-resource</spanx> designates the described stack entry. By default,
+	  the expression number N in {entries-metadata} describes the expression number N in
+	  {entries}.
+	</t>
+      </section>
+
+      <section title="Payload with metadata">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x3</spanx> (mnemonic: <spanx
+	    style="verb">describe</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( describe {metadata} {payload}:Expr )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This form associates arbitrary metadata with an arbitrary payload. It is intended to
+	  constitute most entries in BARF archives. In the context of {metadata}, <spanx
+	  style="verb">rdf:this-resource</spanx> designates the payload.
+	</t>
+	<t>Type: <spanx style="verb">GBCForm</spanx></t>
+      </section>
+
     </section>
 
     <section title="Security Considerations" anchor="sec">
