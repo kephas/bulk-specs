@@ -218,6 +218,51 @@
 	<t>Type: <spanx style="verb">GBCForm</spanx></t>
       </section>
 
+      <section title="BULK stream embedding">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x4</spanx> (mnemonic: <spanx
+	    style="verb">bulk-stream</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( bulk-streamm {payload} )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This form makes it possible to include a complete BULK stream without modification, as
+	  {payload}.
+	</t>
+	<t>Type: <spanx style="verb">GBCForm</spanx></t>
+      </section>
+
+      <section title="Compressed data">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx
+	    style="verb">compressed</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( compressed {method}:Expr {payload}:Array nil )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This form encapsulates a compressed payload. This specification doesn't define names to
+	  express a compression method.
+	</t>
+	<t>Type: <spanx style="verb">GBCForm</spanx></t>
+      </section>
+
+      <section title="Encrypted data">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
+	    style="verb">encrypted</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( encrypted {method}:Expr {payload}:Array nil )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This form encapsulates an encrypted payload. This specification doesn't define names to
+	  express an encryption method.
+	</t>
+	<t>Type: <spanx style="verb">GBCForm</spanx></t>
+      </section>
+
     </section>
 
     <section title="Security Considerations" anchor="sec">
