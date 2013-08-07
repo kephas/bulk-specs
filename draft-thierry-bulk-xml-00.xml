@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date day="4" month="August" year="2013" />
+    <date day="7" month="August" year="2013" />
     <keyword>binary</keyword>
     <keyword>xml</keyword>
 
@@ -230,7 +230,7 @@
       <reference anchor="BULK1">
 	<front>
 	  <title>Binary Uniform Language Kit 1.0</title>
-	  <date day="2" month="August" year="2013"/>
+	  <date day="7" month="August" year="2013"/>
 	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
 	    <organization>Thierry Technologies</organization>
 	    <address>
