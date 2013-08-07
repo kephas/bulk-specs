@@ -128,6 +128,26 @@
       </section>
     </section>
 
+    <section title="Guaranteed Backward Compatibility">
+      <t>
+	This specification defines the notion of Guaranteed Backward Compatibility (GBC). It applies
+	to forms that carry a main payload with additional metadata. A form that obeys the rules of
+	GBC has the type GBCForm.
+      </t>
+      <t>
+	A GBCForm has the shape <spanx style="verb">( Ref {arguments} {next}:Expr )</spanx>. If the
+	payload of a GBCForm is readable without knowledge of that form, then {next} MUST be that
+	payload. Otherwise, {next} MUST be nil.
+      </t>
+      <t>
+	For example, a GBC-compliant checksum form could have the shape <spanx style="verb">( crc32c
+	{crc}:Word32 {payload} )</spanx>, where {crc} is the checksum of the byte sequence
+	{payload}. On the other hand, a GBC-compliant encryption form, where obviously the payload
+	is unreadable without proper knowledge of the form, could have the shape <spanx
+	style="verb">( encrypt {payload} nil )</spanx>.
+      </t>
+    </section>
+
     <section title="BULK archive namespace">
       <t>
 	The archive namespace (mnemonic: <spanx style="verb">barf</spanx>) is an official namespace

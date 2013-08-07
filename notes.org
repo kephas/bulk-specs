@@ -242,16 +242,16 @@
 	- ( Metadatum+ )
 	- any other BULK expression suited as metadata
       - {entries} can be one or several arrays instead of BULK
-   2. ( describe {metadata} {entries-metadata} ) {entries}
+   2. ( stack {metadata} {entries-metadata} ) {entries}
       - to make BULK-unaware append possible
       - {entries-metadata} means {entries} can be a single Array and
         the content of the entry is the end of the BULK file
-   3. ( entry {metadata} {content} )
+   3. ( describe {metadata} {content} )
       - {metadata} as in pack
       - {content} can be an Array (e.g. a file's content) or BULK
    4. ( bulk-stream {stream} )
       - to include a BULK stream in a pack without a surrounding array
-   5. ( compressed {method} Array )
+   5. ( compressed {method} Array nil )
    6. --- Metadatum ---
    7. ( path {components} )
       - by design, there is no way to express an absolute FS path
@@ -294,6 +294,10 @@
        - {size} is number of bytes in {bulk}
        - kind of an explicitly parseable array
        - alternative to =offsets=
+
+*** Guaranteed Backward Compatibility
+    - pass-through :: ( Ref {arguments} {payload}:Expr )
+    - opaque :: ( Ref {arguments} nil )
 
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
