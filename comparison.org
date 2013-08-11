@@ -1,0 +1,234 @@
+#+TITLE: Comparison of JSON, BSON, MsgPack, CBOR and BULK
+
+* Architecture
+  The main architectural differences are the following:
+
+  - structure
+    - JSON is a mapping from names to values (and complex structures use
+      mappings as values, recursively)
+      - BSON forces the top-level data structure to be a mapping
+    - the document in MsgPack and CBOR is a length-carrying data
+      structre
+    - a BULK stream is just a sequence of values (and complex
+      structures use sequences as values, recursively)
+  - identifiers
+    - JSON use text names, effectively creating a tree of directories
+      with named entries
+      - true for mappings in BSON, MsgPack and CBOR
+    - MsgPack, CBOR and BULK don't mandates the use of names
+      - a stream could be made almost entirely of data, except for a
+        few marker bytes for nesting and primitive types, when a prior
+        agreement on a schema exists
+      - names in MsgPack and CBOR are strings
+      - names in BULK are 136bits collision-free words, represented in
+        the stream as 16bits markers
+
+
+  Now, why don't JSON users already use number as identifiers for
+  compactness? I see two reasons.
+
+  First, it'd make JSON data far less readable, although you could
+  easily use a schema to transform any number-id JSON document to a
+  text-id equivalent. But an error in the use of the schema in the
+  document makes it impossible to render correctly (this is related to
+  the next issue).
+
+  Second and probably more important: naming collisions. You cannot
+  store number-id JSON documents and keep the ability to insert a
+  document within another, because their ids are likely to clash, thus
+  yielding an ambiguous sturcture. Naming collisions are also possible
+  with text, but they are far less likely and immensely easier to
+  debug.
+
+  It is important to note that naming collisions are possible and are
+  bound to happen if you try to use JSON to store arbitatray complex
+  aggregated data. But it is neither a capability nor an intended use
+  case of JSON. JSON itself cannot store arbitrary binary data without
+  some encoding like base64. BSON is actually even limited in the size
+  of documents (to 4Gb).
+
+  Contrary to JSON, BSON, MsgPack or CBOR, a BULK stream doesn't need
+  a schema to be transformed to a human-readable structure, because
+  number-ids are unique (you just need a mapping between those numbers
+  and readable names, but that mapping is of no concern to
+  applications using the data for anything else than presenting the
+  wire format to humans). So you actually have both compactness and
+  the potential readability of JSON.
+
+* Feature grid
+  |                         | JSON   | BSON     | MsgPack  | CBOR     | BULK   |
+  |-------------------------+--------+----------+----------+----------+--------|
+  | decentralized           | no     | no       | no       | no       | yes    |
+  | streamable*             | yes    | no       | no       | yes      | yes    |
+  | smallest unit processed | byte   | byte     | bit      | bit      | byte   |
+  |-------------------------+--------+----------+----------+----------+--------|
+  | file size limit         | no     | 4G bytes | no       | no       | no     |
+  | container size limit    | no     | 4G bytes | 4G items | 4G items | no     |
+  |-------------------------+--------+----------+----------+----------+--------|
+  | smallest padding        | 1 byte | 2 bytes  | 1 byte   | 1 byte   | 1 byte |
+  | most probable padding   | 0x20   | ?        | 0x0      | 0x0      | 0x0    |
+  |-------------------------+--------+----------+----------+----------+--------|
+  | future extension slots  | n/a    | 235      | 13       | 254*     | 8.7e40 |
+  |-------------------------+--------+----------+----------+----------+--------|
+  
+  - streamable means being able to be sent before all data is known
+  - CBOR has actually 1.8e19 names avalaible for extension, but only
+    if the size of wire data is allowed to get bigger. Some names will
+    take 3, 5 or 9 bytes and the first extensions will get the shorter
+    names.
+
+* Wire data
+  Let's compare a few simple examples. The data in the table is the
+  size of the example in bytes.
+
+  
+  | format      |  1 |  2 |  3 |
+  |-------------+----+----+----|
+  | JSON        | 16 | 32 | 28 |
+  | BSON        | 21 | 47 | 25 |
+  | MsgPack     | 13 | 23 | 18 |
+  | CBOR        | 13 | 21 | 18 |
+  | BULK        | 14 | 27 | 12 |
+  | BULK*       | 10 | 23 |  8 |
+  | naive BULK  | 20 | 31 | 27 |
+  | naive BULK* | 16 | 27 | 23 |
+
+
+  The BULK* entries are 4 bytes shorter by dispensing with the
+  enclosing sequence and the marker which would be the idiomatic way
+  of doing with BULK. That is, instead of containing =( json name
+  value name value )=, it contains =name value name value=.
+
+  This idiomatic way provide type-safety and makes it possible to
+  recognize the binary content as BULK-encoded JSON, so this is an
+  added feature compared to the other formats. The BULK* entries make
+  it possible to compare them without this added feature.
+
+  The "naive BULK" entries store mapping names as string instead of
+  globally unique identifiers.
+
+** JSON
+   1: ={"hello":"world}=
+
+   2: ={"BSON":["awesome", 5.05, 1986]}=
+
+   3: ={"compact": true,"schema":0}=
+
+** BSON
+   #+BEGIN_example
+   16 00 00 00  02  h  e  l 
+    l  o 00 06  00 00  w  o
+    r  l  d 00  00
+   #+END_example
+
+   #+BEGIN_example
+   31 00 00 00  04  B  S  O
+    N 00 26 00  00 00 20 00
+   08 00 00 00   a  w  e  s
+    o  m  e 00  11 00 33 33
+   33 33 33 33  14 40 01 02
+   00 CE 07 00  00 00 00
+   #+END_example
+
+   #+BEGIN_example
+   XX 00 00 00  08  c  o  m
+    p  a  c  t  00 01 10  s
+    h  e  m  a  00 00 00 00
+   00
+   #+END_example
+
+** MsgPack
+   #+BEGIN_example
+   81 A5  h  e   l  l  o A5
+    w  o  r  l   d
+   #+END_example
+
+   #+BEGIN_example
+   81 A4  B  S   O  N 93 A7
+    a  w  e  s   o  m  e CA
+   IE EE 07 54  CD 07 C2
+   #+END_example
+
+   #+BEGIN_example
+   82 A7  c  o   m  p  a  c
+    t C7 A6  s   c  h  e  m
+    a 00
+   #+END_example
+
+** CBOR
+   #+BEGIN_example
+   A1 65  h  e   l  l  o 65
+    w  o  r  l   d
+   #+END_example
+
+   #+BEGIN_example
+   A1 64  B  S   O  N 83 67
+    a  w  e  s   o  m  e F9
+   IE EE 1F 07  C2
+   #+END_example
+
+   #+BEGIN_example
+   A2 67  c  o   m  p  a  c
+    t F5 66  s   c  h  e  m
+    a 00
+   #+END_example
+
+** BULK
+   #+BEGIN_example
+   01 20 01 21  01 03 04 05
+    w  o  r  l   d 02
+   #+END_example
+
+   #+BEGIN_example
+   01 20 01 21  02 01 03 04
+   07  a  w  e   s  o  m  e
+   01 20 22 05  IE EE 02 05
+   07 C2 02
+   #+END_example
+
+   #+BEGIN_example
+   01 20 01 21  03 20 02 21
+   04 04 00 02
+   #+END_example
+
+*** Profile
+    These examples are intended to be used with the following profile
+    (*this is not a schema*, as it is *not needed to parse or use* the
+    data):
+    #+BEGIN_src lisp
+    ( ns 20 {json} )
+    ( ns 21 {foo} )
+    ( define foo:1 "hello" )
+    ( define foo:2 "BSON" )
+    ( define foo:3 "compact" )
+    ( define foo:4 "schema" )
+    #+END_src
+
+** naive BULK
+   #+BEGIN_example
+   01 20 01 03  04 05  h  e 
+    l  l  o 03  04 05  w  o
+    r  l  d 02
+   #+END_example
+
+   #+BEGIN_example
+   01 20 01 03  04 04  B  S
+    O  N 03 04  07  a  w  e
+    s  o  m  e  01 20 22 05
+   IE EE 02 05  07 C2 02
+   #+END_example
+
+   #+BEGIN_example
+   01 20 01 03  04 07  c  o
+    m  p  a  c   t 20 02 03
+   04 06  s  c   h  e  m  a
+   04 00 02
+   #+END_example
+
+*** Profile
+    These examples are intended to be used with the following profile
+    (*this is not a schema*, as it is *not needed to parse or use* the
+    data):
+    #+BEGIN_src lisp
+    ( ns 20 {json} )
+    #+END_src
