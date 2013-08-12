@@ -303,3 +303,24 @@
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
 
+* Redesign?
+** stdlib
+   | marker | shape                | notes                 |
+   |--------+----------------------+-----------------------|
+   |  00−3F | {int}                |                       |
+   |  40−7F | smallarray {content} | size = (marker && 3F) |
+   |     80 | nil                  |                       |
+   |     81 | (                    |                       |
+   |     82 | )                    |                       |
+   |     83 | array Int {content}  |                       |
+   |     84 | w8 1B                |                       |
+   |     85 | w16 2B               |                       |
+   |     86 | w32 4B               |                       |
+   |     87 | w64 8B               |                       |
+   |     88 | w128 16B             |                       |
+   |     89 | sint Word            |                       |
+   |        |                      |                       |
+
+   - smallarray overhead: 1 byte (1.6−50%)
+   - array of size 64−255 overhead: 3 bytes (1.2−4.7%)
+   - array of size 256+ overhead: 4 bytes (0.006−1.6%)
