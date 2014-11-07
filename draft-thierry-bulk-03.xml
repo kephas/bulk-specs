@@ -15,7 +15,7 @@
 
 <rfc ipr="trust200902"
      category="exp"
-     docName="draft-thierry-bulk-02"
+     docName="draft-thierry-bulk-03"
      xmlns:x="http://purl.org/net/xml2rfc/ext">
   <x:feedback template="mailto:pierre@nothos.net"/>
   <front>
@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date day="7" month="August" year="2013" />
+    <date day="" month="" year="2014" />
     <keyword>binary</keyword>
 
     <abstract>
@@ -46,11 +46,11 @@
         <t>
           This specification aims at finding an original trade-off between uniformity, generality,
           extensibility, decentralization, compactness and processing speed for a data format. It is
-          our opinion that every widely used existing format occupy a different position in the
-          solution space for formats, hence this new design. It is also our opinion that most of
-          those existing formats constitute an optimal solution for their specific use case, either
-          in a absolute sense, or at least at the time of their design. But the ever-changing field
-          of IT now faces new challenges that call for a new approach.
+          our opinion that every widely used existing format occupy a different position than this
+          one in the solution space for formats, hence this new design. It is also our opinion that
+          most of those existing formats constitute an optimal solution for their specific use case,
+          either in a absolute sense, or at least at the time of their design. But the ever-changing
+          field of IT now faces new challenges that call for a new approach.
         </t>
 	<t>
 	  In particular, whereas the previous trend for Internet and Web standards and programming
@@ -113,7 +113,7 @@
 	<section title="State of the art">
 	  <t>
 	    Uniformity, generality and extensibility are usually highly-valued traits in formats
-	    design. Programming languages obviouly feature them foremost, although their generality
+	    design. Programming languages obviously feature them foremost, although their generality
 	    usually stops at what they are supposed to express: procedures. Most of them are
 	    ill-suited to represent arbitrary data, but notable exceptions include Lisp (where "code
 	    is data") and Javascript, from which a subset has been extracted to exchange data, JSON,
@@ -164,8 +164,7 @@
 	</t>
 	<t>
 	  Non uniform atoms start with a marker byte, followed by a static or dynamic number of
-	  bytes, depending on the type (none for nil, static for fixed-size binary words, dynamic
-	  for arrays).
+	  bytes, depending on the type.
 	</t>
 	<t>
 	  Any other atom is a reference, which consists of a namespace marker (in most of the cases,
@@ -198,7 +197,7 @@
 	      namespace and every vocabulary would be parsed by the same mechanisms.
 	    </t>
 	    <t>
-	      Whether a content must be stored as-is instead of serialized or a highly-optimized ad
+	      Whenever a content must be stored as-is instead of serialized or a highly-optimized ad
 	      hoc serialization exists for some data, anything can always be stored within an
 	      array. They can contain arbitray bytes and there is no limit to their size.
 	    </t>
@@ -1049,10 +1048,8 @@
       <t>
 	The original author of this specification read <eref
 	target="http://www.schnada.de/grapt/eriknaggum-xmlrant.html">Erik Naggum's famous rant about
-	XML</eref> several years before, and it may well have unconsciouly influenced this
-	design. He happened to stumble upon it again while writing the earliest draft of this
-	specification and it struck him how much it embodies Erik's ideas. In any case, this format
-	is dedicated to Erik.
+	XML</eref> several years before, and while forgotten as such, it clearly was the seed that
+	slowly bloomed into the design of BULK. This format is dedicated to Erik.
       </t>
     </section>
   </middle>
@@ -1079,6 +1076,7 @@
           <title>
 	    IANA Charset Registry (archived at):
           </title>
+	  <author/>
 	  <date/>
         </front>
       </reference>
@@ -1150,6 +1148,7 @@
       <reference anchor="protobuf" target="https://developers.google.com/protocol-buffers/">
 	<front>
 	  <title>Protocol Buffers</title>
+	  <author/>
 	  <date month="July" year="2008"/>
 	</front>
       </reference>
