@@ -1,0 +1,45 @@
+#+TITLE: Parsing BULK
+#+OPTIONS: toc:nil num:nil
+
+* Jump table
+  Parsing a BULK stream means parsing a sequence of
+  expressions. Parsing an expression means reading a *marker byte* and
+  parsing the corresponding payload.
+
+  Bits and bytes are in big-endian order.
+
+  |    marker | action                                                                       |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x0 | Return nil                                                                   |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x1 | Start sequence                                                               |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x2 | End sequence                                                                 |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x3 | Parse an expression (must be an integer);                                    |
+  |           | read as many bytes and return them as an array                               |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x4 | Read the next byte as an 8 bits unsigned integer and return it               |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x5 | Read the next 2 bytes as a 16 bits unsigned integer and return it            |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x6 | Read the next 4 bytes as a 32 bits unsigned integer and return it            |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x7 | Read the next 8 bytes as a 64 bits unsigned integer and return it            |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x8 | Read the next 16 bytes as a 128 bits unsigned integer and return it          |
+  |-----------+------------------------------------------------------------------------------|
+  |       0x9 | Parse an expression (must be an integer);                                    |
+  |           | parse its value as two's complement notation and return a signed integer     |
+  |-----------+------------------------------------------------------------------------------|
+  |   0xA-0xF | Error                                                                        |
+  |-----------+------------------------------------------------------------------------------|
+  | 0x10-0xFE | Read the next byte; return a reference object:                               |
+  |           | its name field is that byte as an 8 bits unsigned integer                    |
+  |           | its namespace field is the marker byte as an 8 bits unsigned integer         |
+  |-----------+------------------------------------------------------------------------------|
+  |      0xFF | Read bytes until a byte is different than 0xFF and treat those bytes,        |
+  |           | including the first marker 0xFF, as an unsigned integer;                     |
+  |           | read the next byte as an 8 bits unsigned integer; return a reference object: |
+  |           | its namespace and name fields are the two integers                           |
+  |-----------+------------------------------------------------------------------------------|
