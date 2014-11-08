@@ -827,7 +827,7 @@
 	  <t>
 	    In the text notation of a BULK stream, a decimal integer represent the smallest byte
 	    sequence that is represented by this integer. For example, <spanx style="verb">( 31 256
-	    )</spanx> is a notation for the bytes <spanx style="verb">0x1 0x7 0x1F 0x8 0x0 0x0 0x1 0x0
+	    )</spanx> is a notation for the bytes <spanx style="verb">0x1 0x4 0x1F 0x5 0x1 0x0
 	    0x2</spanx>.
 	  </t>
 
