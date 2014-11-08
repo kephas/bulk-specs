@@ -75,13 +75,13 @@
 	style="verb">stringenc</spanx> form can appear.
       </t>
       <t>
-	An application writing Simple XML data SHOULD use <spanx style="verb">rdf:prefix</spanx> to
-	denote element and attribute prefixed names and arrays for unprefixed names. The semantics
-	of the <spanx style="verb">rdf:prefix</spanx> form are application-dependent; an application
-	could choose to evaluate it without changing its value beforehand, thus using expanded names
-	(cf. <xref target="XML-NAMES10"/> and <xref target="XML-NAMES11"/>), or follow the <xref
-	target="XML-INFOSET">XML Infoset</xref> principle of keeping the namespace and local part of
-	the name separate.
+	An application writing Simple XML data SHOULD use <spanx style="verb">rdf:prefix</spanx>
+	(see <xref target="BULK-RDF"/>) to denote element and attribute prefixed names and arrays
+	for unprefixed names. The semantics of the <spanx style="verb">rdf:prefix</spanx> form are
+	application-dependent; an application could choose to evaluate it without changing its value
+	beforehand, thus using expanded names (cf. <xref target="XML-NAMES10"/> and <xref
+	target="XML-NAMES11"/>), or follow the <xref target="XML-INFOSET">XML Infoset</xref>
+	principle of keeping the namespace and local part of the name separate.
       </t>
       <t>
 	Note that Simple XML cannot store the original prefix associated with a namespace. The goal
@@ -182,7 +182,7 @@
 	  <list style="hanging">
 	    <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx
 	    style="verb">xml:</spanx> )</t>
-	    <t hangText="value"><spanx style="verb">( prefix "http://www.w3.org/XML/1998/namespace" )</spanx></t>
+	    <t hangText="value"><spanx style="verb">( rdf:prefix "http://www.w3.org/XML/1998/namespace" )</spanx></t>
 	  </list>
 	</t>
       </section>
@@ -192,7 +192,7 @@
 	  <list style="hanging">
 	    <t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx
 	    style="verb">xmlns:</spanx> )</t>
-	    <t hangText="value"><spanx style="verb">( prefix "http://www.w3.org/2000/xmlns/" )</spanx></t>
+	    <t hangText="value"><spanx style="verb">( rdf:prefix "http://www.w3.org/2000/xmlns/" )</spanx></t>
 	  </list>
 	</t>
       </section>
@@ -239,6 +239,20 @@
 	  </author>
 	</front>
 	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-02"/>
+      </reference>
+
+      <reference anchor="BULK-RDF">
+	<front>
+	  <title>BULK RDF namespace</title>
+	  <date day="7" month="August" year="2013"/>
+	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
+	    <organization>Thierry Technologies</organization>
+	    <address>
+	      <email>pierre@nothos.net</email>
+	    </address>
+	  </author>
+	</front>
+	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-rdf-00"/>
       </reference>
     </references>
 

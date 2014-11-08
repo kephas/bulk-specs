@@ -112,8 +112,8 @@
     - ( comment {content} )
     - ( element {name} {content} )
     - ( attribute {name} {value} )
-    - xml: ⇔ ( prefix xml: "http://www.w3.org/XML/1998/namespace" )
-    - xmlns: ⇔ ( prefix xml: "http://www.w3.org/2000/xmlns/" )
+    - xml: ⇔ ( rdf:prefix "http://www.w3.org/XML/1998/namespace" )
+    - xmlns: ⇔ ( rdf:prefix "http://www.w3.org/2000/xmlns/" )
     - preserve ⇔ ( define preserve ( attribute ( xml: "space" )
       "preserve" ) )
 
@@ -125,7 +125,7 @@
 
    1. ( uriref Array )
    2. ( base Array )
-   3. ( prefix <pre>:Ref # Int <begin> )
+   3. ( prefix <prefix> )
    4. blank
    5. ( plain <lang> <literal )
    6. ( datatype <id>:URIRef <literal> )
