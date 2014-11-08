@@ -522,11 +522,11 @@
 	  <section title="Speciale case">
 	    <t>
 	      References have a special parsing rule. In case a BULK stream needs an important
-	      number of namespaces, if the marker byte is <spanx style="verb">0xFF</spanx>, the parser
-	      continues to read bytes until it finds a byte different than 0xFF. The value of this
-	      sequence of bytes is the value associated with a namespace. For example, the reference
-	      denoted by the bytes <spanx style="verb">0xFF 0xFF 0x8C 0x1A</spanx> is the name 26 in
-	      the namespace associated with 16777100.
+	      number of namespaces, if the marker byte is <spanx style="verb">0xFF</spanx>, the
+	      parser continues to read bytes until it finds a byte different than 0xFF. The sum of
+	      each of those bytes taken as unsigned integers is the value associated with a
+	      namespace. For example, the reference denoted by the bytes <spanx style="verb">0xFF
+	      0xFF 0x8C 0x1A</spanx> is the name 26 in the namespace associated with 650.
 	    </t>
 	  </section>
 	</section>

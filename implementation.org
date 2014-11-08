@@ -38,8 +38,8 @@
   |           | its name field is that byte as an 8 bits unsigned integer                    |
   |           | its namespace field is the marker byte as an 8 bits unsigned integer         |
   |-----------+------------------------------------------------------------------------------|
-  |      0xFF | Read bytes until a byte is different than 0xFF and treat those bytes,        |
-  |           | including the first marker 0xFF, as an unsigned integer;                     |
+  |      0xFF | Read bytes until a byte is different than 0xFF and compute the of each of    |
+  |           | those bytes, including the first marker 0xFF, taken as unsigned integers;    |
   |           | read the next byte as an 8 bits unsigned integer; return a reference object: |
   |           | its namespace and name fields are the two integers                           |
   |-----------+------------------------------------------------------------------------------|
