@@ -69,13 +69,15 @@
 
       <section title="Types">
 	<t>This specification defines the following types:</t>
-	<list style="hanging">
-	  <t hangText="Int123">a sequence of type <spanx style="verb">Int</spanx>, <spanx
-	  style="verb">Int Int</spanx> or <spanx style="verb">Int Int Int</spanx></t>
-	  <t hangText="IntsF">a sequnce of one or more expressions, all of which MUST be of type
-	  <spanx style="verb">Int</spanx>, except the last which can also be of type <spanx
-	  style="verb">Float</spanx></t>
-	</list>
+	<t>
+	  <list style="hanging">
+	    <t hangText="Int123">a sequence of type <spanx style="verb">Int</spanx>, <spanx
+	    style="verb">Int Int</spanx> or <spanx style="verb">Int Int Int</spanx></t>
+	    <t hangText="IntsF">a sequnce of one or more expressions, all of which MUST be of type
+	    <spanx style="verb">Int</spanx>, except the last which can also be of type <spanx
+	    style="verb">Float</spanx></t>
+	  </list>
+	</t>
       </section>
 
       <section title="ISO 8601">
