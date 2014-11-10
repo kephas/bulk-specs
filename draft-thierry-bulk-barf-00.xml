@@ -262,12 +262,16 @@
 	  <list style="hanging">
 	    <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
 	    style="verb">bulk-stream</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( bulk-stream gbc> {payload} )</spanx></t>
+	    <t hangText="shape"><spanx style="verb">( bulk-stream gbc> {size}:Expr ( {stream} ) )</spanx></t>
 	  </list>
 	</t>
 	<t>
 	  This form makes it possible to include a complete BULK stream without modification, as
-	  {payload}.
+	  {stream}.
+	</t>
+	<t>
+	  If <spanx style="verb">{size}</spanx> is not <spanx style="verb">nil</spanx>, it MUST
+	  be the number of bytes of <spanx style="verb">{stream}</spanx>.
 	</t>
 	<t>Type: <spanx style="verb">GBCForm</spanx></t>
       </section>
@@ -379,6 +383,21 @@
 	  express an encryption method.
 	</t>
 	<t>Type: <spanx style="verb">GBCForm</spanx></t>
+      </section>
+
+      <section title="Metadata entries">
+	<section title="Count">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx
+	      style="verb">count</spanx> )</t>
+	      <t hangText="shape"><spanx style="verb">( count {num}:Int )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This MAY be used to give the number of entries contained in a pack or a stack.
+	  </t>
+	</section>
       </section>
 
     </section>
