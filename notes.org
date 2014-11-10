@@ -276,69 +276,73 @@
    21. ( anno-hegirae Int123 )
 
 ** BARF: BULK Archive Format
-   1. ( pack {metadata} {entries} )
-      - {metadata}
+   1. ( pack {metadata}:Metadata {entries} )
+      - Metadata
 	- nil
-	- ( Metadatum+ )
 	- any other BULK expression suited as metadata
       - {entries} can be one or several arrays instead of BULK
-   2. ( stack {metadata} {entries-metadata} ) {entries}
+   2. ( stack {metadata}:Metadata {entries-metadata}:Metadata+ ) {entries}
       - to make BULK-unaware append possible
       - {entries-metadata} means {entries} can be a single Array and
         the content of the entry is the end of the BULK file
-   3. ( describe {metadata} {content} )
-      - {metadata} as in pack
+   3. ( describe {metadata}:Metadata {content} )
       - {content} can be an Array (e.g. a file's content) or BULK
-   4. ( bulk-stream {stream} )
+   4. ( metadata {data} )
+   5. ( entry {num} )
+   6. ( bulk-stream gbc> {stream} )
       - to include a BULK stream in a pack without a surrounding array
-   5. ( compressed {method} Array nil )
-   6. ( encrypted {method} Array nil )
-   7. --- Metadatum ---
-   8. ( path {components} )
-      - by design, there is no way to express an absolute FS path
-	- an application is free to define insecure forms to express
-          absolute paths and links
-	- TODO: what if a component contain "/"?
-	  - implementation should not resolve the name but look it up
-            in the directory entries (that takes care of "/" but not
-            of a ".." entry, this still needs checking, shame on Unix)
-   9. ( user {name} )
-      - {name} can be anything, incl. string and Int
-	- multiple entries (e.g. "pierre"/1000)
-   10. ( group {name} )
-   11. ( dev-major {num} )
+   7. gbc|
+   8. gbc>
+      - GBC form must not be preserved if payload is modified
+   9. gbc*>
+      - preservable GBC form
+   10. gbc*~>
+       - preservable GBC form whose payload was modified
+   11. ( compressed gbc| {method} Array )
+   12. deflate
+   13. ( encrypted gbc| {method} Array )
+   14. --- Metadatum ---
+   15. ( path {components} )
+       - by design, there is no way to express an absolute FS path
+	 - an application is free to define insecure forms to express
+           absolute paths and links
+	 - TODO: what if a component contain "/"?
+	   - implementation should not resolve the name but look it up
+             in the directory entries (that takes care of "/" but not
+             of a ".." entry, this still needs checking, shame on Unix)
+   16. ( user {name} )
+       - {name} can be anything, incl. string and Int
+	 - multiple entries (e.g. "pierre"/1000)
+   17. ( group {name} )
+   18. ( dev-major {num} )
        - redundant with a xxx-dev form as entry content?
-   12. ( dev-minor {num} )
+   19. ( dev-minor {num} )
        - idem
-   13. contiguous
+   20. contiguous
        - tar semantics
-   14. ( access {time} )
-   15. ( modification {time} )
-   16. ( change {time} )
-   17. ( mode {mode} )
-   18. ( posix-acl {acls} )
+   21. ( access {time} )
+   22. ( modification {time} )
+   23. ( change {time} )
+   24. ( mode {mode} )
+   25. ( posix-acl {acls} )
        - ( user {id} {mode} {default?} )
        - ( group {id} {mode} {defaults?} )
        - ( other {mode} {defaults?} )
        - ( mask {mode} {defaults?} )
-   19. ( xattr {xattr} )
+   26. ( xattr {xattr} )
        - {xattrs} = ( {name} {value} )+
-   20. ( offsets Int+ )
+   27. ( offsets Int+ )
        - base is the first byte after {metadata}
-   21. ---
-   22. ( hard-link Path nil )
-   23. ( sym-link Path nil )
-   24. ( char-dev {??} nil )
-   25. ( block-dev {??} nil )
-   26. ( directory {name} nil )
-   27. ( known-size {size}:Int {bulk} )
+   28. ---
+   29. ( hard-link Path nil )
+   30. ( sym-link Path nil )
+   31. ( char-dev {??} nil )
+   32. ( block-dev {??} nil )
+   33. ( directory {name} nil )
+   34. ( known-size gbc> {size}:Int {bulk} )
        - {size} is number of bytes in {bulk}
        - kind of an explicitly parseable array
        - alternative to =offsets=
-
-*** Guaranteed Backward Compatibility
-    - pass-through :: ( Ref {arguments} {payload}:Expr )
-    - opaque :: ( Ref {arguments} nil )
 
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?

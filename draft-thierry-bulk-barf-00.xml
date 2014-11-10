@@ -131,24 +131,35 @@
       </section>
     </section>
 
-    <section title="Guaranteed Backward Compatibility">
-      <t>
-	This specification defines the notion of Guaranteed Backward Compatibility (GBC). It applies
-	to forms that carry a main payload with additional metadata. A form that obeys the rules of
-	GBC has the type GBCForm.
-      </t>
-      <t>
-	A GBCForm has the shape <spanx style="verb">( Ref {arguments} {next}:Expr )</spanx>. If the
-	payload of a GBCForm is readable without knowledge of that form, then {next} MUST be that
-	payload. Otherwise, {next} MUST be nil.
-      </t>
-      <t>
-	For example, a GBC-compliant checksum form could have the shape <spanx style="verb">( crc32c
-	{crc}:Word32 {payload} )</spanx>, where {crc} is the checksum of the byte sequence
-	{payload}. On the other hand, a GBC-compliant encryption form, where obviously the payload
-	is unreadable without proper knowledge of the form, could have the shape <spanx
-	style="verb">( encrypt {payload} nil )</spanx>.
-      </t>
+    <section title="Types">
+      <section title="Metadata">
+	<t>This specification defines the type Metadata and describe two forms with that type. But
+	wherever an application expects a Metadata form, it MUST be ready to find an unknown form,
+	as any other vocabulary could be used to convey metadata (e.g. <xref
+	target="BULK-RDF"/>).</t>
+	<t>To denote the absence of metadata, the <spanx style="verb">nil</spanx> expression has the
+	type Metadata</t>
+      </section>
+      <section title="Guaranteed Backward Compatibility">
+	<t>
+	  This specification defines the notion of Guaranteed Backward Compatibility (GBC). A form
+	  that obeys the rules of GBC has the type GBCForm.
+	</t>
+	<t>
+	  A GBCForm has the shape <spanx style="verb">( Ref {tag} {arguments} {next}:Expr
+	  )</spanx>. If the payload of a GBCForm is readable without knowledge of that form, then
+	  {next} MUST be that payload and {tag} must be <spanx style="verb">gbc&gt;</spanx>, <spanx
+	  style="verb">gbc*&gt;</spanx> or <spanx style="verb">gbc*~&gt;</spanx>. Otherwise, {tag}
+	  must be <spanx style="verb">gbc|</spanx>.
+	</t>
+	<t>
+	  For example, a GBC-compliant checksum form could have the shape <spanx style="verb">( crc32c
+	  gbc> {crc}:Word32 {payload} )</spanx>, where {crc} is the checksum of the byte sequence
+	  {payload}. On the other hand, a GBC-compliant AES encryption form, where obviously the payload
+	  is unreadable without proper knowledge of the form, could have the shape <spanx
+	  style="verb">( aes gbc| {ciphertext} )</spanx>.
+	</t>
+      </section>
     </section>
 
     <section title="BULK archive namespace">
@@ -190,9 +201,7 @@
 	  be a sequence of expressions of length equal or inferior to the number of expressions in
 	  {entries}. Each expression in {entries-metadata} holds metadata about a single entry of
 	  the stack. In the context of such a metadata expression, <spanx
-	  style="verb">rdf:this-resource</spanx> designates the described stack entry. By default,
-	  the expression number N in {entries-metadata} describes the expression number N in
-	  {entries}.
+	  style="verb">rdf:this-resource</spanx> designates the described stack entry.
 	</t>
 	<t>
 	  When the stack form is in the abstract yield, this has the property that if the last entry
@@ -210,7 +219,7 @@
 	  <list style="hanging">
 	    <t hangText="name"><spanx style="verb">0x3</spanx> (mnemonic: <spanx
 	    style="verb">describe</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( describe {metadata} {payload}:Expr )</spanx></t>
+	    <t hangText="shape"><spanx style="verb">( describe GBC> {metadata}:Metadata {payload}:Expr )</spanx></t>
 	  </list>
 	</t>
 	<t>
@@ -221,12 +230,39 @@
 	<t>Type: <spanx style="verb">GBCForm</spanx></t>
       </section>
 
-      <section title="BULK stream embedding">
+      <section title="Metadata">
 	<t>
 	  <list style="hanging">
 	    <t hangText="name"><spanx style="verb">0x4</spanx> (mnemonic: <spanx
+	    style="verb">metadata</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( metadata {metadata}:Metadata )</spanx></t>
+	  </list>
+	</t>
+	<t></t>
+      </section>
+
+      <section title="Entry designator">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx
+	    style="verb">entry</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( entry {which} )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This form can be used to designate an entry by its order in a sequence of entries
+	  (starting with 0). Within a Metadata form, if <spanx style="verb">{which}</spanx> is <spanx
+	  style="verb">nil</spanx>, it means that the metadata are associated with the next entry
+	  with which metadata has not yet been associated.
+	</t>
+      </section>
+
+      <section title="BULK stream embedding">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
 	    style="verb">bulk-stream</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( bulk-streamm {payload} )</spanx></t>
+	    <t hangText="shape"><spanx style="verb">( bulk-stream gbc> {payload} )</spanx></t>
 	  </list>
 	</t>
 	<t>
@@ -236,27 +272,106 @@
 	<t>Type: <spanx style="verb">GBCForm</spanx></t>
       </section>
 
-      <section title="Compressed data">
+      <section title="Opaque GBC tag">
 	<t>
 	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx
-	    style="verb">compressed</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( compressed {method}:Expr {payload}:Array nil )</spanx></t>
+	    <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx
+	    style="verb">gbc|</spanx> )</t>
 	  </list>
 	</t>
 	<t>
-	  This form encapsulates a compressed payload. This specification doesn't define names to
+	  This tag is used for GBC forms whose payload is only readable if the form is known by the
+	  application.
+	</t>
+      </section>
+
+      <section title="Pass-through GBC tag (modification-sensitive)">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx
+	    style="verb">gbc&gt;</spanx> )</t>
+	  </list>
+	</t>
+	<t>
+	  This tag is used for GBC forms whose payload is readable even if the form is not known by
+	  the application.
+	</t>
+	<t>
+	  A form with this tag MUST NOT be preserved around a payload other than the original
+	  payload.
+	</t>
+	<t>Type: <spanx style="verb">GBC></spanx></t>
+      </section>
+
+      <section title="Pass-through GBC tag (modification-insensitive)">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx
+	    style="verb">gbc*&gt;</spanx> )</t>
+	  </list>
+	</t>
+	<t>
+	  This tag is used for GBC forms whose payload is readable even if the form is not known by
+	  the application.
+	</t>
+	<t>
+	  A form with this tag MAY be preserved around a payload other than the original payload. In
+	  this case, the tag MUST be changed to <spanx style="verb">gbc*~&gt;</spanx>.
+	</t>
+	<t>Type: <spanx style="verb">GBC></spanx></t>
+      </section>
+
+      <section title="Pass-through GBC tag (modified)">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx
+	    style="verb">gbc*~&gt;</spanx> )</t>
+	  </list>
+	</t>
+	<t>
+	  This tag is used for GBC forms whose payload is readable even if the form is not known by
+	  the application.
+	</t>
+	<t>
+	  This tag means that the form had been created around a different payload but has been
+	  kept around the modified payload.
+	</t>
+	<t>Type: <spanx style="verb">GBC></spanx></t>
+      </section>
+
+      <section title="Compressed data">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx
+	    style="verb">compressed</spanx> )</t>
+	    <t hangText="shape"><spanx style="verb">( compressed gbc| {method}:Expr {payload}:Array )</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  This form encapsulates a compressed payload. This specification only defines one name to
 	  express a compression method.
 	</t>
 	<t>Type: <spanx style="verb">GBCForm</spanx></t>
       </section>
 
+      <section title="DEFLATE">
+	<t>
+	  <list style="hanging">
+	    <t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx
+	    style="verb">deflate</spanx> )</t>
+	  </list>
+	</t>
+	<t>
+	  This name designates the <xref target="RFC1951">DEFLATE</xref> compression method.
+	</t>
+      </section>
+
       <section title="Encrypted data">
 	<t>
 	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
+	    <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx
 	    style="verb">encrypted</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( encrypted {method}:Expr {payload}:Array nil )</spanx></t>
+	    <t hangText="shape"><spanx style="verb">( encrypted gbc| {method}:Expr {payload}:Array )</spanx></t>
 	  </list>
 	</t>
 	<t>
@@ -303,6 +418,19 @@
 	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-02"/>
       </reference>
 
+      <reference anchor="BULK-RDF">
+	<front>
+	  <title>BULK RDF namespace</title>
+	  <date day="7" month="August" year="2013"/>
+	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
+	    <organization>Thierry Technologies</organization>
+	    <address>
+	      <email>pierre@nothos.net</email>
+	    </address>
+	  </author>
+	</front>
+	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-rdf-00"/>
+      </reference>
     </references>
 
 
@@ -314,8 +442,20 @@
 	  <date year="2004"/>
 	</front>
       </reference>
-    </references>
 
+      <reference anchor="RFC1951">
+        <front>
+          <title>
+            DEFLATE Compressed Data Format Specification version 1.3
+          </title>
+          <author initials="P." surname="Deutsch" fullname="L. Peter Deutsch">
+            <organization>Aladdin Enterprises</organization>
+            <address><email>ghost@aladdin.com</email></address>
+          </author>
+          <date month="May" year="1996"/>
+        </front>
+      </reference>
+    </references>
   </back>
 </rfc>
 
