@@ -72,8 +72,9 @@
 	  extensions to store long file names.
 	</t>
 	<t>
-	  So we propose yet another archive format, that uses an efficient but extensible syntax, so
-	  that the format cannot fail to be extended or modified for new use cases or constraints.
+	  So we propose yet another archive format, that uses an efficient but extensible syntax, in
+	  the hope that this format cannot fail to be extended or modified for new use cases or
+	  constraints.
 	</t>
       </section>
 
@@ -82,14 +83,16 @@
 	  A BARF file is basically a set of metadata fields followed by data entries. Each entry
 	  consists of a set of metadata fields followed by its content. The interesting property of
 	  using BULK is that any portion of that structure is dynamic (no fixed metadata fields, and
-	  an entry without metadata is serialized as its content, as with BULK, the entry and its
-	  content cannot be confused with each other) and anything can be enclosed in a BULK
-	  structure to add features.
+	  an entry without metadata is serialized as its content, either an array or a BULK form
+	  itself) and anything can be enclosed in a BULK structure to add features (like digital
+	  signatures, either on metadata or on content).
 	</t>
 	<t>
-	  Metadata fields are just a BULK expression, which means that any ad hoc or standard BULK
-	  vocabulary can be used in an efficient way as metadata. Mutually incompatible metadata
-	  vocabularies could even be stored alongside each other for legacy support, if need be.
+	  Metadata fields are just a BULK expression, which means that any ad hoc (e.g. the <spanx
+	  style="verb">user</spanx> field defined in this specification) or standard (e.g. <xref
+	  target="BULK-RDF"/>) BULK vocabulary can be used as metadata. Mutually incompatible
+	  metadata vocabularies could even be stored alongside each other for legacy support, if
+	  need be.
 	</t>
 	<t>
 	  The archive file can be compressed or encrypted by an outside tool (producing a
@@ -97,7 +100,7 @@
 	  entire archive, internally to the file, can be a BULK compression or encryption form, as
 	  well as any metadata set, metadata field or entry. Almost any extension and optimization
 	  can be retrofitted in this structure in a backward-compatible way, like checksums, digital
-	  signature or access offsets for random access.
+	  signatures or access offsets for random access.
 	</t>
 	<t>
 	  This extends the use case of BARF archives outside of archives for multiple files. An
