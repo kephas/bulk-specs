@@ -33,25 +33,20 @@
    5. ( iana-charset Int)
    6. ( codepage Int )
    7. ( ns <id>:Int <uuid>:Word128 )
-   8. ( ns* <id>:Int <uuid>:Word128 )
-   9. ( package <uuid> <namespaces> )
-   10. ( import <base>:Int <uuid> )
-   11. ( define <id> Expr )
-       - <id> = Ref | Int8
-   12. ( subst {code} )
-   13. ( arg Int )
-   14. ( rest Int )
-   15. ( named Ref Expr )
-   16. ---
-   17. ( let ( <bindings> ) Expr+ )
+   8. ( package <uuid> <namespaces> )
+   9. ( import <base>:Int <count>:Int <uuid> )
+   10. ( define Ref Expr )
+   11. ( subst {code} )
+   12. ( arg Int )
+   13. ( rest Int )
+   14. ---
+   15. ( let ( <bindings> ) Expr+ )
        - bindings = Ref Expr [ bindings ]
-   18. ( named* Ref Expr )
-       - allows recursive definition
-   19. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
+   16. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
        <definitions> )
        - error if ( define Ref Expr ) in *final abstract yield*
-   20. ( openpgp <data>:Array )
-   21. ( x509 <data>:Array )
+   17. ( openpgp <data>:Array )
+   18. ( x509 <data>:Array )
 
 
    32. ( frac Int Int )
@@ -66,6 +61,11 @@
    fragile.
 
    openpgp and x509 may come from a crypto NS instead.
+
+   I removed the notion of required NS (not known to parser ⇒ parsing
+   error). I have yet to see a relevant use case and it would probably
+   make having unreadable BULK streams too easy. It defeats the
+   uniform syntax…
 
 ** Mobile code
    - language = namespace

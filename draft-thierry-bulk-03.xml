@@ -168,10 +168,10 @@
 	</t>
 	<t>
 	  Any other atom is a reference, which consists of a namespace marker (in most of the cases,
-	  a single byte) followed by a identifier within this namespace (a single byte). All in all,
-	  a very little sacrifice is made in compactness for the benefit of a very simple syntax:
-	  apart from nil, nothing is smaller than 2 bytes, and as most forms involve a reference
-	  followed by some content, a form is 4 bytes + its content.
+	  a single byte) followed by an identifier within this namespace (a single byte). All in
+	  all, a very little sacrifice is made in compactness for the benefit of a very simple
+	  syntax: apart from nil, nothing is smaller than 2 bytes, and as most forms involve a
+	  reference followed by some content, a form is 4 bytes + its content.
 	</t>
 	<t>
 	  A namespace marker in a BULK stream is associated by either one of two simple forms to a
@@ -358,15 +358,16 @@
 	<section title="Difference between sequence and form">
 	  <t>
 	    Beware that although the specific yield of a form is a sequence of expressions, it is
-	    not the same thing as a byte sequence described as a sequence of expressions. Let's
-	    examine several forms of the shape <spanx style="verb">( foo {seq} )</spanx>.
+	    not the same thing as a byte sequence denoting a form, which is a sequence in the
+	    yield. Let's examine several forms of the shape <spanx style="verb">( foo {seq}
+	    )</spanx>.
 	  </t>
 	  <t>
-	    In the first form, {seq} is a sequence of 3 expressions: <spanx style="verb">( foo nil
-	    nil nil )</spanx>. In the second form, {seq} is a single expression, and that expression
-	    is an atom: <spanx style="verb">( foo nil )</spanx>. But in the third form, {seq} is
-	    also a single expression, and that expression is a form: <spanx style="verb">( foo ( nil
-	    nil nil ) )</spanx>.
+	    In the form <spanx style="verb">( foo nil nil nil )</spanx>, {seq} is a sequence of 3
+	    expressions, but they are three atoms in the yield. In the form <spanx style="verb">(
+	    foo nil )</spanx>, {seq} is a single expression, and that expression is an atom. But in
+	    the form <spanx style="verb">( foo ( nil nil nil ) )</spanx>, {seq} is also a single
+	    expression, and that expression is a form, which is a sequence in the yield.
 	  </t>
 	</section>
       </section>
@@ -661,12 +662,7 @@
 	</section>
 
 	<section title="Namespaces">
-	  <t>
-	    The semantic of some expressions is to make a namespace required. It is a parsing error
-	    if a processing application doesn't recognise this namespace.
-	  </t>
-
-	  <section title="Required namespace">
+	  <section title="New namespace">
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">ns</spanx>)</t>
@@ -674,51 +670,39 @@
 	      </list>
 	    </t>
 	    <t>
-	      This associates the namespace identified by {uuid} to the value {mark}. It makes this
-	      namespace required.
-	    </t>
-	  </section>
-
-	  <section title="Optional namespace">
-	    <t>
-	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">ns*</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( ns* {mark}:Int {uuid}:Word128 )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This associates the namespace identified by {uuid} to the value {mark}.
+	      This associates the namespace identified by {uuid} to the value {mark}, within the
+	      scope of this expression.
 	    </t>
 	  </section>
 
 	  <section title="Package">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">package</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">package</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( package {uuid}:Word128 {namespaces} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This creates a package identified by {uuid}. Packages are immutable, {uuid} MUST be a
-	      v5 UUID generated with the BULK UUID and the byte sequence {namespaces}. <spanx
-	      style="verb">{namespaces}</spanx> must be a sequence of expressions. They can be
-	      either expressions of type Word128 or have the shape <spanx style="verb">( ns* Word128
-	      )</spanx>, which means that the designated namespace is optional to this package.
+	      v5 UUID generated with the byte sequence <spanx style="verb">{namespaces}</spanx> as
+	      name. The BULK UUID (<eref target="urn:uuid:abaddeed-face-11e2-9605-74de2b4102f1"/>)
+	      SHOULD be used as UUID name space. <spanx style="verb">{namespaces}</spanx> must be a
+	      sequence of expressions of type Word128, each containing a UUID identifying a BULK
+	      namespace.
 	    </t>
 	  </section>
 
 	  <section title="Import">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">import</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( import {base}:Int {uuid}:Word128 )</spanx></t>
+		<t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">import</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( import {base}:Int {count}:Int {uuid}:Word128 )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This associates the namespaces in the package identified by {uuid} with a continuous
-	      range of values starting at {base}. If the namespace is not optional to this package,
-	      it make the namespace required. It is a parsing error if a processing application
-	      doesn't recognize the package.
+	      This associates the first <spanx style="verb">{count}</spanx> namespaces in the
+	      package identified by <spanx style="verb">{uuid}</spanx> with a continuous range of
+	      values starting at <spanx style="verb">{base}</spanx>.
 	    </t>
 	  </section>
 	</section>
@@ -729,7 +713,7 @@
 	    identified by its UUID, not the marker value) within a certain scope.
 	  </t>
 	  <t>
-	    If a BULK stream is not evaluated, the semantics of an definition are entirely
+	    If a BULK stream is not evaluated, the semantics of a definition are entirely
 	    application-dependent.
 	  </t>
 	  <t>
@@ -744,7 +728,7 @@
 	  <section title="Simple definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( define {ref}:Ref Expr )</spanx></t>
 	      </list>
 	    </t>
@@ -758,7 +742,7 @@
 	  <section title="Substitution function">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">subst</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">subst</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
 	      </list>
 	    </t>
@@ -774,7 +758,7 @@
 	    <section title="Argument">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">arg</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">arg</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( arg {n}:Int )</spanx></t>
 		</list>
 	      </t>
@@ -790,7 +774,7 @@
 	    <section title="Rest of arguments list">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx style="verb">rest</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">rest</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( rest {n}:Int )</spanx></t>
 		</list>
 	      </t>
@@ -803,18 +787,6 @@
 		</list>
 	      </t>
 	    </section>
-	  </section>
-
-	  <section title="Named expression">
-	    <t>
-	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx style="verb">named</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( named {ref}:Ref {expr}:Expr )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This form defines {ref} as {expr} in its scope. This form evaluates to {expr}.
-	    </t>
 	  </section>
 	</section>
 
@@ -966,7 +938,7 @@
 	  it is not using a specific profile:
 	</t>
 	<t>
-	  <spanx style="verb">( bulk:stringenc 106 )</spanx>
+	  <spanx style="verb">( bulk:stringenc ( bulk:iana-charset 106 ) )</spanx>
 	</t>
 	<t>
 	  This means that the default string encoding in a BULK stream is UTF-8.
@@ -1249,6 +1221,7 @@
 	notation. The following form could be interpreted as the sequence of integers (-1358102763
 	35467 -100237):
 	<figure>
+	  <preamble>Fig. 1</preamble>
 	  <artwork>
 ( foo:sints w32 0xAF0CFF15 w16 0x8A8B w32 0xFFFE7873 )
 	  </artwork>
@@ -1259,6 +1232,7 @@
 	size, an application MAY pack them into an array. The sequence of integers (-14376 -235 4567
 	-31299 42) could be serialized as:
 	<figure>
+	  <preamble>Fig. 2</preamble>
 	  <artwork>
 ( foo:array16 # w8 0xA 0xC7D8FF1511D785BD002A )
 	  </artwork>
@@ -1270,6 +1244,7 @@
 	(-1358102763 35467 -100237 -14376 -235 4567 -31299 42 -8449839282860229000) could be
 	serialized as:
 	<figure>
+	  <preamble>Fig. 3</preamble>
 	  <artwork>
 ( foo:flatten w32 0xAF0CFF15 w16 0x8A8B w32 0xFFFE7873 ( foo:array16 # w8 0xA 0xC7D8FF1511D785BD002A
 ) w64 0x8ABC23F0FFF98283 )
