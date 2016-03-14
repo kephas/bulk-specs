@@ -289,8 +289,11 @@
       - {content} can be an Array (e.g. a file's content) or BULK
    4. ( metadata {data} )
    5. ( entry {num} )
-   6. ( bulk-stream gbc> {stream} )
+   6. ( bulk-stream gbc> {size} {stream} )
       - to include a BULK stream in a pack without a surrounding array
+      - {size} is number of bytes in {bulk}
+	- kind of an explicitly parseable array
+	- {size} can be nil
    7. gbc|
    8. gbc>
       - GBC form must not be preserved if payload is modified
@@ -302,7 +305,8 @@
    12. deflate
    13. ( encrypted gbc| {method} Array )
    14. --- Metadatum ---
-   15. ( path {components} )
+   15. ( count {num} )
+   16. ( path {components} )
        - by design, there is no way to express an absolute FS path
 	 - an application is free to define insecure forms to express
            absolute paths and links
@@ -310,39 +314,35 @@
 	   - implementation should not resolve the name but look it up
              in the directory entries (that takes care of "/" but not
              of a ".." entry, this still needs checking, shame on Unix)
-   16. ( user {name} )
+   17. ( user {name} )
        - {name} can be anything, incl. string and Int
 	 - multiple entries (e.g. "pierre"/1000)
-   17. ( group {name} )
-   18. ( dev-major {num} )
+   18. ( group {name} )
+   19. ( dev-major {num} )
        - redundant with a xxx-dev form as entry content?
-   19. ( dev-minor {num} )
+   20. ( dev-minor {num} )
        - idem
-   20. contiguous
+   21. contiguous
        - tar semantics
-   21. ( access {time} )
-   22. ( modification {time} )
-   23. ( change {time} )
-   24. ( mode {mode} )
-   25. ( posix-acl {acls} )
+   22. ( access {time} )
+   23. ( modification {time} )
+   24. ( change {time} )
+   25. ( mode {mode} )
+   26. ( posix-acl {acls} )
        - ( user {id} {mode} {default?} )
        - ( group {id} {mode} {defaults?} )
        - ( other {mode} {defaults?} )
        - ( mask {mode} {defaults?} )
-   26. ( xattr {xattr} )
+   27. ( xattr {xattr} )
        - {xattrs} = ( {name} {value} )+
-   27. ( offsets Int+ )
+   28. ( offsets Int+ )
        - base is the first byte after {metadata}
-   28. ---
-   29. ( hard-link Path nil )
-   30. ( sym-link Path nil )
-   31. ( char-dev {??} nil )
-   32. ( block-dev {??} nil )
-   33. ( directory {name} nil )
-   34. ( known-size gbc> {size}:Int {bulk} )
-       - {size} is number of bytes in {bulk}
-       - kind of an explicitly parseable array
-       - alternative to =offsets=
+   29. ---
+   30. ( hard-link Path nil )
+   31. ( sym-link Path nil )
+   32. ( char-dev {??} nil )
+   33. ( block-dev {??} nil )
+   34. ( directory {name} nil )
 
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
