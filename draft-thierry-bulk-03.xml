@@ -520,7 +520,7 @@
 	    namespace <spanx style="verb">math</spanx> becomes <spanx style="verb">math:fp</spanx>.
 	  </t>
 	  <t>Type: <spanx style="verb">Ref</spanx></t>
-	  <section title="Speciale case">
+	  <section title="Special case">
 	    <t>
 	      References have a special parsing rule. In case a BULK stream needs an important
 	      number of namespaces, if the marker byte is <spanx style="verb">0xFF</spanx>, the
