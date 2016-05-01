@@ -96,7 +96,7 @@
 	    </list>
 	  </t>
 	  <t>
-	    This serialize dates like 1999, 2001-06 or 2013-08-06.
+	    This serializes dates like 1999, 2001-06 or 2013-08-06.
 	  </t>
 	  <t>Types: <spanx style="verb">ISOTime</spanx>, <spanx style="verb">Date</spanx></t>
 	</section>
@@ -110,7 +110,7 @@
 	    </list>
 	  </t>
 	  <t>
-	    This serialize dates like 1979, 1987-W06 or 2012-W52-1.
+	    This serializes dates like 1979, 1987-W06 or 2012-W52-1.
 	  </t>
 	  <t>Types: <spanx style="verb">ISOTime</spanx>, <spanx style="verb">Date</spanx></t>
 	</section>
@@ -124,7 +124,7 @@
 	    </list>
 	  </t>
 	  <t>
-	    This serialize dates like 2004-006 or 2000-366.
+	    This serializes dates like 2004-006 or 2000-366.
 	  </t>
 	  <t>Types: <spanx style="verb">ISOTime</spanx>, <spanx style="verb">Date</spanx></t>
 	</section>
@@ -138,8 +138,8 @@
 	    </list>
 	  </t>
 	  <t>
-	    This serialize times like 22, 13:45 or 06:34:57,3. {components} MUST contain from 1 to 3
-	    expressions.
+	    This serializes times like 22, 13:45 or 06:34:57.3. {components} MUST contain from 1 to
+	    3 expressions.
 	  </t>
 	  <t>Types: <spanx style="verb">ISOTime</spanx>, <spanx style="verb">ISOTimeOfDay</spanx></t>
 	</section>
@@ -153,7 +153,7 @@
 	    </list>
 	  </t>
 	  <t>
-	    This serialize dates like 2005-W34-7T19:45.
+	    This serializes dates like 2005-W34-7T19:45.
 	  </t>
 	  <t>Type: <spanx style="verb">ISOTime</spanx></t>
 	</section>
@@ -167,7 +167,7 @@
 	    </list>
 	  </t>
 	  <t>
-	    This serialize times like 2005-W34-7T19:45Z or 11:53:23Z.
+	    This serializes times like 2005-W34-7T19:45Z or 11:53:23Z.
 	  </t>
 	  <t>Type: <spanx style="verb">ISOTime</spanx></t>
 	</section>
@@ -181,7 +181,7 @@
 	    </list>
 	  </t>
 	  <t>
-	    This serialize times like 2005-W34-7T19:45+02 or 11:53-01:30.
+	    This serializes times like 2005-W34-7T19:45+02 or 11:53-01:30.
 	  </t>
 	  <t>Type: <spanx style="verb">ISOTime</spanx></t>
 	</section>
