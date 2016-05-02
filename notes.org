@@ -48,16 +48,11 @@
              {mnemonic}:Expr {doc}:Expr {definitions} )
      - ( mnemonic/def nil {…} ) defines the next unattributed ref
        (starting at 0)
-   -  :: ( subst {code} )
-   -  :: ( arg Int )
-   -  :: ( rest Int )
-   -  :: ( lambda {var}:Expr {body} )
-   -  :: ( concat {a1} {a2} )
-   -  :: id ⇔ ( subst ( rest 0 ) )
-   - /TODO/
-   - 0x12 :: ( openpgp {data}:Array )
-   - 0x13 :: ( x509 {data}:Array )
-   - /DONE: math/
+   - 0x0E :: ( concat {a1} {a2} )
+   - 0x0F :: ( subst {code} )
+   - 0x10 :: ( arg Int )
+   - 0x11 :: ( rest Int )
+   - 
    - 0x20 :: ( frac Int Int )
    - 0x21 :: ( bigint Array )
    - 0x22 :: ( binary {bits} )

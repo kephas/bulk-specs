@@ -877,11 +877,27 @@
 	    </t>
 	  </section>
 
+	  <section title="Array concatenation">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx style="verb">concat</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( concat {array1} {array2} )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      <list style="hanging">
+		<t hangText="Name's type">EagerFunction</t>
+		<t hangText="Form's type">Array</t>
+		<t hangText="Form's value">the concatenation of {array1} and {array2}.</t>
+	      </list>
+	    </t>
+	  </section>
+
 	  <section title="Substituton">
 	    <section title="Substitution function">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">subst</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx style="verb">subst</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
 		</list>
 	      </t>
@@ -898,7 +914,7 @@
 	    <section title="Argument">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">arg</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx style="verb">arg</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( arg {n}:Int )</spanx></t>
 		</list>
 	      </t>
@@ -914,7 +930,7 @@
 	    <section title="Rest of arguments list">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx style="verb">rest</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0x11</spanx> (mnemonic: <spanx style="verb">rest</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( rest {n}:Int )</spanx></t>
 		</list>
 	      </t>
@@ -934,40 +950,6 @@
 		<t>The evaluation of <spanx style="verb">( ( subst 1 ( rest 0 ) 2 ) 3 4 )</spanx>
 		must yield the same as <spanx style="verb">( 1 3 4 2 )</spanx></t>
 	      </section>
-	    </section>
-	    <section title="Array concatenation">
-	      <t>
-		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx style="verb">concat</spanx>)</t>
-		  <t hangText="shape"><spanx style="verb">( concat {array1} {array2} )</spanx></t>
-		</list>
-	      </t>
-	      <t>
-		<list style="hanging">
-		  <t hangText="Name's type">EagerFunction</t>
-		  <t hangText="Form's type">Array</t>
-		  <t hangText="Form's value">the concatenation of {array1} and {array2}.</t>
-		</list>
-	      </t>
-	    </section>
-	    <section title="Identity function">
-	      <t>
-		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx style="verb">id</spanx>)</t>
-		  <t hangText="shape"><spanx style="verb">( id {rest} )</spanx></t>
-		</list>
-	      </t>
-	      <t>
-		<list style="hanging">
-		  <t hangText="Value"><spanx style="verb">( subst ( rest 0 ) )</spanx>.</t>
-		</list>
-	      </t>
-	      <t>
-		Somestimes a form is needed just to add a semantic aspect to an expression without
-		actually changing its value for most purposes. For these cases, a reference can be
-		given the value of bulk:id. Some processing applications will substitute their own
-		evaluation this one to implement that semantic.
-	      </t>
 	    </section>
 
 	  </section>
