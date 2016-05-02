@@ -405,15 +405,6 @@
    - ( directory {name} nil )
 
 ** Hash
-   - ( fletcher Word )
-     - ( config modulus Int ) ?
-       - Adler-32 = ( fletcher Word32 ) ( config modulus 65521 )
-   - TODO: GBC forms and metadata for signatures
-
-   - ( config {config} )
-     - {config} = [field value]*
-
-
    #+BEGIN_SRC bulk
    ( verifiable-ns 40 {id} nil "hash"
    "The forms in this vocabulary can be used to represent hashes along with the hashing algorithm instead of using an unmarked byte sequence. When an algorithm has other inputs than the message, they can be provided after the hash itself as a property list.
