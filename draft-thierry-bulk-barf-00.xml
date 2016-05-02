@@ -146,11 +146,12 @@
 	  that obeys the rules of GBC has the type GBCForm.
 	</t>
 	<t>
-	  A GBCForm has the shape <spanx style="verb">( Ref {tag} {arguments} {next}:Expr
-	  )</spanx>. If the payload of a GBCForm is readable without knowledge of that form, then
-	  {next} MUST be that payload and {tag} must be <spanx style="verb">gbc&gt;</spanx>, <spanx
-	  style="verb">gbc*&gt;</spanx> or <spanx style="verb">gbc*~&gt;</spanx>. Otherwise, {tag}
-	  must be <spanx style="verb">gbc|</spanx>.
+	  A GBCForm has the shape <spanx style="verb">( Ref {tag}:Expr {arguments} {next}:Expr
+	  )</spanx> or <spanx style="verb">( Ref {tag}:Expr {arguments} )</spanx>. If the payload of
+	  a GBCForm is readable without knowledge of that form, then {next} MUST be that payload and
+	  {tag} MUST be <spanx style="verb">gbc&gt;</spanx>, <spanx style="verb">gbc*&gt;</spanx> or
+	  <spanx style="verb">gbc*~&gt;</spanx>. Otherwise, {tag} MUST be <spanx
+	  style="verb">gbc|</spanx>.
 	</t>
 	<t>
 	  For example, a GBC-compliant checksum form could have the shape <spanx style="verb">( crc32c
@@ -302,7 +303,8 @@
 	</t>
 	<t>
 	  A form with this tag MUST NOT be preserved around a payload other than the original
-	  payload.
+	  payload, except when the processing application that writes the modified form can
+	  determine that the form still applies.
 	</t>
 	<t>Type: <spanx style="verb">GBC></spanx></t>
       </section>
@@ -320,7 +322,9 @@
 	</t>
 	<t>
 	  A form with this tag MAY be preserved around a payload other than the original payload. In
-	  this case, the tag MUST be changed to <spanx style="verb">gbc*~&gt;</spanx>.
+	  this case, the tag MUST be changed to <spanx style="verb">gbc*~&gt;</spanx>, except when
+	  the processing application that writes the modified form can determine that the form still
+	  applies.
 	</t>
 	<t>Type: <spanx style="verb">GBC></spanx></t>
       </section>
@@ -337,59 +341,95 @@
 	  the application.
 	</t>
 	<t>
-	  This tag means that the form had been created around a different payload but has been
-	  kept around the modified payload.
+	  This tag means that the form had been created around a different payload but has been kept
+	  around the modified payload by a processing application unable or unwilling to determine
+	  if it still applies.
 	</t>
 	<t>Type: <spanx style="verb">GBC></spanx></t>
       </section>
 
-      <section title="Compressed data">
+      <section title="Broad categories GBC forms">
 	<t>
-	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx
-	    style="verb">compressed</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( compressed gbc| {method}:Expr {payload}:Array )</spanx></t>
-	  </list>
+	  The fact that namespaces are identified by unique identifiers unambiguously makes it
+	  rather easy to set up some form of discovery mechanism for when a processing application
+	  encounters an unknown namespace. Still, that discovery mechanism needs to be setup, found
+	  and reached.
 	</t>
 	<t>
-	  This form encapsulates a compressed payload. This specification only defines one name to
-	  express a compression method.
+	  Thus this specification defines a few GBC forms that make a 2-bytes sacrifice in
+	  compactness in favor of the possibility for processing applications to determine and
+	  report to users the nature of some common GBC forms use cases.
 	</t>
-	<t>Type: <spanx style="verb">GBCForm</spanx></t>
-      </section>
+	<t>
+	  For example, instead of encountering a form of shape <spanx style="verb">( ??? gbc|
+	  {something} )</spanx> that the application can only report is opaque to it, it would
+	  encounter <spanx style="verb">( compressed gbc| ??? {something} )</spanx> and be able to
+	  report that it is data compressed with an unknown algorithm.
+	</t>
 
-      <section title="DEFLATE">
-	<t>
-	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx
-	    style="verb">deflate</spanx> )</t>
-	  </list>
-	</t>
-	<t>
-	  This name designates the <xref target="RFC1951">DEFLATE</xref> compression method.
-	</t>
-      </section>
+	<section title="Compressed data">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx
+	      style="verb">compressed</spanx> )</t>
+	      <t hangText="shape"><spanx style="verb">( compressed gbc| {method}:Expr {payload}:Array )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This form encapsulates a compressed payload. This specification only defines one name to
+	    express a compression method.
+	  </t>
+	  <t>Type: <spanx style="verb">GBCForm</spanx></t>
+	</section>
 
-      <section title="Encrypted data">
-	<t>
-	  <list style="hanging">
-	    <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx
-	    style="verb">encrypted</spanx> )</t>
-	    <t hangText="shape"><spanx style="verb">( encrypted gbc| {method}:Expr {payload}:Array )</spanx></t>
-	  </list>
-	</t>
-	<t>
-	  This form encapsulates an encrypted payload. This specification doesn't define names to
-	  express an encryption method.
-	</t>
-	<t>Type: <spanx style="verb">GBCForm</spanx></t>
+	<section title="DEFLATE">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx
+	      style="verb">deflate</spanx> )</t>
+	    </list>
+	  </t>
+	  <t>
+	    This name designates the <xref target="RFC1951">DEFLATE</xref> compression method.
+	  </t>
+	</section>
+
+	<section title="Encrypted data">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx
+	      style="verb">encrypted</spanx> )</t>
+	      <t hangText="shape"><spanx style="verb">( encrypted gbc| {method}:Expr {payload}:Array )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This form encapsulates an encrypted payload. This specification doesn't define names to
+	    express an encryption method.
+	  </t>
+	  <t>Type: <spanx style="verb">GBCForm</spanx></t>
+	</section>
+
+	<section title="Hashed data">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx
+	      style="verb">hashed</spanx> )</t>
+	      <t hangText="shape"><spanx style="verb">( hashed gbc> {hash}:Expr {payload}:Array )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This form encapsulates a hashed payload along with its hash. This specification doesn't
+	    define names to express a hash.
+	  </t>
+	  <t>Type: <spanx style="verb">GBCForm</spanx></t>
+	</section>
       </section>
 
       <section title="Metadata entries">
 	<section title="Count">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx
+	      <t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx
 	      style="verb">count</spanx> )</t>
 	      <t hangText="shape"><spanx style="verb">( count {num}:Int )</spanx></t>
 	    </list>
