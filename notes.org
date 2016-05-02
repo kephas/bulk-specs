@@ -58,14 +58,6 @@
    - 0x22 :: ( binary {bits} )
    - 0x23 :: ( decimal {bits} )
 
-
-   A NS could be tied to a URL where its reference definition can be
-   found (with an v5 UUID hashing the URL). But if the URL stops being
-   resolvable, the NS cannot be "authenticated" anymore. It seems too
-   fragile.
-
-   openpgp and x509 may come from a crypto NS instead.
-
 ** Mobile code
    - language = namespace
    - language-agnostic encoding
