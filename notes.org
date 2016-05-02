@@ -261,9 +261,18 @@
     : (:A(:B:C:D))
 
 ** MeTOD: Media type Optimal Description
-   - type as UniqueID (short, 32 or 64 bits)
+   - type as UniqueID
+     - different forms for different use cases:
+       - expressing types in contexts where namespaces are available
+       - expressing types concisely without overhead of using
+         namespaces: concise forms forcing kinds to be 16-bits SHA3
+         and types 32-bits SHA3
+	 - type = 9 bytes / kind+type = 12 bytes
+	 - other forms could be defined to implement the same scheme
+           with other constraints (like different sizes or hashing
+           algorithm if collisions occur)
    - atomic type
-     - html
+     - html5
      - jpeg
    - composite type
      - syntax
@@ -274,7 +283,8 @@
        - ( gzip tar )
        - ( base64 zip )
    - complex structures
-     - ( s/mime ( multipart ( alt txt html ) zip ) openpgp )
+     - ( s/mime ( multipart ( alt ( qp txt ) ( qp html5 ) ) ( base64
+       zip ) ) ( base64 openpgp ) )
    - accept patterns
      - ( xml * )
      - ( xml xhtml * )
@@ -282,6 +292,15 @@
      - for xml, the first subtype MUST be the type for the document
        element
      - for MIME, order of parts
+
+
+   - 0x00 :: ( type {type}:Expr {params} )
+   - 0x01 :: ( kind/type {kind}:Expr {type}:Expr {params} )
+   - 0x02 :: *
+   - 0x03 :: bulk / ( bulk {namespaces} )
+   - 0x04 :: ( concise-type-sha3 {type}:Word32 )
+   - 0x05 :: ( concise-kind/type-sha3 {kind}:Word16 {type}:Word32 )
+   - 0x06 :: ( associate {type}:Expr {ids} )
 
 ** Dates namespace
    - Int123 := Int | Int Int | Int Int Int
