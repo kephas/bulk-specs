@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date day="" month="" year="2014" />
+    <date day="" month="" year="2016" />
     <keyword>binary</keyword>
 
     <abstract>
@@ -58,10 +58,10 @@
 	  technologies like <xref target="protobuf">protocol buffers</xref>, <xref
 	  target="Thrift">Thrift</xref>, the various binary serializations for JSON like <xref
 	  target="Avro">Avro</xref> or <xref target="Smile">Smile</xref>, or the binary <xref
-	  target="HTTP2">HTTP/2.0</xref> currently in development seem to indicate that the time is
-	  ripe for a generalized use of binary, reserved until now for the low-level protocols. The
-	  lessons about flexibility learnt in the previous switch from binary to plain text can now
-	  be applied to efficient binary syntaxes.
+	  target="HTTP2">HTTP/2</xref> seem to indicate that the time is ripe for a generalized use
+	  of binary, reserved until now for the low-level protocols. The lessons about flexibility
+	  learnt in the previous switch from binary to plain text can now be applied to efficient
+	  binary syntaxes.
 	</t>
 	<section title="Definitions">
 	  <t>
@@ -120,14 +120,15 @@
 	    which has seen a tremendous success for this purpose. JSON may lack in generality and
 	    compactness, but its design makes its parsing really straightforward and fast. All of
 	    them, though, lack decentralization. Some of them make it possible to extend them in a
-	    relatively decentralized way if some discipline is followed (for example, by naming
-	    modules after domaine names), but the discipline is not mandatory.
+	    distrubuted way if some discipline is followed (for example, by naming modules after
+	    domain names), but the discipline is not mandatory (and even with domain names, a change
+	    of ownership makes it possible for name collisions).
 	  </t>
 	  <t>
-	    The SGML/XML family of formats also feature these traits and actually fare much better
-	    than programming languages on the three fronts. XML namespaces also make it relatively
-	    decentralized and there have been attempts at making it compact (e.g. EXI from W3C, Fast
-	    Infoset from ISO/ITU or EBML).
+	    The SGML/XML family of formats also feature uniformity, generality and extensibility and
+	    actually fare much better than programming languages on the three fronts. XML namespaces
+	    also make XML naming distributed and there have been attempts at making it compact
+	    (e.g. EXI from W3C, Fast Infoset from ISO/ITU or EBML).
 	  </t>
 	  <t>
 	    All the previously cited formats clearly lack compactness, although just applying
@@ -160,34 +161,35 @@
 	  starting byte marker, a sequence of expressions and an ending byte marker. Among atoms,
 	  only nil (the null byte), arrays and fixed-sized binary words have a special syntax, for
 	  efficiency purposes. Even booleans and floating-point numbers follow the uniform syntax
-	  that every other expression follow.
+	  that every other expression follows.
 	</t>
 	<t>
 	  Non uniform atoms start with a marker byte, followed by a static or dynamic number of
 	  bytes, depending on the type.
 	</t>
 	<t>
-	  Any other atom is a reference, which consists of a namespace marker (in most of the cases,
+	  Any other atom is a reference, which consists of a namespace marker (in almost all cases,
 	  a single byte) followed by an identifier within this namespace (a single byte). All in
 	  all, a very little sacrifice is made in compactness for the benefit of a very simple
 	  syntax: apart from nil, nothing is smaller than 2 bytes, and as most forms involve a
-	  reference followed by some content, a form is 4 bytes + its content.
+	  reference followed by some content, a form is usually 4 bytes + its content.
 	</t>
 	<t>
-	  A namespace marker in a BULK stream is associated by either one of two simple forms to a
-	  namespace identified by a UUID, thus ensuring decentralized extensibility. One of the two
-	  forms declares that the stream can be processed even if the application doesn't recognize
-	  the namespace. Parsing remains possible thanks to the uniform syntax.
+	  A namespace marker in a BULK stream is associated to a namespace identified by some
+	  identifier guaranteed to be unique without coordination (like a UUID or cryptographical
+	  hash), thus ensuring decentralized extensibility. The stream can be processed even if the
+	  application doesn't recognize the namespace. Parsing remains possible thanks to the
+	  uniform syntax.
 	</t>
 	<t>
 	  Combination of BULK namespaces, BULK streams and even other formats doesn't need any
 	  content transformation to work. Here are some examples:
 	  <list style="symbols">
 	    <t>
-	      The content of a BULK stream, enclosed in 0x1 and 0x2 bytes markers, constitute a
-	      valid BULK expression. Thus BULK streams can be packed or annotated within a BULK
-	      stream without modification. Annotation use cases include adding metadata and
-	      cryptographic signature.
+	      The content of a BULK stream, enclosed in sequence starting and ending byte markers,
+	      constitute a valid BULK expression. Thus BULK streams can be packed or annotated
+	      within a BULK stream without modification. Annotation use cases include adding
+	      metadata or cryptographic signature.
 	    </t>
 	    <t>
 	      A BULK format could specify in its syntax the place for an expression holding
@@ -251,8 +253,16 @@
 	<t>
 	  When an entire shape describes the byte sequence of an atom, it is the normative
 	  specification for parsing it, but shapes of forms are only normative with respect to their
-	  evaluation. A reference defined with a form shape can be used in different shapes, albeit
-	  with different semantics and value.
+	  default evaluation. A reference defined with a form shape can be used in different shapes,
+	  albeit with different semantics and value and even when used in its default shape, a
+	  processing application MAY give it alternative semantics.
+	</t>
+	<t>
+	  For example, this specification defines a way do specify a string encoding with forms of
+	  the shape <spanx style="verb">( stringenc {enc}:Expr )</spanx>. But the shapes <spanx
+	  style="verb">( stringenc {arg1}:Int {arg2}:Int )</spanx> or <spanx style="verb">(
+	  {arg1}:Int stringenc {arg2}:Int )</spanx> are syntactly valid. They just have unspecified
+	  semantics, as far as this specification is concerned.
 	</t>
       </section>
     </section>
@@ -268,14 +278,21 @@
 	A processing application is not expected to actually produce the abstract yield, but an
 	adaptation of the abstract yield to its own implementation, called the concrete yield. Also,
 	some expressions in a BULK stream may have the semantics of a transformation of the abstract
-	yield. A processing application may thus not produce or retain the concrete yield but the
+	yield. A processing application MAY thus not produce or retain the concrete yield but the
 	result of its transformation. This specification deals mainly with the byte sequence and the
-	abstract yield and occasionnally provide guidelines about the concrete yield.
+	abstract yield and occasionnally provide guidelines about the concrete yield. Of course, a
+	processing application MAY not produce the concrete yield at all but produce various side
+	effects from parsing the BULK stream.
       </t>
       <t>
 	The abstract yield is a sequence of expressions. Expressions can be atoms or forms. Forms
 	are sequences of expressions. If a byte sequence is parsed as an expression, this byte
 	sequence is said to denote this expression.
+      </t>
+      <t>
+	When a sequence of bytes is named in a shape, its name can be used in this specification to
+	designate either the byte sequence, or the expression or sequence of expressions it
+	denotes. When there could be ambiguity, this specification specifies which is designated.
       </t>
 
       <section anchor="parsing" title="Parsing algorithm">
@@ -306,6 +323,11 @@
 	  The scope of an expression is the part of its context that follows the expression.
 	</t>
 	<t>
+	  This specification designates the context where the expressions contained in a form are
+	  appended as the inner scope of the form. Its parent context is designated as the outer
+	  scope of the form.
+	</t>
+	<t>
 	  Whenever a parsing error is encountered, parsing of the BULK stream MUST stop.
 	</t>
 	<section title="Evaluation">
@@ -313,14 +335,16 @@
 	    A processing application MAY implement evaluation of BULK expressions and streams. When
 	    evaluating a BULK stream, when the parser gets to the dispatch stage and the context is
 	    the abstract yield, the last expression in the context is replaced by what it evaluates
-	    to.
+	    to. (of course, this description is supposed to provide the semantics of BULK
+	    evaluation, but a processing application MAY implement evaluation with a different
+	    algorithm as long as it provides the same semantics)
 	  </t>
 	  <t>
 	    The default evaluation rule is that an expression evaluates to itself. A name within a
 	    namespace can have a value, which is what a reference associated to this name evaluates
 	    to. A reference whose marker value is associated to no namespace or whose name has no
 	    value evaluates to itself. How self-evaluating BULK expressions are represented in the
-	    concrete yield is application-dependent, but future specifications may define a standard
+	    concrete yield is application-dependent, but future specifications MAY define a standard
 	    API to access it, similar to the Document Object Model for XML.
 	  </t>
 	  <t>
@@ -357,17 +381,31 @@
 
 	<section title="Difference between sequence and form">
 	  <t>
-	    Beware that although the specific yield of a form is a sequence of expressions, it is
-	    not the same thing as a byte sequence denoting a form, which is a sequence in the
-	    yield. Let's examine several forms of the shape <spanx style="verb">( foo {seq}
-	    )</spanx>.
+	    There is a difference between a byte sequence denoting a sequence of expressions among
+	    the current context and a byte sequence denoting a form (i.e. a single expression that
+	    contains a sequence of expressions). As an example, let's examine several forms of the
+	    shape <spanx style="verb">( foo {seq} )</spanx>.
 	  </t>
 	  <t>
-	    In the form <spanx style="verb">( foo nil nil nil )</spanx>, {seq} is a sequence of 3
-	    expressions, but they are three atoms in the yield. In the form <spanx style="verb">(
-	    foo nil )</spanx>, {seq} is a single expression, and that expression is an atom. But in
-	    the form <spanx style="verb">( foo ( nil nil nil ) )</spanx>, {seq} is also a single
-	    expression, and that expression is a form, which is a sequence in the yield.
+	    <list style="symbols">
+	      <t>In the form <spanx style="verb">( foo nil nil nil )</spanx>, {seq} denotes 3
+	      expressions, and they are three atoms in the yield.</t>
+
+	      <t>In the form <spanx style="verb">( foo nil )</spanx>, {seq} is a single expression
+	      in the yield, and that expression is an atom.</t>
+
+	      <t>In the form <spanx style="verb">( foo ( nil nil nil ) )</spanx>, {seq} is also a
+	      single expression in the yield, and that expression is a form, a sequence in the
+	      yield.</t>
+	    </list>
+	  </t>
+	  <t>
+	    In a shape, when a byte sequence must yield a single expression, it has the type <spanx
+	    style="verb">Expr</spanx>. So the last two examples fit the shape <spanx style="verb">(
+	    foo {seq}:Expr )</spanx> but not the first. When a byte sequence must yield a form, it
+	    has type <spanx style="verb">Form</spanx>. Thus the shape <spanx style="verb">( foo
+	    {bar}:Form )</spanx> is equivalent to <spanx style="verb">( foo ( {bar} )
+	    )</spanx>. Either one MAY be used.
 	  </t>
 	</section>
       </section>
@@ -382,10 +420,10 @@
 	  </t>
 	  <t>
 	    Apart from being a possible short marker value, the fact that the <spanx
-	    style="verb">0x0</spanx> byte represents a valid atom means that a sequence of null bytes
-	    is a valid part of a BULK stream, thus making the format less fragile. In a network
-	    communication, nil atoms can also be sent to keep the channel open. They can also be
-	    used as padding at the end of a form.
+	    style="verb">0x0</spanx> byte represents a valid atom means that a sequence of null
+	    bytes is a valid part of a BULK stream, thus making the format less fragile. In a
+	    network communication, nil atoms can be sent to keep the channel open. They can also be
+	    used as padding at the end of a form or between forms.
 	  </t>
 	</section>
 
@@ -405,93 +443,138 @@
 	  </t>
 	  <t>
 	    If two arrays have the shapes <spanx style="verb"># {s1} {c1}</spanx> and <spanx
-	    style="verb"># {s2} {c2}</spanx> and if <spanx style="verb">{s1+s2}</spanx> denotes the sum
-	    of <spanx style="verb">{s1} </spanx>and <spanx style="verb">{s2}</spanx>, then their
-	    concatenation is <spanx style="verb"># {s1+s2} {c1} {c2}</spanx>.
+	    style="verb"># {s2} {c2}</spanx> and if <spanx style="verb">{s1+s2}</spanx> denotes the
+	    sum of the integers <spanx style="verb">{s1}</spanx> and <spanx
+	    style="verb">{s2}</spanx>, then their concatenation is <spanx style="verb"># {s1+s2}
+	    {c1} {c2}</spanx>.
 	  </t>
 	  <t>
-	    In the text notation, a quoted string represent an array containing the encoding of that
-	    string in the current encoding.
+	    In the text notation, a quoted string represents an array containing the encoding of
+	    that string in the current encoding.
 	  </t>
-	  <t>Type: <spanx style="verb">Array</spanx></t>
+	  <t>Types: <spanx style="verb">Array</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  <t>
+	    In a shape, the type String is synonymous with Array, but means that the content of the
+	    array is supposed to be taken as a string.
+	  </t>
 	</section>
 
 	<section title="Binary words">
 	  <t>
-	    A word can be interpreted either as a bits sequence or as an unsigned integer in binary
-	    notation. The choice depends on the context and the application. Actually, many
-	    processing applications may not need make any choice, as most programming language
+	    A unsigned word can be interpreted either as a bits sequence or as an unsigned integer
+	    in binary notation. The choice depends on the context and the application. Actually,
+	    many processing applications may not need make any choice, as most programming language
 	    implementations actually also confuse unsigned integers and bits sequences to some
 	    extent.
 	  </t>
-	  <section title="8 bits word">
-	    <t>
-	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">w8</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">w8 1B</spanx></t>
-	      </list>
-	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word8</spanx></t>
-	  </section>
-
-	  <section title="16 bits word">
-	    <t>
-	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">w16</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">w16 2B</spanx></t>
-	      </list>
-	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word16</spanx></t>
-	  </section>
-
-	  <section title="32 bits word">
-	    <t>
-	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">w32</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">w32 4B</spanx></t>
-	      </list>
-	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx></t>
-	  </section>
-
-	  <section title="64 bits word">
-	    <t>
-	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">w64</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">w64 8B</spanx></t>
-	      </list>
-	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx></t>
-	  </section>
-
-	  <section title="128 bits word">
-	    <t>
-	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">w128</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">w128 16B</spanx></t>
-	      </list>
-	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx></t>
-	  </section>
-	</section>
-
-	<section title="Signed fixed-size integer">
 	  <t>
-	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">sint</spanx>)</t>
-	      <t hangText="shape"><spanx style="verb">sint Word</spanx></t>
-	    </list>
+	    Signed words contain the value of an integer in two's-complement notation.
 	  </t>
-	  <t>
-	    The value of its contained word is the value of this integer in two's-complement
-	    notation.
-	  </t>
-	  <t>Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx></t>
+
+	  <section title="8 bits unsigned word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">uw8</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">uw8 1B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word8</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="16 bits unsigned word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">uw16</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">uw16 2B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word16</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="32 bits unsigned word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">uw32</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">uw32 4B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="64 bits unsigned word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">uw64</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">uw64 8B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="128 bits unsigned word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">uw128</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">uw128 16B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="8 bits signed word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">sw8</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw8 1B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word8</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="16 bits signed word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">sw16</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw16 2B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word16</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="32 bits signed word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">sw32</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw32 4B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="64 bits signed word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">sw64</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw64 8B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
+	  <section title="128 bits signed word">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">sw128</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw128 16B</spanx></t>
+	      </list>
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
 	</section>
 
 	<section title="Reserved marker bytes">
 	  <t>
-	    Marker bytes <spanx style="verb">0xA−0xF</spanx> are reserved for future major versions of
+	    Marker bytes <spanx style="verb">0xE−0x1F</spanx> are reserved for future major versions of
 	    BULK. It is a parser error if a BULK stream with major version 1 contains such a marker
 	    byte.
 	  </t>
@@ -499,14 +582,15 @@
 
 	<section title="Reference">
 	  <t><list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x10−0xFF</spanx></t>
+	      <t hangText="marker"><spanx style="verb">0x20−0xFF</spanx></t>
 	      <t hangText="shape"><spanx style="verb">{ns}:1B {name}:1B</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    The <spanx style="verb">{ns}</spanx> byte is a value associated with a namespace. Values
-	    <spanx style="verb">0x10−0x1F</spanx> are reserved for namespaces defined by BULK
-	    specifications. Greater values can be associated with namespaces identified by a UUID.
+	    <spanx style="verb">0x20−0x27</spanx> are reserved for namespaces defined by BULK
+	    specifications. Greater values can be associated with namespaces identified by a unique
+	    identifier.
 	  </t>
 	  <t>
 	    The <spanx style="verb">{name}</spanx> byte is the name within the namespace. Vocabularies
@@ -537,13 +621,13 @@
 
     <section title="Standard namespaces">
       <t>
-	Standard namespaces have a fixed namespace value and are not identified by a UUID.
+	Standard namespaces have a fixed marker value and are not identified by a unique identifier.
       </t>
 
       <section title="BULK core namespace">
 	<t>
 	  <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x10</spanx> (mnemonic: <spanx style="verb">bulk</spanx>)</t>
+	      <t hangText="marker"><spanx style="verb">0x20</spanx> (mnemonic: <spanx style="verb">bulk</spanx>)</t>
 	  </list>
 	</t>
 
@@ -666,11 +750,11 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">ns</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( ns {mark}:Int {uuid}:Word128 )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( ns {marker}:Int {id}:UniqueID )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This associates the namespace identified by {uuid} to the value {mark}, within the
+	      This associates the namespace identified by {id} to the value {marker}, within the
 	      scope of this expression.
 	    </t>
 	  </section>
@@ -679,16 +763,13 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">package</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( package {uuid}:Word128 {namespaces} )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( package {id}:UniqueID {namespaces} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This creates a package identified by {uuid}. Packages are immutable, {uuid} MUST be a
-	      v5 UUID generated with the byte sequence <spanx style="verb">{namespaces}</spanx> as
-	      name. The BULK UUID (<eref target="urn:uuid:abaddeed-face-11e2-9605-74de2b4102f1"/>)
-	      SHOULD be used as UUID name space. <spanx style="verb">{namespaces}</spanx> must be a
-	      sequence of expressions of type Word128, each containing a UUID identifying a BULK
-	      namespace.
+	      This creates a package identified by {id}. Packages are immutable, {id} MUST be
+	      verifiable against the byte sequence {namespaces}. {namespaces} must be a sequence of
+	      expressions of type UniqueID, each identifying a BULK namespace.
 	    </t>
 	  </section>
 
@@ -696,13 +777,12 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">import</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( import {base}:Int {count}:Int {uuid}:Word128 )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( import {base}:Int {count}:Int {id}:UniqueID )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This associates the first <spanx style="verb">{count}</spanx> namespaces in the
-	      package identified by <spanx style="verb">{uuid}</spanx> with a continuous range of
-	      values starting at <spanx style="verb">{base}</spanx>.
+	      This associates the first {count} namespaces in the package identified by {id} with a
+	      continuous range of values starting at {base} within the scope of this expression.
 	    </t>
 	  </section>
 	</section>
@@ -710,7 +790,7 @@
 	<section title="Definitions">
 	  <t>
 	    To define a reference is to change the the value of its name in its namespace (as
-	    identified by its UUID, not the marker value) within a certain scope.
+	    identified by its unique identifier, not the marker value) within a certain scope.
 	  </t>
 	  <t>
 	    If a BULK stream is not evaluated, the semantics of a definition are entirely
@@ -729,36 +809,96 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( define {ref}:Ref Expr )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( define {ref}:Ref {value}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This defines the reference {ref} in the scope of this expression.
+	      This defines the reference {ref} to the yield of {value} in the outer scope of this form.
 	    </t>
 	  </section>
-	</section>
 
-	<section title="Substituton">
-	  <section title="Substitution function">
+	  <section title="Named definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">subst</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
+		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">mnemonic/def</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( mnemonic/def {ref}:Ref {mnemonic}:String
+		{doc}:Expr {value} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
+	      This suggest {mnemonic} as the mnemonic of the name designated by {ref} in its
+	      namespace. If {value} is of type Expr, this defines the reference {ref} to {value} in
+	      the outer scope of this form.
+	    </t>
+	    <t>
+	      {doc} is any expression that provides a documentation for this reference. If it has
+	      type Array, it MUST be a string. It could be any kind of metadata or document type.
+	    </t>
+	  </section>
+
+	  <section title="Namespace description">
+	    <t>
 	      <list style="hanging">
-		<t hangText="Name's type">LazyFunction</t>
-		<t hangText="Form's type">EagerFunction</t>
-		<t hangText="Form's value">A substitution function whose return value is the value
-		of {code}. Within {code}'s specific yield, the names <spanx style="verb">arg</spanx>
-		and <spanx style="verb">rest</spanx> are defined:</t>
+		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx
+		style="verb">ns-mnemonic</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( ns-mnemonic {ns}:Expr {mnemonic}:String
+		{doc} )</spanx></t>
 	      </list>
 	    </t>
+	    <t>
+	      This suggest {mnemonic} as the mnemonic of the namespace designated by {ns} (which can
+	      be the integer to which this namespace is associated, a reference in this namespace or
+	      the unique identifier of this namespace).
+	    </t>
+	  </section>
+
+	  <section title="Verifiable namespace definition">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x0D</spanx> (mnemonic: <spanx style="verb">verifiable-ns</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( verifiable-ns {marker}:Int {id}:UniqueID
+		{data}:Expr {mnemonic}:Expr {definitions} )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This associates the namespace identified by {id} to the value {marker}, within the
+	      outer and inner scopes of this form. Verifiable namespaces are immutable, {id} MUST
+	      be verifiable against the byte sequence <spanx style="verb">{data} {mnemonic}
+	      {definitions}</spanx>. Defining a reference in the inner scope of this form also
+	      defines that reference in the outer scope of this form.
+	    </t>
+	    <t>
+	      If {mnemonic} is of type String, then this suggests it as the mnemonic of the
+	      namespace. Else it MUST be <spanx style="verb">nil</spanx>.
+	    </t>
+	    <t>
+	      If more data than {id} is needed to verify {id} against {definitions}, this data
+	      should be provided by {data}. Else {data} MUST be <spanx style="verb">nil</spanx>.
+	    </t>
+	  </section>
+
+	  <section title="Substituton">
+	    <section title="Substitution function">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">subst</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		<list style="hanging">
+		  <t hangText="Name's type">LazyFunction</t>
+		  <t hangText="Form's type">EagerFunction</t>
+		  <t hangText="Form's value">A substitution function whose return value is the value
+		  of {code}. Within {code}'s specific yield, the names <spanx style="verb">arg</spanx>
+		  and <spanx style="verb">rest</spanx> are defined:</t>
+		</list>
+	      </t>
+	    </section>
 	    <section title="Argument">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">arg</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">arg</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( arg {n}:Int )</spanx></t>
 		</list>
 	      </t>
@@ -774,7 +914,7 @@
 	    <section title="Rest of arguments list">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">rest</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx style="verb">rest</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( rest {n}:Int )</spanx></t>
 		</list>
 	      </t>
@@ -786,7 +926,50 @@
 		  first {n} elements.</t>
 		</list>
 	      </t>
+	      <section title="Examples">
+		<t>Here is a definition of the inverse followed by the number 1/2, 1/3 and 1/4:</t>
+		<t><spanx style="verb">( define inverse ( subst ( frac 1 ( arg 0 ) ) ) ) ( inverse 2 )
+		( inverse 3 ) ( inverse 4 )</spanx></t>
+		<t>Substitution will splice multiple expressions in place:</t>
+		<t>The evaluation of <spanx style="verb">( ( subst 1 ( rest 0 ) 2 ) 3 4 )</spanx>
+		must yield the same as <spanx style="verb">( 1 3 4 2 )</spanx></t>
+	      </section>
 	    </section>
+	    <section title="Array concatenation">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx style="verb">concat</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( concat {array1} {array2} )</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		<list style="hanging">
+		  <t hangText="Name's type">EagerFunction</t>
+		  <t hangText="Form's type">Array</t>
+		  <t hangText="Form's value">the concatenation of {array1} and {array2}.</t>
+		</list>
+	      </t>
+	    </section>
+	    <section title="Identity function">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx style="verb">id</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( id {rest} )</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		<list style="hanging">
+		  <t hangText="Value"><spanx style="verb">( subst ( rest 0 ) )</spanx>.</t>
+		</list>
+	      </t>
+	      <t>
+		Somestimes a form is needed just to add a semantic aspect to an expression without
+		actually changing its value for most purposes. For these cases, a reference can be
+		given the value of bulk:id. Some processing applications will substitute their own
+		evaluation this one to implement that semantic.
+	      </t>
+	    </section>
+
 	  </section>
 	</section>
 
@@ -875,25 +1058,14 @@
 
     <section title="Extension namespaces">
       <t>
-	Extension namespaces are defined with an identifier UUID, to be associated to a marker
+	Extension namespaces are defined with a unique identifier, to be associated to a marker
 	value.
       </t>
-
-      <section title="Official namespaces">
-	<t>
-	  Extension namespaces defined as part of the official BULK suite MUST be identified by a v5
-	  UUID. The namespace UUID used to generate it MUST be <eref
-	  target="urn:uuid:abaddeed-face-11e2-9605-74de2b4102f1"/>. The name used to generate it
-	  SHOULD be a URI designating the described vocabulary when one exists.
-	</t>
-      </section>
-
-      <section title="User-defined namespaces">
-	<t>
-	  User-defined namespaces are actually no different than official namespaces, apart from the
-	  choice of UUID.
-	</t>
-      </section>
+      <t>
+	By is decentralized nature, as far as a processing application is concerned, apart from
+	standard namespaces, there is no difference between a namespace defined as part of the
+	official BULK suite and a user-defined one.
+      </t>
     </section>
 
     <section title="Profiles">
@@ -998,19 +1170,19 @@
 	  a version form has the side-effect that classes of BULK streams can be identified by a
 	  sequence of bytes acting as "magic number":
 	  <list style="hanging">
-	    <t hangText="0x011001">any BULK stream</t>
-	    <t hangText="0x01100104">a BULK stream of any major version beneath 256</t>
-	    <t hangText="0x0110010401">a BULK stream of major version 1</t>
-	    <t hangText="0x0110010401040202">a BULK stream of version 1.2</t>
+	    <t hangText="0x012001">any BULK stream</t>
+	    <t hangText="0x01200104">a BULK stream of any major version beneath 256</t>
+	    <t hangText="0x0120010401">a BULK stream of major version 1</t>
+	    <t hangText="0x0120010401040202">a BULK stream of version 1.2</t>
 	  </list>
 	  </t>
 	  <t hangText="Published specification">this document</t>
 	  <t hangText="Applications that use this media type">none so far</t>
-	  <t hangText="Fragment identifier considerations">this specification defines no semantics for
-	  addressing the data with a fragment identifier; a future specification could define fragment
-	  identifier syntaxes to address the content by byte offset or the parsed results by their
-	  number in the yielded sequence</t>
-	  <t hangText="Additional information">a future specification may define a naming convention
+	  <t hangText="Fragment identifier considerations">this specification defines no semantics
+	  for addressing the data with a fragment identifier; a future specification MAY define
+	  fragment identifier syntaxes to address the content by byte offset or the parsed results
+	  by their position in the yielded sequence</t>
+	  <t hangText="Additional information">a future specification MAY define a naming convention
 	  for media types based on bulk with a +bulk suffix, as for XML with +xml</t>
 	</list>
       </t>
@@ -1060,11 +1232,11 @@
 
       <reference anchor="HTTP2">
 	<front>
-	  <title>Hypertext Transfer Protocol version 2.0</title>
+	  <title>Hypertext Transfer Protocol version 2 (HTTP/2)</title>
 	  <author initials="M." surname="Belshe" fullname="Mike Belshe">
-	    <organization>Twist</organization>
+	    <organization>BitGo</organization>
 	    <address>
-	      <email>mbelshe@chromium.org</email>
+	      <email>mike@belshe.com</email>
 	    </address>
 	  </author>
 
@@ -1076,37 +1248,22 @@
 	  </author>
 
 	  <author initials="M." surname="Thomson" fullname="Martin Thomson" role="editor">
-	    <organization>Microsoft</organization>
+	    <organization>Mozilla</organization>
 	    <address>
 	      <postal>
-		<street>3210 Porter Drive</street>
-		<city>Palo Alto</city>
-		<code>94304</code>
+		<street>331 E Evelyn Street</street>
+		<city>Mountain View, CA</city>
+		<code>94041</code>
 		<country>US</country>
 	      </postal>
-	      <email>martin.thomson@skype.net</email>
+	      <email>martin.thomson@gmail.com</email>
 	    </address>
 	  </author>
-
-	  <author initials="A." surname="Melnikov" fullname="Alexey Melnikov" role="editor">
-	    <organization>Isode Ltd</organization>
-	    <address>
-	      <postal>
-		<street>5 Castle Business Village</street>
-		<street>36 Station Road</street>
-		<city>Hampton</city>
-		<region>Middlesex</region>
-
-		<code>TW12 2BX</code>
-		<country>UK</country>
-	      </postal>
-	      <email>Alexey.Melnikov@isode.com</email>
-	    </address>
-	  </author>
-	  <date month="July" year="2013"/>
+	  <date month="May" year="2015"/>
 	</front>
-	<seriesInfo name="Internet-Draft" value="draft-ietf-httpbis-http2-04"/>
+        <seriesInfo name="RFC" value="7540"/>
       </reference>
+
       <reference anchor="Avro" target="http://avro.apache.org/docs/1.7.4/spec.html">
 	<front>
 	  <title>Apache Avro™ 1.7.4 Specification</title>
@@ -1160,9 +1317,9 @@
       <t>
 	This constitutes a suggestion of architecture for a BULK processing application. It has the
 	advantage that an agent cannot modify the values of names to which it has not specifically
-	be given authority. This architecture doesn't ensure this property by checking the validity
-	of definitions but by adhering to the Principle Of Least Authority, thus ensuring no false
-	positives or TOCTOU race conditions.
+	been given authority. This architecture doesn't ensure this property by checking the
+	validity of definitions but by adhering to the Principle Of Least Authority, thus ensuring
+	no false positives or TOCTOU race conditions.
       </t>
       <t>
 	For each new context (including the abstract yield when parsing starts), the parser creates
@@ -1184,73 +1341,27 @@
       </t>
       <section title="Selective authority">
 	<t>
-	  A number of lasting namespaces are included for the abstract yield. Their UUIDs are agreed
-	  out-of-band. The disadvantage of this solution is that it needs prior agreement on the
-	  definable namespaces.
+	  A number of lasting namespaces are included for the abstract yield. Their unique
+	  identifiers are agreed out-of-band. The disadvantage of this solution is that it needs
+	  prior agreement on the definable namespaces.
 	</t>
       </section>
       <section title="Open authority">
 	<t>
-	  Any <spanx style="verb">ns*</spanx> form for a UUID unknown to the processing application
-	  triggers the creation a lasting namespace.
+	  Any <spanx style="verb">ns</spanx> form for a unique identifier unknown to the processing
+	  application triggers the creation of a lasting namespace.
 	</t>
 	<t>
 	  The disadvantage of this solution is that it opens a denial of service vulnerability. If
 	  Bob is a processing application and Carol and Dave are agents communicating with Bob with
 	  an open authority, Dave can prevent Carol from defining a namespace if it manages to know
-	  the UUID and starting a communication with Bob before Carol.
+	  the unique identifier and starting a communication with Bob before Carol.
 	</t>
 	<t>
-	  If an agent uses a secure way to create UUIDs and protects their secrecy, this solution is
-	  both flexible and safe.
+	  If an agent uses a secure way to create unique identifiers, this solution is both flexible
+	  and safe (the burden is not on the BULK processing application).
 	</t>
       </section>
-    </section>
-
-    <section title="Semantic leeway">
-      <t>
-	Atoms and forms have semantics and sometimes evaluation rules defined by this specification,
-	but as long as parsing rules are maintained, a processing application MAY use any form and
-	atom with different semantics and evaluation rules, as long as it is within the confines of
-	a form that makes this semantics change explicit.
-      </t>
-      <t>
-	For example, if an application needs to store a big number of unsigned integers and the
-	overhead of the two marker bytes is too big, the application SHOULD bypass the default
-	semantics of words and define a form in which they are taken as two's-complement
-	notation. The following form could be interpreted as the sequence of integers (-1358102763
-	35467 -100237):
-	<figure>
-	  <preamble>Fig. 1</preamble>
-	  <artwork>
-( foo:sints w32 0xAF0CFF15 w16 0x8A8B w32 0xFFFE7873 )
-	  </artwork>
-	</figure>
-      </t>
-      <t>
-	If an overhead of one byte per integer is still too big and the integers all have the same
-	size, an application MAY pack them into an array. The sequence of integers (-14376 -235 4567
-	-31299 42) could be serialized as:
-	<figure>
-	  <preamble>Fig. 2</preamble>
-	  <artwork>
-( foo:array16 # w8 0xA 0xC7D8FF1511D785BD002A )
-	  </artwork>
-	</figure>
-      </t>
-      <t>
-	BULK's syntax also enables hybrid solutions, for example by packing together into an array
-	the sequences of same-size integers, among a sequence of words. So the sequence of integers
-	(-1358102763 35467 -100237 -14376 -235 4567 -31299 42 -8449839282860229000) could be
-	serialized as:
-	<figure>
-	  <preamble>Fig. 3</preamble>
-	  <artwork>
-( foo:flatten w32 0xAF0CFF15 w16 0x8A8B w32 0xFFFE7873 ( foo:array16 # w8 0xA 0xC7D8FF1511D785BD002A
-) w64 0x8ABC23F0FFF98283 )
-	  </artwork>
-	</figure>
-      </t>
     </section>
 
   </back>
