@@ -2,57 +2,66 @@
   - final abstract yield = abstract yield after application of
     transformation semantics
 
-** stdlib
-   M = marker byte
-
-   O. nil
-   1. (
-   2. )
-   3. Array: M <dim>:Int <content>:nB
-      - arrays are used whenever a vector or matrix is needed
-	- the semantics of the content must be inferred by the
-          application; where ambiguity can appear, an application
-          SHOULD enclose the array in a type-denoting form
-      - because BULK arrays have no end markers, the payload of a BULK
-        stream can constitute the end of the stream
-      - an array can be skipped in constant time and mapped in memory
-   4. 8 bits word: M 1B
-   5. 16 bits word: M 2B
-   6. 32 bits word: M 4B
-   7. 64 bits word: M 8B
-   8. 128 bits word: M 16N
-   9. 32, 64 or 128 bits signed integer: M Word
+** syntax
+   - 0x00 :: nil
+   - 0x01 :: (
+   - 0x02 :: )
+   - 0x03 :: # {dim}:Int {content}:nB
+     - arrays are used whenever a vector or matrix is needed
+       - the semantics of the content must be inferred by the
+         application; where ambiguity can appear, an application
+         SHOULD enclose the array in a type-denoting form
+     - because BULK arrays have no end markers, the payload of a BULK
+       stream can constitute the end of the stream
+     - an array can be skipped in constant time and mapped in memory
+     - unlimited size
+       - # Word128 {content} is of maximum size 2^128
+       - # ( bigint # Word128 {num} ) {content} is of maximum size 2^(2^128)
+       - the bigint's size can be a bigint too… ad infinitam
+   - 0x04 :: uw8 1B
+   - 0x05 :: uw16 2B
+   - 0x06 :: uw32 4B
+   - 0x07 :: uw64 8B
+   - 0x08 :: uw128 16B
+   - 0x09 :: sw8 1B
+   - 0x0A :: sw16 2B
+   - 0x0B :: sw32 4B
+   - 0x0C :: sw64 8B
+   - 0x0D :: sw128 16B
 
 ** BULK core namespace
-   NSID: 0x10
+   NSID: 0x20
 
-   1. ( version Int Int )
-   2. true
-   3. false
-   4. ( stringenc <id> )
-   5. ( iana-charset Int)
-   6. ( codepage Int )
-   7. ( ns <id>:Int <uuid>:Word128 )
-   8. ( package <uuid> <namespaces> )
-   9. ( import <base>:Int <count>:Int <uuid> )
-   10. ( define Ref Expr )
-   11. ( subst {code} )
-   12. ( arg Int )
-   13. ( rest Int )
-   14. ---
-   15. ( let ( <bindings> ) Expr+ )
-       - bindings = Ref Expr [ bindings ]
-   16. ( signed-ns <uuid>:Word128 <ns-uuid>:Word128 <signature>
-       <definitions> )
-       - error if ( define Ref Expr ) in *final abstract yield*
-   17. ( openpgp <data>:Array )
-   18. ( x509 <data>:Array )
-
-
-   32. ( frac Int Int )
-   33. ( bigint Array )
-   34. ( binary <bits> )
-   35. ( decimal <bits> )
+   - 0x01 :: ( version Int Int )
+   - 0x02 :: true
+   - 0x03 :: false
+   - 0x04 :: ( stringenc {enc}:Encoding )
+   - 0x05 :: ( iana-charset Int ):Encoding
+   - 0x06 :: ( codepage Int ):Encoding
+   - 0x07 :: ( ns {marker}:Int {id}:UniqueID )
+   - 0x08 :: ( package {id}:UniqueID {namespaces} )
+   - 0x09 :: ( import {base}:Int {count}:Int {uuid} )
+   - 0x0A :: ( define Ref Expr )
+   - 0x0B :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )
+   - 0x0C :: ( ns-mnemonic {ns}:Expr {mnemonic}:String {doc} )
+   - 0x0D :: ( verifiable-ns {marker}:Int {id}:UniqueID
+             {mnemonic}:Expr {doc}:Expr {definitions} )
+     - ( mnemonic/def nil {…} ) defines the next unattributed ref
+       (starting at 0)
+   -  :: ( subst {code} )
+   -  :: ( arg Int )
+   -  :: ( rest Int )
+   -  :: ( lambda {var}:Expr {body} )
+   -  :: ( concat {a1} {a2} )
+   -  :: id ⇔ ( subst ( rest 0 ) )
+   - /TODO/
+   - 0x12 :: ( openpgp {data}:Array )
+   - 0x13 :: ( x509 {data}:Array )
+   - /DONE: math/
+   - 0x20 :: ( frac Int Int )
+   - 0x21 :: ( bigint Array )
+   - 0x22 :: ( binary {bits} )
+   - 0x23 :: ( decimal {bits} )
 
 
    A NS could be tied to a URL where its reference definition can be
@@ -61,11 +70,6 @@
    fragile.
 
    openpgp and x509 may come from a crypto NS instead.
-
-   I removed the notion of required NS (not known to parser ⇒ parsing
-   error). I have yet to see a relevant use case and it would probably
-   make having unreadable BULK streams too easy. It defeats the
-   uniform syntax…
 
 ** Mobile code
    - language = namespace
@@ -88,6 +92,45 @@
        - possibly on-demand w/ cache
        - selective evaluation: only evaluate what the client doesn't
          support
+
+** Lambda expressions
+   #+BEGIN_SRC bulk
+   ( verifiable-ns 40 {id} nil "λ"
+   "This vocabulary can be used to represent functions that can be evaluated."
+
+   ( mnemonic/def nil "lambda" "( lambda {var}:Ref {body} )" )
+
+   ( define 0x28 0xff "This reference is intended to be used as lambda function variable." )
+   ( mnemonic/def nil "a" 0x28 0xff )
+   ( mnemonic/def nil "b" 0x28 0xff )
+   ( mnemonic/def nil "c" 0x28 0xff )
+   ( mnemonic/def nil "d" 0x28 0xff )
+   ( mnemonic/def nil "e" 0x28 0xff )
+   ( mnemonic/def nil "f" 0x28 0xff )
+   ( mnemonic/def nil "g" 0x28 0xff )
+   ( mnemonic/def nil "h" 0x28 0xff )
+   ( mnemonic/def nil "i" 0x28 0xff )
+   ( mnemonic/def nil "j" 0x28 0xff )
+   ( mnemonic/def nil "k" 0x28 0xff )
+   ( mnemonic/def nil "l" 0x28 0xff )
+   ( mnemonic/def nil "m" 0x28 0xff )
+   ( mnemonic/def nil "n" 0x28 0xff )
+   ( mnemonic/def nil "o" 0x28 0xff )
+   ( mnemonic/def nil "p" 0x28 0xff )
+   ( mnemonic/def nil "q" 0x28 0xff )
+   ( mnemonic/def nil "r" 0x28 0xff )
+   ( mnemonic/def nil "s" 0x28 0xff )
+   ( mnemonic/def nil "t" 0x28 0xff )
+   ( mnemonic/def nil "u" 0x28 0xff )
+   ( mnemonic/def nil "v" 0x28 0xff )
+   ( mnemonic/def nil "w" 0x28 0xff )
+   ( mnemonic/def nil "x" 0x28 0xff )
+   ( mnemonic/def nil "y" 0x28 0xff )
+   ( mnemonic/def nil "z" 0x28 0xff )
+
+   ( mnemonic/def nil "id" "Somestimes a form is needed just to add a semantic aspect to an expression without actually changing its value for most purposes. For these cases, a reference can be given the value of id. Some processing applications will substitute their own evaluation to this one to implement that semantic." ( lambda x x ) )
+   )
+   #+END_SRC
 
 ** XML
    XML is pretty complex, but most of it is unused (some even advised
@@ -121,38 +164,37 @@
 
 *** Package?
     RDF + Simple XML ( + XPath )
-
 ** XPath namespace
    urn:uuid:2cdad14a-4e46-5f2d-b3e2-e105ebafa5f8 (BULK
    http://www.w3.org/TR/1999/REC-xpath-19991116)
 
-   1. ( xpath {expr} )
-      - {expr} is a sequence of Step
-      - as a Step, {name}:QName ⇔ ( step child {name} )
-   2. ( | {exprs} )
-   3. ( step {axis} {test} {preds} )
-      - ( step {axis} ) ⇔ ( step {axis} node() )
-   4. . / ( step . {rest} )
-      - . ⇔ ( step self node() )
-   5. .. / ( step .. {rest} )
-      - .. ⇔ ( step parent node() )
-   6. //
-      - // ⇔  ( step // node() )
-   7. ancestor
-   8. ancestor-or-self
-   9. attribute
-   10. child
-   11. descendant
-   12. following
-   13. following-sibling
-   14. namespace
-   15. preceding
-   16. preceding-sibling
-   17. * / ( * {ns}:URIRef )
-   18. node()
-   19. text()
-   20. comment()
-   21. pi() / ( pi() {literal}:Array )
+   - 0x01 :: ( xpath {expr} )
+     - {expr} is a sequence of Step
+     - as a Step, {name}:QName ⇔ ( step child {name} )
+   - 0x02 :: ( | {exprs} )
+   - 0x03 :: ( step {axis} {test} {preds} )
+     - ( step {axis} ) ⇔ ( step {axis} node() )
+   - 0x04 :: . / ( step . {rest} )
+     - . ⇔ ( step self node() )
+   - 0x05 :: .. / ( step .. {rest} )
+     - .. ⇔ ( step parent node() )
+   - 0x06 :: //
+     - // ⇔  ( step // node() )
+   - 0x07 :: ancestor
+   - 0x08 :: ancestor-or-self
+   - 0x09 :: attribute
+   - 0x0A :: child
+   - 0x0B :: descendant
+   - 0x0C :: following
+   - 0x0D :: following-sibling
+   - 0x0E :: namespace
+   - 0x0F :: preceding
+   - 0x10 :: preceding-sibling
+   - 0x11 :: * / ( * {ns}:URIRef )
+   - 0x12 :: node()
+   - 0x13 :: text()
+   - 0x14 :: comment()
+   - 0x15 :: pi() / ( pi() {literal}:Array )
 
 *** QName
     To maximize reuse between namespaces, URIRef and URIString
@@ -163,38 +205,34 @@
    urn:uuid:ed460331-a89b-5742-a8de-907dff727779 (BULK
    [[http://www.w3.org/1999/02/22-rdf-syntax-ns#]])
 
-   1. ( uriref Array )
-   2. ( base Array )
-   3. ( prefix <prefix> )
-   4. blank
-   5. ( plain <lang> <literal )
-   6. ( datatype <id>:URIRef <literal> )
-   7. xmlliteral
-   8. ( triples <triples> )
-   9. ( turtle <statements> )
-   10. type
-   11. Property
-   12. Statement
-   13. subject
-   14. predicate
-   15. object
-   16. Bag
-   17. Seq
-   18. Alt
-   19. value
-   20. List
-   21. nil
-   22. first
-   23. rest
-   24. PlainLiteral
-   25. 
-   26. 
-   27. 
-   28. 
-   29. 
-   30. 
-   31. 
-   32. this-resource
+   - 0x01 :: uriref ⇔ λ:id
+   - 0x02 :: ( base Array )
+   - 0x03 :: prefix ⇔ ( lambda u ( lambda s ( concat u s ) ) )
+   - 0x04 :: rdf# ⇔ ( uriref "[[http://www.w3.org/1999/02/22-rdf-syntax-ns#]]" )
+   - 0x05 :: blank
+   - 0x06 :: ( plain {lang} {literal} )
+   - 0x07 :: ( datatype {id}:URIRef {literal} )
+   - 0x08 :: xmlliteral ⇔ ( rdf# "XMLLiteral" )
+   - 0x09 :: ( triples {triples} )
+   - 0x0A :: ( turtle {statements} )
+   - 0x0B :: type ⇔ ( rdf# "type" )
+   - 0x0C :: property ⇔ ( rdf# "Property" )
+   - 0x0D :: statement ⇔ ( rdf# "Statement" )
+   - 0x0E :: subject ⇔ ( rdf# "subject" )
+   - 0x0F :: predicate ⇔ ( rdf# "predicate" )
+   - 0x10 :: object ⇔ ( rdf# "object" )
+   - 0x11 :: bag ⇔ ( rdf# "Bag" )
+   - 0x12 :: seq ⇔ ( rdf# "Seq" )
+   - 0x13 :: alt ⇔ ( rdf# "Alt" )
+   - 0x14 :: value ⇔ ( rdf# "value" )
+   - 0x15 :: list ⇔ ( rdf# "List" )
+   - 0x16 :: nil ⇔ ( rdf# "nil" )
+   - 0x17 :: first ⇔ ( rdf# "first" )
+   - 0x18 :: rest ⇔ ( rdf# "rest" )
+   - 0x19 :: plainliteral ⇔ ( rdf# "PlainLiteral" )
+   - 
+   - 0x20 :: this-resource
+   - 0x21 :: uri
 
 
 *** Differences between complete triples (3s) and turtle-like (Tl)
@@ -203,11 +241,12 @@
     : (:A:B:C)
 
     For big graphs of mostly known references, this can already be a
-    valuable improvement. <triples> could be a packed sequence without
+    valuable improvement. {triples} could be a packed sequence without
     markers around triples, but that would mean that a single missing
     or superfluous expression would wreck everything that's after
     it. The fact that a triple is still a form limits the savings but
-    keeps a level of robustness.
+    keeps a level of robustness (but it would be possible to define a
+    packing RDF form…).
 
     Adding another triple cannot cost less than adding 8 bytes:
 
@@ -222,8 +261,7 @@
     : (:A(:B:C:D))
 
 ** MeTOD: Media type Optimal Description
-   - type as UUID
-     - Type = w128 UUID
+   - type as UniqueID (short, 32 or 64 bits)
    - atomic type
      - html
      - jpeg
@@ -251,104 +289,172 @@
    - Time = Date | TimeOfDay
 
 
-   1. ( calendar Int123 )
-   2. ( weekdate Int123 )
-   3. ( ordinal Int Int )
-   4. ( time IntsF )
-   5. ( point Date TimeOfDay )
-   6. ( zulu Time )
-   7. ( offset TimeOfDay Time )
-   8. ( years IntsF )
-   9. ( months IntsF )
-   10. ( days IntsF )
-   11. ( hours IntsF )
-   12. ( minutes IntsF )
-   13. ( seconds IntsF )
-   14. ( weeks Int )
-   15. ( interval {exprs} )
-       - {exprs} = Time Time | Duration Time | Time Duration |
-         Duration
-   16. ( repeat Int Interval ) / ( repeat Interval )
-   17. ( julian Number )
-   18. ( unix-time SInt )
-   19. ( tng-stardate Int Int )
-   20. ( anno-mundi Int123 )
-   21. ( anno-hegirae Int123 )
+   - 0x01 :: ( calendar Int123 )
+   - 0x02 :: ( weekdate Int123 )
+   - 0x03 :: ( ordinal Int Int )
+   - 0x04 :: ( time IntsF )
+   - 0x05 :: ( point Date TimeOfDay )
+   - 0x06 :: ( zulu Time )
+   - 0x07 :: ( offset TimeOfDay Time )
+   - 0x08 :: ( years IntsF )
+   - 0x09 :: ( months IntsF )
+   - 0x0A :: ( days IntsF )
+   - 0x0B :: ( hours IntsF )
+   - 0x0C :: ( minutes IntsF )
+   - 0x0D :: ( seconds IntsF )
+   - 0x0E :: ( weeks Int )
+   - 0x0F :: ( interval {exprs} )
+     - {exprs} = Time Time | Duration Time | Time Duration |
+       Duration
+   - 0x10 :: ( repeat Int Interval ) / ( repeat Interval )
+   - 0x11 :: ( julian Number )
+   - 0x12 :: ( unix-time SInt )
+   - 0x13 :: ( tng-stardate Int Int )
+   - 0x14 :: ( anno-mundi Int123 )
+   - 0x15 :: ( anno-hegirae Int123 )
+
+
+   TODO: make ISOTime also be Time and make interval accept Time
 
 ** BARF: BULK Archive Format
-   1. ( pack {metadata}:Metadata {entries} )
-      - Metadata
-	- nil
-	- any other BULK expression suited as metadata
-      - {entries} can be one or several arrays instead of BULK
-   2. ( stack {metadata}:Metadata {entries-metadata}:Metadata+ ) {entries}
-      - to make BULK-unaware append possible
-      - {entries-metadata} means {entries} can be a single Array and
-        the content of the entry is the end of the BULK file
-   3. ( describe {metadata}:Metadata {content} )
-      - {content} can be an Array (e.g. a file's content) or BULK
-   4. ( metadata {data} )
-   5. ( entry {num} )
-   6. ( bulk-stream gbc> {size} {stream} )
-      - to include a BULK stream in a pack without a surrounding array
-      - {size} is number of bytes in {bulk}
-	- kind of an explicitly parseable array
-	- {size} can be nil
-   7. gbc|
-   8. gbc>
-      - GBC form must not be preserved if payload is modified
-   9. gbc*>
-      - preservable GBC form
-   10. gbc*~>
-       - preservable GBC form whose payload was modified
-   11. ( compressed gbc| {method} Array )
-   12. deflate
-   13. ( encrypted gbc| {method} Array )
-   14. --- Metadatum ---
-   15. ( count {num} )
-   16. ( path {components} )
-       - by design, there is no way to express an absolute FS path
-	 - an application is free to define insecure forms to express
-           absolute paths and links
-	 - TODO: what if a component contain "/"?
-	   - implementation should not resolve the name but look it up
-             in the directory entries (that takes care of "/" but not
-             of a ".." entry, this still needs checking, shame on Unix)
-   17. ( user {name} )
-       - {name} can be anything, incl. string and Int
-	 - multiple entries (e.g. "pierre"/1000)
-   18. ( group {name} )
-   19. ( dev-major {num} )
-       - redundant with a xxx-dev form as entry content?
-   20. ( dev-minor {num} )
-       - idem
-   21. contiguous
-       - tar semantics
-   22. ( access {time} )
-   23. ( modification {time} )
-   24. ( change {time} )
-   25. ( mode {mode} )
-   26. ( posix-acl {acls} )
-       - ( user {id} {mode} {default?} )
-       - ( group {id} {mode} {defaults?} )
-       - ( other {mode} {defaults?} )
-       - ( mask {mode} {defaults?} )
-   27. ( xattr {xattr} )
-       - {xattrs} = ( {name} {value} )+
-   28. ( offsets Int+ )
-       - base is the first byte after {metadata}
-   29. ---
-   30. ( hard-link Path nil )
-   31. ( sym-link Path nil )
-   32. ( char-dev {??} nil )
-   33. ( block-dev {??} nil )
-   34. ( directory {name} nil )
+   - 0x01 :: ( pack {metadata}:Expr {entries} )
+     - metadata
+       - nil
+       - any other BULK expression suited as metadata
+   - 0x02 :: ( stack {metadata}:Expr {entries-metadata} ) {entries}
+     - to make BULK-unaware append possible
+     - {entries-metadata} means {entries} last element can be a single
+       Array and the content of the entry is the end of the BULK file
+   - 0x03 :: ( describe {metadata}:Expr {content} )
+     - {content} can be an Array (e.g. a file's content) or BULK
+   - 0x04 :: ( metadata {data} )
+   - 0x05 :: ( entry {num} )
+   - 0x06 :: ( bulk-stream gbc*> {size} {stream} )
+     - to include a BULK stream in a pack without a surrounding array
+     - {size} is number of bytes in {bulk}
+       - kind of an explicitly parseable array
+       - {size} can be nil
+   - 0x07 :: gbc|
+   - 0x08 :: gbc>
+     - GBC form must not be preserved if payload is modified
+   - 0x09 :: gbc*>
+     - preservable GBC form
+   - 0x0A :: gbc*~>
+     - preservable GBC form whose payload was modified
+   - 0x0B :: ( compressed gbc| {method} Array )
+   - 0x0C :: deflate
+   - 0x0D :: ( encrypted gbc| {method} Array )
+   - 0x0E :: ( hashed gbc> {signature} Array )
+   - OxOF :: ( count {num} )
+   - --- Metadatum ---
+   - ( path {components} )
+     - by design, there is no way to express an absolute FS path
+       - an application is free to define insecure forms to express
+         absolute paths and links
+       - TODO: what if a component contain "/"?
+	 - implementation should not resolve the name but look it up
+           in the directory entries (that takes care of "/" but not
+           of a ".." entry, this still needs checking, shame on Unix)
+   - ( user {name} )
+     - {name} can be anything, incl. string and Int
+       - multiple entries (e.g. "pierre"/1000)
+   - ( group {name} )
+   - ( dev-major {num} )
+     - redundant with a xxx-dev form as entry content?
+   - ( dev-minor {num} )
+     - idem
+   - contiguous
+     - tar semantics
+   - ( access {time} )
+   - ( modification {time} )
+   - ( change {time} )
+   - ( mode {mode} )
+   - ( posix-acl {acls} )
+     - ( user {id} {mode} {default?} )
+     - ( group {id} {mode} {defaults?} )
+     - ( other {mode} {defaults?} )
+     - ( mask {mode} {defaults?} )
+   - ( xattr {xattr} )
+     - {xattrs} = ( {name} {value} )+
+   - ( offsets Int+ )
+     - base is the first byte after {metadata}
+   - ---
+   - ( hard-link Path nil )
+   - ( sym-link Path nil )
+   - ( char-dev {??} nil )
+   - ( block-dev {??} nil )
+   - ( directory {name} nil )
+
+** Hash
+   - ( fletcher Word )
+     - ( config modulus Int ) ?
+       - Adler-32 = ( fletcher Word32 ) ( config modulus 65521 )
+   - TODO: GBC forms and metadata for signatures
+
+   - ( config {config} )
+     - {config} = [field value]*
+
+
+   #+BEGIN_SRC bulk
+   ( verifiable-ns 40 {id} nil "hash"
+   "The forms in this vocabulary can be used to represent hashes along with the hashing algorithm instead of using an unmarked byte sequence. When an algorithm has other inputs than the message, they can be provided after the hash itself as a property list.
+
+When an algorithm can produce hashes in different sizes and the size used is a number of bits divisible by 8, the size property should be omitted from the property list and inferred by the processing application from the size of the BULK expression (e.g. `( sha3 # 24 {hash} )` is a 196-bits SHA3 hash).
+
+As a rule, each of these forms can contain `nil` as a first expression to denote not a hash but a choice of configuration in some application context. For example, `( uuid nil prepend {ns} )` could mean that subsequent v3 and v5 UUIDs will be produced with {ns} as UUID namespace."
+
+   ( mnemonic/def nil "bsd" "( bsd Word16 )" )
+   ( mnemonic/def nil "sysv" "( sysv Word16 )" )
+   ( mnemonic/def nil "crc" "( crc Word )" )
+   ( mnemonic/def nil "fletcher" "( fletcher Word {config} )" )
+   ( mnemonic/def nil "adler32" "( adler32 Word32 )" ( λ:lambda λ:h ( fletcher λ:h key 65521 ) ) )
+   ( mnemonic/def nil "pjwhash" "( pjw Word )" )
+   ( mnemonic/def nil "elfhash" "( fnv Word )" )
+
+   ( mnemonic/def nil "murmur1" "( murmur1 Word )" )
+   ( mnemonic/def nil "murmur2" "( murmur2 Word )" )
+   ( mnemonic/def nil "murmur2a" "( murmur2a Word )" )
+   ( mnemonic/def nil "murmur64a" "( murmur64a Word )" )
+   ( mnemonic/def nil "murmur64b" "( murmur64b Word )" )
+   ( mnemonic/def nil "murmur3" "( murmur3 Word )" )
+
+   ( mnemonic/def nil "umac" "( umac Word {config} )" )
+   ( mnemonic/def nil "vmac" "( vmac Word {config} )" )
+
+   ( mnemonic/def nil "uuid" "( uuid Word128 {config} )" )
+   ( mnemonic/def nil "md2" "( md2 Word128 )" )
+   ( mnemonic/def nil "md4" "( md4 Word128 )" )
+   ( mnemonic/def nil "md5" "( md5 Word128 )" )
+   ( mnemonic/def nil "md6" "( md6 Bytes {config} )" )
+   ( mnemonic/def nil "ripemd" "( ripemd Bytes )" )
+   ( mnemonic/def nil "haval" "( haval Bytes )" )
+   ( mnemonic/def nil "gost" "( gost Array )" )
+   ( mnemonic/def nil "sha1" "( sha1 Array )" )
+   ( mnemonic/def nil "sha2" "( sha2 Array )" )
+   ( mnemonic/def nil "sha3" "( sha3 Bytes )" )
+   ( mnemonic/def nil "tiger" "( tiger Bytes )" )
+   ( mnemonic/def nil "tiger2" "( tiger2 Bytes )" )
+   ( mnemonic/def nil "whirlpool" "( whirlpool Array )" )
+   ( mnemonic/def nil "blake" "( blake Array )" )
+   ( mnemonic/def nil "blake2" "( blake2 Bytes )" )
+
+   ( mnemonic/def nil "size" )
+   ( mnemonic/def nil "prepend" )
+   ( mnemonic/def nil "append" )
+   ( mnemonic/def nil "key" )
+   ( mnemonic/def nil "salt" )
+   ( mnemonic/def nil "rounds" )
+
+   )
+   #+END_SRC
 
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
 
 * Redesign?
-** stdlib
+** syntax
+   As inspired by CBOR
+
    | marker | shape                | notes                 |
    |--------+----------------------+-----------------------|
    |  00−3F | {int}                |                       |
@@ -368,3 +474,16 @@
    - smallarray overhead: 1 byte (1.6−50%)
    - array of size 64−255 overhead: 3 bytes (1.2−4.7%)
    - array of size 256+ overhead: 4 bytes (0.006−1.6%)
+
+
+   Doesn't seem that great a gain for the added complexity (and loss
+   of available NS markers?).
+
+* Implementation notes
+** Semantics beyond definitions
+   When implementing a processing application that gives semantics
+   beyond the evaluation of expressions, to benefit from all possible
+   evaluations, the application should just replace relevant
+   definitions with its own implementation while evaluating the BULK
+   streams defining the corresponding vocabularies (for example
+   predefine them and don't let BULK definitions overwrite them).
