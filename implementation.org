@@ -29,17 +29,24 @@
   |-----------+------------------------------------------------------------------------------|
   |       0x8 | Read the next 16 bytes as a 128 bits unsigned integer and return it          |
   |-----------+------------------------------------------------------------------------------|
-  |       0x9 | Parse an expression (must be an integer);                                    |
-  |           | parse its value as two's complement notation and return a signed integer     |
+  |       0x9 | Read the next byte as an 8 bits signed integer and return it                 |
   |-----------+------------------------------------------------------------------------------|
-  |   0xA-0xF | Error                                                                        |
+  |       0xA | Read the next 2 bytes as a 16 bits signed integer and return it              |
   |-----------+------------------------------------------------------------------------------|
-  | 0x10-0xFE | Read the next byte; return a reference object:                               |
+  |       0xB | Read the next 4 bytes as a 32 bits signed integer and return it              |
+  |-----------+------------------------------------------------------------------------------|
+  |       0xC | Read the next 8 bytes as a 64 bits signed integer and return it              |
+  |-----------+------------------------------------------------------------------------------|
+  |       0xD | Read the next 16 bytes as a 128 bits signed integer and return it            |
+  |-----------+------------------------------------------------------------------------------|
+  |  0xE-0x1F | Error                                                                        |
+  |-----------+------------------------------------------------------------------------------|
+  | 0x20-0xFE | Read the next byte; return a reference object:                               |
   |           | its name field is that byte as an 8 bits unsigned integer                    |
   |           | its namespace field is the marker byte as an 8 bits unsigned integer         |
   |-----------+------------------------------------------------------------------------------|
-  |      0xFF | Read bytes until a byte is different than 0xFF and compute the of each of    |
-  |           | those bytes, including the first marker 0xFF, taken as unsigned integers;    |
+  |      0xFF | Read bytes until a byte is different than 0xFF and compute the sum of each   |
+  |           | of those bytes, including the first marker 0xFF, taken as unsigned integers; |
   |           | read the next byte as an 8 bits unsigned integer; return a reference object: |
   |           | its namespace and name fields are the two integers                           |
   |-----------+------------------------------------------------------------------------------|
