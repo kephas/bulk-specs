@@ -14,4 +14,4 @@ txt: $(txt)
 clean:
 	rm -f $(html) $(txt)
 
-.PHONY: html txt
+.PHONY: clean html txt
