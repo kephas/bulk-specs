@@ -57,6 +57,13 @@
    - 0x21 :: ( bigint Array )
    - 0x22 :: ( binary {bits} )
    - 0x23 :: ( decimal {bits} )
+   - 
+   - 0x30 :: ( prefix-bytecode {bytecode} )
+   - 0x31 :: ( prefix-bytecode* ( {arities} ) {bytecode} )
+     - {arities} is a sequence of: ( Int {refs} )
+   - 0x32 :: ( postfix-bytecode {bytecode} )
+   - 0x33 :: ( postfix-bytecode* ( {arities} ) {bytecode} )
+   - 0x34 :: ( arity Int {refs} )
 
 ** Mobile code
    - language = namespace

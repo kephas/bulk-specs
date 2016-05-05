@@ -1031,6 +1031,193 @@
 	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Float</spanx>.
 	    </t>
 	  </section>
+	</section>
+
+	<section title="Compact formats">
+	  <t>
+	    This specification and other specifications in the official BULK suite take the option
+	    to use as their basic building block a form with a distinguishing reference as first
+	    element (basically, they are a binary representation of an abstract syntax tree). As
+	    noted previously, this means that most representations weigh 4 bytes plus their actual
+	    content, which will in turn have some overhead because of one or several marker bytes.
+	  </t>
+	  <t>
+	    But when there is a special need for compactness, BULK makes it possible to design
+	    protocols and formats with different trade-offs, while retaining its property of being
+	    parseable by processing applications not knowing the protocol in its entirety.
+	  </t>
+	  <t>
+	    On one end of the spectrum, a format might choose to use an array to encapsulate an ad
+	    hoc binary format. An extreme use of this scheme would be to use BULK just to make
+	    explicit the binary format used. With a known profile (for example with a file extension
+	    and/or media type for such explicitly typed BLOBs), a BULK stream that consists solely
+	    of the version form, a reference that describes the binary format and an array will have
+	    a total overhead of 14, 16 or 20 bytes if the data's size is representable in 16, 32 or
+	    64 bits.
+	  </t>
+	  <t>
+	    Still, even this extreme in the design space retains the ability to insert expressions
+	    in the BULK stream, whatever their type. Thus metadata can be added about data that is
+	    represented in a format that doesn't allow for metadata or for limited metadata.
+	  </t>
+	  <t>
+	    In-between these two extremes, several options are available to produce a format that
+	    leverages the BULK parser a lot more while being more compact than a classiical BULK
+	    format. The following forms provide a standard way to create such formats.
+	  </t>
+	  <t>
+	    A flat sequence of operators and operands is called a bytecode. Prefix bytecodes are
+	    those where operators come before operands, postfix bytecodes are those where operators
+	    come after operands. In the following forms, operators MUST be references.
+	  </t>
+	  <t>
+	    When evaluating a bytecode form, a processing application MAY try to transform it to an
+	    abstract syntax tree of its content and then evaluate expressions with the normal BULK
+	    evaluation rules. When evaluating a bytecode form that doesn't provide arities, a
+	    processing application MUST abort this transformation as soon as it encounters a
+	    reference for which it cannot determine if it is an operator or its arity. When
+	    evaluating a bytecode form that provides arities, any reference that is not known to be
+	    an operator MUST be determined not to be an operator.
+	  </t>
+	  <t>
+	    To transform a prefix bytecode form, a processing application creates an alternate
+	    context. If the first expression of the bytecode can be determined not to be an
+	    operator, it is removed from the beginning of the bytecode and appended as an atom at
+	    the end of the alternate context. If the first expression of the bytecode can be
+	    determined to be an operator, it is removed from the beginning of the bytecode along
+	    with as many next expressions as its arity and they all are appended as a form in the
+	    alternate context. The transformation continues until the bytecode is empty, in which
+	    case the alternate context becomes the inner context of the bytecode form and the
+	    transformation is complete.
+	  </t>
+	  <t>
+	    To transform a postfix bytecode form, a processing application creates an alternate
+	    context. If the first expression of the bytecode can be determined not to be an
+	    operator, it is removed from the beginning of the bytecode and appended as an atom at
+	    the end of the alternate context. If the first expression of the bytecode can be
+	    determined to be an operator, it is removed from the beginning of the bytecode and as
+	    many expressions as its arity are removed from the end of the alternate context. They
+	    all are appended as a form in the alternate context (with the operator as first element
+	    followed by the operands, kept in their previous order). The transformation continues
+	    until the bytecode is empty, in which case the alternate context becomes the inner
+	    context of the bytecode form and the transformation is complete.
+	  </t>
+	  <t>
+	    If the overhead of several marker bytes in the operands of some operators is too much,
+	    even more compactness can be achieved by packing together small operands. For example,
+	    instead of an operator with two integers as its operands, one could specify an operator
+	    to take a single word as operand and extract the integers from it (while still retaining
+	    the ability to operate on many sizes of integers, because it can still deduce the size
+	    of the integers by dividing the size of the word by two).
+	  </t>
+	  <t>
+	    For example, a BULK format representing player moves with a pair of coordinates might
+	    represent a single move with the following shapes:
+	  </t>
+	  <t>
+	    <list style="hanging">
+	      <t hangText="classical (8 bytes)"><spanx style="verb">( sgf:black/2 w8 0x04 w8 0x10
+	      )</spanx></t>
+	      <t hangText="packed classical (7 bytes)"><spanx style="verb">( sgf:black/1 w16 0x04
+	      0x10 )</spanx></t>
+	      <t hangText="bytecode (6 bytes)"><spanx style="verb">sgf:black/2 w8 0x04 w8
+	      0x10</spanx></t>
+	      <t hangText="packed bytecode (5 bytes)"><spanx style="verb">sgf:black/1 w16 0x04
+	      0x10</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    The transformation defined for the bytecode forms makes it possible to mix literal
+	    expressions and operations represented by a sequence of operators and operands. In the
+	    previous scenario, for example, one might represent alternating moves by two players as
+	    a sequence of words, lowering the weight of each move to 3 bytes when coordinates are
+	    below 256. The difference between all these schemes and an array is that you keep the
+	    ability to insert other forms, for example to represent comments on the game or
+	    variants.
+	  </t>
+	  <t>
+	    The cost of the bytecode format is that if it contains operators whose arity is unknown
+	    to a processing application, the whole sequence after the first occurrence of them is
+	    unreadable to that processing application, whereas in the classical format, the
+	    processing application can still process all the forms it understands (and it requires
+	    no anticipation by the application creating the BULK stream).
+	  </t>
+
+	  <section title="Prefix bytecode">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x30</spanx> (mnemonic: <spanx
+		style="verb">prefix-bytecode</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( prefix-bytecode {bytecode} )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This is a prefix bytecode form that doesn't provide arities.
+	    </t>
+	  </section>
+
+	  <section title="Prefix bytecode with arities">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x31</spanx> (mnemonic: <spanx
+		style="verb">prefix-bytecode*</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( prefix-bytecode* ( {arities} ) {bytecode} )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This is a prefix bytecode form that provides arities.
+	    </t>
+	    <t>
+	      {arities} MUST be a sequence of shapes <spanx style="verb">( {arity}:Int {refs}
+	      )</spanx>. {refs} MUST be a sequence of references. It indicates that all references
+	      in this sequence are operators of arity {arity}.
+	    </t>
+	  </section>
+
+	  <section title="Postfix bytecode">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x32</spanx> (mnemonic: <spanx
+		style="verb">postfix-bytecode</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( postfix-bytecode {bytecode} )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This is a postfix bytecode form that doesn't provide arities.
+	    </t>
+	  </section>
+
+	  <section title="Postfix bytecode with arities">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x33</spanx> (mnemonic: <spanx
+		style="verb">postfix-bytecode*</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( postfix-bytecode* ( {arities} ) {bytecode} )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This is a postfix bytecode form that provides arities.
+	    </t>
+	    <t>
+	      {arities} MUST be a sequence of shapes <spanx style="verb">( {arity}:Int {refs}
+	      )</spanx>. {refs} MUST be a sequence of references. It indicates that all references
+	      in this sequence are operators of arity {arity}.
+	    </t>
+	  </section>
+
+	  <section title="Arity declaration">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x34</spanx> (mnemonic: <spanx
+		style="verb">arity</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( arity {arity}:Int {refs} )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      {refs} MUST be a sequence of references. It indicates that all references in this
+	      sequence are operators of arity {arity}.
+	    </t>
+	  </section>
 
 	</section>
       </section>
