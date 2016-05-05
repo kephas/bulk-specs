@@ -1071,12 +1071,12 @@
 
       <section title="Profile redundancy">
 	<t>
-	  A processing application should only rely on the use of a profile when it is a safe
+	  A processing application SHOULD only rely on the use of a profile when it is a safe
 	  assumption that the profile is known, for example within a communication where the
 	  protocol dictates the profile.
 	</t>
 	<t>
-	  In particular, long-term storage of a BULK stream should preserve profile information, for
+	  In particular, long-term storage of a BULK stream SHOULD preserve profile information, for
 	  example with a media type that dictates the profile.
 	</t>
 	<t>
