@@ -955,7 +955,7 @@
 	  </section>
 	</section>
 
-	<section title="arithmetic">
+	<section title="Arithmetic">
 	  <t>
 	    A processing application must recognize the type of all expressions defined in this
 	    specification that have the type Number, but an application MAY consider a number as
@@ -968,7 +968,7 @@
 	    0x2</spanx>.
 	  </t>
 
-	  <section title="fraction">
+	  <section title="Fraction">
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x20</spanx> (mnemonic: <spanx style="verb">frac</spanx>)</t>
