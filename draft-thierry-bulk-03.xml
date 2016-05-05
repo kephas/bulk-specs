@@ -1002,8 +1002,7 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x22</spanx> (mnemonic: <spanx style="verb">binary</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( binary {bits}:Word )</spanx></t>
-		<t hangText="shape"><spanx style="verb">( binary {bits}:Array )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( binary {bits}:Bytes )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1020,8 +1019,7 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x23</spanx> (mnemonic: <spanx style="verb">decimal</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( decimal {bits}:Word )</spanx></t>
-		<t hangText="shape"><spanx style="verb">( decimal {bits}:Array )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( decimal {bits}:Bytes )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
