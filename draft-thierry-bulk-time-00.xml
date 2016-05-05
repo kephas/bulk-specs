@@ -98,7 +98,7 @@
 	  <t>
 	    This serializes dates like 1999, 2001-06 or 2013-08-06.
 	  </t>
-	  <t>Types: <spanx style="verb">ISOTime</spanx>, <spanx style="verb">Date</spanx></t>
+	  <t>Types: <spanx style="verb">Time</spanx>, <spanx style="verb">Date</spanx></t>
 	</section>
 
 	<section title="Week date">
@@ -112,7 +112,7 @@
 	  <t>
 	    This serializes dates like 1979, 1987-W06 or 2012-W52-1.
 	  </t>
-	  <t>Types: <spanx style="verb">ISOTime</spanx>, <spanx style="verb">Date</spanx></t>
+	  <t>Types: <spanx style="verb">Time</spanx>, <spanx style="verb">Date</spanx></t>
 	</section>
 
 	<section title="Ordinale date">
@@ -126,7 +126,7 @@
 	  <t>
 	    This serializes dates like 2004-006 or 2000-366.
 	  </t>
-	  <t>Types: <spanx style="verb">ISOTime</spanx>, <spanx style="verb">Date</spanx></t>
+	  <t>Types: <spanx style="verb">Time</spanx>, <spanx style="verb">Date</spanx></t>
 	</section>
 
 	<section title="Time of day">
@@ -141,7 +141,7 @@
 	    This serializes times like 22, 13:45 or 06:34:57.3. {components} MUST contain from 1 to
 	    3 expressions.
 	  </t>
-	  <t>Types: <spanx style="verb">ISOTime</spanx>, <spanx style="verb">ISOTimeOfDay</spanx></t>
+	  <t>Types: <spanx style="verb">Time</spanx>, <spanx style="verb">TimeOfDay</spanx></t>
 	</section>
 
 	<section title="Point in time">
@@ -149,13 +149,13 @@
 	    <list style="hanging">
 	      <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx
 	      style="verb">point</spanx> )</t>
-	      <t hangText="shape"><spanx style="verb">( point Date ISOTimeOfDay )</spanx></t>
+	      <t hangText="shape"><spanx style="verb">( point Date TimeOfDay )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    This serializes dates like 2005-W34-7T19:45.
 	  </t>
-	  <t>Type: <spanx style="verb">ISOTime</spanx></t>
+	  <t>Type: <spanx style="verb">Time</spanx></t>
 	</section>
 
 	<section title="UTC time">
@@ -163,13 +163,13 @@
 	    <list style="hanging">
 	      <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
 	      style="verb">zulu</spanx> )</t>
-	      <t hangText="shape"><spanx style="verb">( zulu ISOTime )</spanx></t>
+	      <t hangText="shape"><spanx style="verb">( zulu Time )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    This serializes times like 2005-W34-7T19:45Z or 11:53:23Z.
 	  </t>
-	  <t>Type: <spanx style="verb">ISOTime</spanx></t>
+	  <t>Type: <spanx style="verb">Time</spanx></t>
 	</section>
 
 	<section title="Offset time">
@@ -177,13 +177,13 @@
 	    <list style="hanging">
 	      <t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx
 	      style="verb">offset</spanx> )</t>
-	      <t hangText="shape"><spanx style="verb">( offset ISOTimeOfDay ISOTime )</spanx></t>
+	      <t hangText="shape"><spanx style="verb">( offset TimeOfDay Time )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    This serializes times like 2005-W34-7T19:45+02 or 11:53-01:30.
 	  </t>
-	  <t>Type: <spanx style="verb">ISOTime</spanx></t>
+	  <t>Type: <spanx style="verb">Time</spanx></t>
 	</section>
 
 	<section title="Durations">
@@ -203,7 +203,7 @@
 	    )</spanx>. { components} must contain from 1 to respectively 6, 5, 4, 3, 2, 1 and 1
 	    expressions.
 	  </t>
-	  <t>Type: <spanx style="verb">ISODuration</spanx></t>
+	  <t>Type: <spanx style="verb">Duration</spanx></t>
 	</section>
 
 	<section title="Interval">
@@ -211,10 +211,10 @@
 	    <list style="hanging">
 	      <t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx
 	      style="verb">interval</spanx> )</t>
-	      <t hangText="shape"><spanx style="verb">( interval ISOTime ISOTime )</spanx></t>
-	      <t hangText="shape"><spanx style="verb">( interval ISOTime ISODuration )</spanx></t>
-	      <t hangText="shape"><spanx style="verb">( interval ISODuration ISOTime )</spanx></t>
-	      <t hangText="shape"><spanx style="verb">( interval ISODuration )</spanx></t>
+	      <t hangText="shape"><spanx style="verb">( interval Time Time )</spanx></t>
+	      <t hangText="shape"><spanx style="verb">( interval Time Duration )</spanx></t>
+	      <t hangText="shape"><spanx style="verb">( interval Duration Time )</spanx></t>
+	      <t hangText="shape"><spanx style="verb">( interval Duration )</spanx></t>
 	    </list>
 	  </t>
 	  <t>Type: <spanx style="verb">Interval</spanx></t>
