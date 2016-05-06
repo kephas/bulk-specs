@@ -339,37 +339,61 @@
    -  :: ( tng-stardate Int Int )
 
 ** BARF: BULK Archive Format
+   When needed, metadata can be any expression (nil SHOULD be used to
+   indicate no metadata).
+
+   - 0x00 :: ( manifest {metadata}:Expr {entries-metadata} )
+     - used to express metadata about data outside the BULK stream (or
+       in arbitrary positions in it)
    - 0x01 :: ( pack {metadata}:Expr {entries} )
-     - metadata
-       - nil
-       - any other BULK expression suited as metadata
    - 0x02 :: ( stack {metadata}:Expr {entries-metadata} ) {entries}
      - to make BULK-unaware append possible
      - {entries-metadata} means {entries} last element can be a single
        Array and the content of the entry is the end of the BULK file
-   - 0x03 :: ( describe {metadata}:Expr {content} )
-     - {content} can be an Array (e.g. a file's content) or BULK
-   - 0x04 :: ( metadata {data} )
-   - 0x05 :: ( entry {num} )
-   - 0x06 :: ( bulk-stream gbc*> {size} {stream} )
-     - to include a BULK stream in a pack without a surrounding array
+     - each entry metadata MUST identify entry (by number, hash, etc…)
+   - 0x03 :: ( bulk-stream {stream} )
+   - 0x04 :: ( bulk-stream* {size} {stream} )
      - {size} is number of bytes in {bulk}
-       - kind of an explicitly parseable array
-       - {size} can be nil
-   - 0x07 :: gbc|
-   - 0x08 :: gbc>
+       - an explicitly parseable array
+   - 0x10 :: gbc|
+   - 0x11 :: gbc>
      - GBC form must not be preserved if payload is modified
-   - 0x09 :: gbc*>
+   - 0x12 :: gbc*>
      - preservable GBC form
-   - 0x0A :: gbc*~>
+   - 0x13 :: gbc*~>
      - preservable GBC form whose payload was modified
-   - 0x0B :: ( compressed gbc| {method} Array )
-   - 0x0C :: deflate
-   - 0x0D :: ( encrypted gbc| {method} Array )
-   - 0x0E :: ( hashed gbc> {signature} Array )
-   - OxOF :: ( count {num} )
+   - 0x20 :: ( described {gbc-tag}:Expr {metadata}:Expr {content} )
+     - {content} can be an Array (e.g. a file's content) or BULK expression
+   - 0x21 :: ( description {metadata}:Expr )
+     - can be inserted in many places in a BULK stream to annotate
+       virtually anything
+   - 0x22 :: ( metadata {data} )
+   - 0x23 :: ( count {num} )
+   - 0x24 :: ( about {what} )
+   - 0x25 :: ( entry {num} )
+   - 0x26 :: ( previous {skip} )
+     - within a metadata form, designates the expression before that
+       metadata form (possibly after skipping {skip} expressions)
+   - 0x27 :: ( next {skip} )
+     - within a metadata form, designates the expression after that
+       metadata form (possibly after skipping {skip} expressions)
+   - 0x28 :: everything-before
+     - within a metadata form, designates the whole sequence of
+       expressions before that metadata form
+   - 0x29 :: ( before {marker}:Ref {skip} )
+     - within a metadata form, designates the expression in the outer
+       context of the metadata form that is before the occurrence of
+       {marker} (possibly after skipping {skip} expressions)
+       - undefined if multiple occurrences
+   - 0x2A :: ( after {marker}:Ref {skip} )
+     - like before, but after…
+   - 
+   - 0x30 :: ( compressed gbc| {method} Array )
+   - 0x31 :: deflate
+   - 0x32 :: ( encrypted gbc| {method} Array )
+   - 0x33 :: ( hashed gbc> {signature} Array )
    - --- Metadatum ---
-   - ( path {components} )
+   - Ox40 :: ( path {components} )
      - by design, there is no way to express an absolute FS path
        - an application is free to define insecure forms to express
          absolute paths and links
@@ -377,35 +401,60 @@
 	 - implementation should not resolve the name but look it up
            in the directory entries (that takes care of "/" but not
            of a ".." entry, this still needs checking, shame on Unix)
-   - ( user {name} )
+   - 0x41 :: ( user {name} )
      - {name} can be anything, incl. string and Int
        - multiple entries (e.g. "pierre"/1000)
-   - ( group {name} )
-   - ( dev-major {num} )
+   - 0x42 :: ( group {name} )
+   - 0x43 :: ( dev-major {num} )
      - redundant with a xxx-dev form as entry content?
-   - ( dev-minor {num} )
+   - 0x44 :: ( dev-minor {num} )
      - idem
-   - contiguous
-     - tar semantics
-   - ( access {time} )
-   - ( modification {time} )
-   - ( change {time} )
-   - ( mode {mode} )
-   - ( posix-acl {acls} )
-     - ( user {id} {mode} {default?} )
-     - ( group {id} {mode} {defaults?} )
-     - ( other {mode} {defaults?} )
-     - ( mask {mode} {defaults?} )
-   - ( xattr {xattr} )
+   - 0x45 :: ( access {time} )
+   - 0x46 :: ( modification {time} )
+   - 0x47 :: ( change {time} )
+   - 0x48 :: ( mode {mode} )
+   - 0x49 :: ( posix-acl {acls} )
+     - 0x4A :: ( user {id} {mode} {default?} )
+     - 0x4B :: ( group {id} {mode} {defaults?} )
+     - 0x4C :: ( other {mode} {defaults?} )
+     - 0x4D :: ( mask {mode} {defaults?} )
+   - 0x4E :: ( xattr {xattr} )
      - {xattrs} = ( {name} {value} )+
-   - ( offsets Int+ )
+   - Ox4F :: ( offsets Int+ )
      - base is the first byte after {metadata}
-   - ---
-   - ( hard-link Path nil )
-   - ( sym-link Path nil )
-   - ( char-dev {??} nil )
-   - ( block-dev {??} nil )
-   - ( directory {name} nil )
+   - 0x50 :: ( hard-link Path nil )
+   - 0x51 :: ( sym-link Path nil )
+   - 0x52 :: ( char-dev {??} nil )
+   - 0x53 :: ( block-dev {??} nil )
+   - 0x54 :: ( directory {name} nil )
+
+
+   One could define a whole namespace of compact versions, like
+   : about-num ⇔ ( lambda n ( about ( entry n ) ) )
+   : about-previous ⇔ ( about ( previous ) )
+   : about-previous* ⇔ ( lambda n ( about ( previous n ) ) )
+
+*** BUlk possibly-Zipped file (.buz)
+    #+BEGIN_SRC bulk
+    ( pack ( metadata ( count 2 ))
+      ( describe ( metadata ( path "foo.txt" ) )
+        ( compressed gbc| lzma {foo.txt} ) )
+      ( describe ( metadata ( path "bar.jpg" ) ) {bar.jpg} ) )
+    #+END_SRC
+
+*** BUlk file Shell (.bus)
+    #+BEGIN_SRC bulk
+    ( described ( metadata ( path "foo.txt" ) )
+      ( hashed gbc> ( sha3 w128 {hash} )
+        ( compressed gbc| lzma {foo.txt} ) ) )
+    #+END_SRC
+
+*** BULK utility
+    #+BEGIN_EXAMPLE
+    $ bulk list <file>
+    $ bulk check <file>
+    $ bulk extract <file> [<members>]
+    #+END_EXAMPLE
 
 ** Hash
    #+BEGIN_SRC bulk
