@@ -312,32 +312,31 @@
    - Time = Date | TimeOfDay
 
 
-   - 0x01 :: ( calendar Int123 )
-   - 0x02 :: ( weekdate Int123 )
-   - 0x03 :: ( ordinal Int Int )
-   - 0x04 :: ( time IntsF )
-   - 0x05 :: ( point Date TimeOfDay )
-   - 0x06 :: ( zulu Time )
-   - 0x07 :: ( offset TimeOfDay Time )
-   - 0x08 :: ( years IntsF )
-   - 0x09 :: ( months IntsF )
-   - 0x0A :: ( days IntsF )
-   - 0x0B :: ( hours IntsF )
-   - 0x0C :: ( minutes IntsF )
-   - 0x0D :: ( seconds IntsF )
-   - 0x0E :: ( weeks Int )
-   - 0x0F :: ( interval {exprs} )
+   - 0x00 :: ( calendar Int123 )
+   - 0x01 :: ( weekdate Int123 )
+   - 0x02 :: ( ordinal Int Int )
+   - 0x03 :: ( time IntsF )
+   - 0x04 :: ( point Date TimeOfDay )
+   - 0x05 :: ( zulu Time )
+   - 0x06 :: ( offset TimeOfDay Time )
+   - 0x07 :: ( years IntsF )
+   - 0x08 :: ( months IntsF )
+   - 0x09 :: ( days IntsF )
+   - 0x0A :: ( hours IntsF )
+   - 0x0B :: ( minutes IntsF )
+   - 0x0C :: ( seconds IntsF )
+   - 0x0D :: ( weeks Int )
+   - 0x0E :: ( interval {exprs} )
      - {exprs} = Time Time | Duration Time | Time Duration |
        Duration
-   - 0x10 :: ( repeat Int Interval ) / ( repeat Interval )
-   - 0x11 :: ( julian Number )
-   - 0x12 :: ( unix-time SInt )
-   - 0x13 :: ( tng-stardate Int Int )
-   - 0x14 :: ( anno-mundi Int123 )
-   - 0x15 :: ( anno-hegirae Int123 )
-
-
-   TODO: make ISOTime also be Time and make interval accept Time
+   - 0x0F :: ( repeat Int Interval ) / ( repeat Interval )
+   -  :: ( julian Number )
+   -  :: ( anno-mundi Int123 )
+   -  :: ( anno-hegirae Int123 )
+   -  :: ( unix SInt )
+   -  :: ( ntp Word )
+   -  :: ( tai64 Word64 )
+   -  :: ( tng-stardate Int Int )
 
 ** BARF: BULK Archive Format
    - 0x01 :: ( pack {metadata}:Expr {entries} )
