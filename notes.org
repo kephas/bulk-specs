@@ -162,33 +162,43 @@
    urn:uuid:2cdad14a-4e46-5f2d-b3e2-e105ebafa5f8 (BULK
    http://www.w3.org/TR/1999/REC-xpath-19991116)
 
-   - 0x01 :: ( xpath {expr} )
-     - {expr} is a sequence of Step
-     - as a Step, {name}:QName ⇔ ( step child {name} )
-   - 0x02 :: ( | {exprs} )
-   - 0x03 :: ( step {axis} {test} {preds} )
-     - ( step {axis} ) ⇔ ( step {axis} node() )
-   - 0x04 :: . / ( step . {rest} )
-     - . ⇔ ( step self node() )
-   - 0x05 :: .. / ( step .. {rest} )
-     - .. ⇔ ( step parent node() )
-   - 0x06 :: //
-     - // ⇔  ( step // node() )
-   - 0x07 :: ancestor
-   - 0x08 :: ancestor-or-self
-   - 0x09 :: attribute
-   - 0x0A :: child
-   - 0x0B :: descendant
-   - 0x0C :: following
-   - 0x0D :: following-sibling
-   - 0x0E :: namespace
-   - 0x0F :: preceding
-   - 0x10 :: preceding-sibling
-   - 0x11 :: * / ( * {ns}:URIRef )
-   - 0x12 :: node()
-   - 0x13 :: text()
-   - 0x14 :: comment()
-   - 0x15 :: pi() / ( pi() {literal}:Array )
+   #+BEGIN_SRC bulk
+   ( verifiable-ns 40 {id} nil "xpath"
+   "This vocabulary can be used to represent XPath expressions."
+
+   ( mnemonic/def nil "xpath" "( xpath {steps} )" )
+   ( mnemonic/def nil "union" "( union {exprs} )" )
+   ( mnemonic/def nil "step" "( step {axis} {test} {preds} )" )
+   ( mnemonic/def nil "ancestor" nil )
+   ( mnemonic/def nil "ancestor-or-self" nil )
+   ( mnemonic/def nil "attribute" nil )
+   ( mnemonic/def nil "child" nil )
+   ( mnemonic/def nil "descendant" nil )
+   ( mnemonic/def nil "descendant-or-self" nil )
+   ( mnemonic/def nil "following" nil )
+   ( mnemonic/def nil "following-sibling" nil )
+   ( mnemonic/def nil "namespace" nil )
+   ( mnemonic/def nil "parent" nil )
+   ( mnemonic/def nil "preceding" nil )
+   ( mnemonic/def nil "preceding-sibling" nil )
+   ( mnemonic/def nil "self" nil )
+   ( mnemonic/def nil "node()" nil )
+   ( mnemonic/def nil "text()" nil )
+   ( mnemonic/def nil "comment()" nil )
+   ( mnemonic/def nil "pi()" "pi() or ( pi() {name}:String )" )
+   ( mnemonic/def nil "pi()" nil )
+
+   ( mnemonic/def nil "." "" ( step self node() ) )
+   ( mnemonic/def nil ".." "" ( step parent node() ) )
+   ( mnemonic/def nil "//" "" ( step descendant-or-self node() ) )
+
+   ( mnemonic/def nil "step*" "" ( λ:lambda λ:a ( step λ:a node() ) ) )
+
+
+   )
+   #+END_SRC
+
+   As a Step, {name}:QName ⇔ ( step child {name} ) ?
 
 *** QName
     To maximize reuse between namespaces, URIRef and URIString
