@@ -456,6 +456,26 @@
     $ bulk extract <file> [<members>]
     #+END_EXAMPLE
 
+*** BARF Object Model
+    - access to metadata
+      - consolidated metadata when forms overwrite each other?
+	- API for history?
+    - access to entries
+      - across manifests/packs/stacks within a common context
+    - ability to add entries/metadata while not breaking hashes
+      - when hash is recomputable:
+	- app knows algo/has all data to hash (key, etc…)
+	- modify/delete/append in place
+	- rehash
+      - when hash is not recomputable:
+	- app doesn't know algo/lacks some data
+	- modify/delete raise error
+	- append after original data
+
+*** Comparison
+    - tar+compression
+    - XZ
+      - has a limited choice of compression/hash
 ** Hash
    #+BEGIN_SRC bulk
    ( verifiable-ns 40 {id} nil "hash"
