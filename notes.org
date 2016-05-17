@@ -282,47 +282,54 @@
 
     : (:A(:B:C:D))
 
-** MeTOD: Media type Optimal Description
-   - type as UniqueID
-     - different forms for different use cases:
-       - expressing types in contexts where namespaces are available
-       - expressing types concisely without overhead of using
-         namespaces: concise forms forcing kinds to be 16-bits SHA3
-         and types 32-bits SHA3
-	 - type = 9 bytes / kind+type = 12 bytes
-	 - other forms could be defined to implement the same scheme
-           with other constraints (like different sizes or hashing
-           algorithm if collisions occur)
+** MeTOD: Media Type Optimal Description
+   - type as ref or form
    - atomic type
      - html5
      - jpeg
    - composite type
      - syntax
-       - ( xml xhtml )
-	 - multiple vocabularies
-	   - ( xml xhtml mathml )
-     - encoding
-       - ( gzip tar )
-       - ( base64 zip )
+       - ( main-type {sub-types} )
+       - ( A B C ) ⇔ ( ( A B ) C )
+	 - so you can have
+	   - xhtml* = ( xml xhtml )
+	   - ( xhtml* mathml svg )
+     - example: xml
+       - ( xml xhtml rdf )
+     - example: mime
+       - ( mime txt jpeg )
+   - some MeTOD types may only make sense inside a form
+     - e.g. xml NS that doesn't have a document element
+       - like dublin-core: ( xml xhtml xvg dublin-core )
+   - encoding as first-class type
+     - ( gzip tar )
+     - ( base64 zip )
    - complex structures
-     - ( s/mime ( multipart ( alt ( qp txt ) ( qp html5 ) ) ( base64
-       zip ) ) ( base64 openpgp ) )
+     - ( mime ( alternatives ( qp txt ) ( qp html5 ) ) ( base64 zip )
+       ( signature ( base64 openpgp ) ) )
    - accept patterns
      - ( xml * )
      - ( xml xhtml * )
    - semantics dictated by type
      - for xml, the first subtype MUST be the type for the document
        element
-     - for MIME, order of parts
+     - for MIME, order of subtypes is order of parts
 
 
-   - 0x00 :: ( type {type}:Expr {params} )
-   - 0x01 :: ( kind/type {kind}:Expr {type}:Expr {params} )
+   - 0x00 :: ( type {type}:Expr )
+     - metadata form
+   - 0x01 :: ( kind/type {kind}:Expr {type}:Expr )
    - 0x02 :: *
    - 0x03 :: bulk / ( bulk {namespaces} )
-   - 0x04 :: ( concise-type-sha3 {type}:Word32 )
-   - 0x05 :: ( concise-kind/type-sha3 {kind}:Word16 {type}:Word32 )
-   - 0x06 :: ( associate {type}:Expr {ids} )
+   - 0x10 :: audio
+   - 0x11 :: video
+   - 0x12 :: image
+
+
+   MeTOD only defines kinds where a default software could be expected
+   to process many or most types of this kind. This is not the case
+   for MIME registries application, text, message, model, multipart
+   and text. But a MIME vocabulary could define them.
 
 ** Dates namespace
    - Int123 := Int | Int Int | Int Int Int
