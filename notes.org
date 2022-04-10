@@ -18,7 +18,7 @@
          application; where ambiguity can appear, an application
          SHOULD enclose the array in a type-denoting form
      - because BULK arrays have no end markers, the payload of a BULK
-       stream can constitute the end of the stream
+       array can constitute the end of the stream
      - an array can be skipped in constant time and mapped in memory
      - unlimited size
        - # Word128 {content} is of maximum size 2^128
