@@ -468,7 +468,11 @@
 	    extent.
 	  </t>
 	  <t>
-	    Signed words contain the value of an integer in two's-complement notation.
+	    As BULK is meant as a serialization format which include unsigned words, including
+	    signed words would basically wasting a bit of sign on every negative integer, while not
+	    avoiding a costly operation (converting an unsigned integer to its negation in two's
+	    complement is one instruction on x86 and two on RISC-V). Hence BULK includes unsigned
+	    words and negative words, containing a negative integer as its negation stored unsigned.
 	  </t>
 
 	  <section title="8 bits unsigned word">
@@ -521,51 +525,51 @@
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="8 bits signed word">
+	  <section title="8 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">sw8</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">sw8 1B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">nw8</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">nw8 1B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word8</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="16 bits signed word">
+	  <section title="16 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">sw16</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">sw16 2B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">nw16</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">nw16 2B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word16</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="32 bits signed word">
+	  <section title="32 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">sw32</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">sw32 4B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">nw32</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">nw32 4B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="64 bits signed word">
+	  <section title="64 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">sw64</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">sw64 8B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">nw64</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">nw64 8B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="128 bits signed word">
+	  <section title="128 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">sw128</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">sw128 16B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">nw128</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">nw128 16B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>

@@ -29,11 +29,18 @@
    - 0x06 :: uw32 4B
    - 0x07 :: uw64 8B
    - 0x08 :: uw128 16B
-   - 0x09 :: sw8 1B
-   - 0x0A :: sw16 2B
-   - 0x0B :: sw32 4B
-   - 0x0C :: sw64 8B
-   - 0x0D :: sw128 16B
+   - 0x09 :: nw8 1B
+   - 0x0A :: nw16 2B
+   - 0x0B :: nw32 4B
+   - 0x0C :: nw64 8B
+   - 0x0D :: nw128 16B
+
+*** signed words
+    Converting a negative word to 2's complement in 64bits RISC-V:
+    #+BEGIN_src riscv
+      XORI x2, x2, 4294967295
+      ADDI x2, x2, 0
+    #+END_src
 
 ** BULK core namespace
    NSID: 0x20
