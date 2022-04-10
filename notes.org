@@ -45,26 +45,26 @@
 ** BULK core namespace
    NSID: 0x20
 
-   - 0x01 :: ( version Int Int )
-   - 0x02 :: true
-   - 0x03 :: false
-   - 0x04 :: ( stringenc {enc}:Encoding )
-   - 0x05 :: ( iana-charset Int ):Encoding
-   - 0x06 :: ( codepage Int ):Encoding
-   - 0x07 :: ( ns {marker}:Int {id}:UniqueID )
-   - 0x08 :: ( package {id}:UniqueID {namespaces} )
-   - 0x09 :: ( import {base}:Int {count}:Int {uuid} )
-   - 0x0A :: ( define Ref Expr )
-   - 0x0B :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )
-   - 0x0C :: ( ns-mnemonic {ns}:Expr {mnemonic}:String {doc} )
-   - 0x0D :: ( verifiable-ns {marker}:Int {id}:UniqueID
+   - 0x00 :: ( version Int Int )
+   - 0x01 :: true
+   - 0x02 :: false
+   - 0x03 :: ( stringenc {enc}:Encoding )
+   - 0x04 :: ( iana-charset Int ):Encoding
+   - 0x05 :: ( codepage Int ):Encoding
+   - 0x06 :: ( ns {marker}:Int {id}:UniqueID )
+   - 0x07 :: ( package {id}:UniqueID {namespaces} )
+   - 0x08 :: ( import {base}:Int {count}:Int {uuid} )
+   - 0x09 :: ( define Ref Expr )
+   - 0x0A :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )
+   - 0x0B :: ( ns-mnemonic {ns}:Expr {mnemonic}:String {doc} )
+   - 0x0C :: ( verifiable-ns {marker}:Int {id}:UniqueID
              {mnemonic}:Expr {doc}:Expr {definitions} )
      - ( mnemonic/def nil {…} ) defines the next unattributed ref
        (starting at 0)
-   - 0x0E :: ( concat {a1} {a2} )
-   - 0x0F :: ( subst {code} )
-   - 0x10 :: ( arg Int )
-   - 0x11 :: ( rest Int )
+   - 0x10 :: ( concat {a1} {a2} )
+   - 0x11 :: ( subst {code} )
+   - 0x12 :: ( arg Int )
+   - 0x13 :: ( rest Int )
    - 
    - 0x20 :: ( frac Int Int )
    - 0x21 :: ( bigint Array )

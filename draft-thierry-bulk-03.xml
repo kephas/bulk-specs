@@ -638,7 +638,7 @@
 	<section title="Version">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x1</spanx> (mnemonic: <spanx style="verb">version</spanx>)</t>
+	      <t hangText="name"><spanx style="verb">0x0</spanx> (mnemonic: <spanx style="verb">version</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">( version {major}:Int {minor}:Int )</spanx></t>
 	    </list>
 	  </t>
@@ -1341,10 +1341,9 @@
 	  a version form has the side-effect that classes of BULK streams can be identified by a
 	  sequence of bytes acting as "magic number":
 	  <list style="hanging">
-	    <t hangText="0x012001">any BULK stream</t>
-	    <t hangText="0x01200104">a BULK stream of any major version beneath 256</t>
-	    <t hangText="0x0120010401">a BULK stream of major version 1</t>
-	    <t hangText="0x0120010401040202">a BULK stream of version 1.2</t>
+	    <t hangText="0x012000">any BULK stream</t>
+	    <t hangText="0x0120000401">a BULK stream of major version 1</t>
+	    <t hangText="0x0120000401040002">a BULK stream of version 1.0</t>
 	  </list>
 	  </t>
 	  <t hangText="Published specification">this document</t>
