@@ -48,7 +48,7 @@
           extensibility, decentralization, compactness and processing speed for a data format. It is
           our opinion that every widely used existing format occupy a different position than this
           one in the solution space for formats, hence this new design. It is also our opinion that
-          most of those existing formats constitute an optimal solution for their specific use case,
+          some of those existing formats constitute an optimal solution for their specific use case,
           either in a absolute sense, or at least at the time of their design. But the ever-changing
           field of IT now faces new challenges that call for a new approach.
         </t>
@@ -133,7 +133,8 @@
 	  <t>
 	    All the previously cited formats clearly lack compactness, although just applying
 	    standard compression techniques would sacrifice only very little processing time to gain
-	    huge size reductions on most of their intended use cases.
+	    huge size reductions on most of their intended use cases, but compression may not
+	    address their ineffectiveness at storing arbitrary bytes.
 	  </t>
 	  <t>
 	    So-called binary formats pretty much exhibit the opposite trade-offs. Most of them are
@@ -150,6 +151,25 @@
 	    compiler and framework are correctly designed, such a format usually represent an
 	    optimum in compactness and speed of processing, as the compiler can also automatically
 	    generate an ad-hoc optimized parser.
+	  </t>
+	  <t>
+	    Where extensibility has been planned in existing formats, it often doesn't get used that
+	    much or at all because of the complications around it. Many binary formats include
+	    reserved values meant to extend them to future uses, like the <spanx
+	    style="verb">CM</spanx> field in the ZIP format. A case like this one faces an
+	    chicken-and-egg problem: if you don't write and get a specification officially adopted,
+	    implementations might not want to include your extension, but if your extension is
+	    purely theoretical and hasn't been tested in the wild, you may face resistance to get it
+	    officially adopted. This is probably why even though most compression formats include
+	    the ability to later encode other compression methods, each new compression method
+	    usually comes with its own format.
+	  </t>
+	  <t>
+	    When extensions are managed with any form of registry, another issue is that you usually
+	    need to reserve a large set of values for free experimentation, and once an extension
+	    gains any traction while in experimentation, its authors face the difficulty to switch
+	    all existing implementations to the definitive values they'll get. And how experimenters
+	    choose their temporary values makes them vulnerable to conflicts with others.
 	  </t>
 	</section>
       </section>
