@@ -15,7 +15,7 @@
 
 <rfc ipr="trust200902"
      category="exp"
-     docName="draft-thierry-bulk-03"
+     docName="draft-thierry-bulk-04"
      xmlns:x="http://purl.org/net/xml2rfc/ext">
   <x:feedback template="mailto:pierre@nothos.net"/>
   <front>
@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date day="02" month="05" year="2016" />
+    <date day="05" month="09" year="2023" />
     <keyword>binary</keyword>
 
     <abstract>
@@ -45,12 +45,14 @@
       <section title="Rationale">
         <t>
           This specification aims at finding an original trade-off between uniformity, generality,
-          extensibility, decentralization, compactness and processing speed for a data format. It is
-          our opinion that every widely used existing format occupy a different position than this
-          one in the solution space for formats, hence this new design. It is also our opinion that
-          some of those existing formats constitute an optimal solution for their specific use case,
-          either in a absolute sense, or at least at the time of their design. But the ever-changing
-          field of IT now faces new challenges that call for a new approach.
+          extensibility, decentralization, compactness and processing speed for a data format. It
+          is our opinion that every widely used existing format occupy a different position than
+          this one in the solution space for formats, that none is better on all axes, and that
+          this one is the current best on at least one axis, hence this new design. It is also our
+          opinion that some of those existing formats constitute an optimal solution for their
+          specific use case, either in a absolute sense, or at least at the time of their
+          design. But the ever-changing field of IT now faces new challenges that call for a new
+          approach.
         </t>
 	<t>
 	  In particular, whereas the previous trend for Internet and Web standards and programming
@@ -296,13 +298,13 @@
       </t>
       <t>
 	A processing application is not expected to actually produce the abstract yield, but an
-	adaptation of the abstract yield to its own implementation, called the concrete yield. Also,
-	some expressions in a BULK stream may have the semantics of a transformation of the abstract
-	yield. A processing application MAY thus not produce or retain the concrete yield but the
-	result of its transformation. This specification deals mainly with the byte sequence and the
-	abstract yield and occasionnally provide guidelines about the concrete yield. Of course, a
-	processing application MAY not produce the concrete yield at all but produce various side
-	effects from parsing the BULK stream.
+	adaptation of the abstract yield to its own implementation, called the concrete
+	yield. Also, some expressions in a BULK stream may have the semantics of a transformation
+	of the abstract yield. A processing application MAY thus not produce or retain the concrete
+	yield but the result of its transformation. This specification deals mainly with the byte
+	sequence and the abstract yield and occasionnally provide guidelines about the concrete
+	yield. Of course, a processing application MAY not produce the concrete yield at all but
+	produce various data structures and side effects from parsing the BULK stream.
       </t>
       <t>
 	The abstract yield is a sequence of expressions. Expressions can be atoms or forms. Forms
