@@ -101,17 +101,10 @@
          support
 
 ** BULK API Model
-   - some vocabularies will already need one
-     - hashing forms will need to know their own offset and those of
-       the parent form (and access to the byte sequence)
-   - class *Sequence*
-   - class *Expression*
-     - *offsets()*
-       - returns the offsets of the first and last byte of the byte
-         sequence denoting this expression
-     - *eval()*
-   - class *Stream* (*Sequence*)
-   - class *Form* (*Sequence* *Expression*)
+   - needed at least for hashing: access the bytes of an expression
+     (API to get positions to read the bytes independently or API to
+     get the bytes directly)
+
 ** Lambda expressions
    #+BEGIN_SRC bulk
    ( verifiable-ns 40 {id} nil "λ"
@@ -677,33 +670,35 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
 
-* Redesign?
-** syntax
-   As inspired by CBOR
+* Redesign inspired by CBOR?
 
-   | marker | shape                | notes                 |
-   |--------+----------------------+-----------------------|
-   |  00−3F | {int}                |                       |
-   |  40−7F | smallarray {content} | size = (marker && 3F) |
-   |     80 | nil                  |                       |
-   |     81 | (                    |                       |
-   |     82 | )                    |                       |
-   |     83 | array Int {content}  |                       |
-   |     84 | w8 1B                |                       |
-   |     85 | w16 2B               |                       |
-   |     86 | w32 4B               |                       |
-   |     87 | w64 8B               |                       |
-   |     88 | w128 16B             |                       |
-   |     89 | sint Word            |                       |
-   |        |                      |                       |
+  | marker | shape                | notes                 |
+  |--------+----------------------+-----------------------|
+  |  00−3F | {int}                |                       |
+  |  40−7F | smallarray {content} | size = (marker && 3F) |
+  |     80 | nil                  |                       |
+  |     81 | (                    |                       |
+  |     82 | )                    |                       |
+  |     83 | array Int {content}  |                       |
+  |     84 | w8 1B                |                       |
+  |     85 | w16 2B               |                       |
+  |     86 | w32 4B               |                       |
+  |     87 | w64 8B               |                       |
+  |     88 | w128 16B             |                       |
+  |     89 | neg8 1B              |                       |
+  |     8A | neg16 2B             |                       |
+  |     8B | neg32 4B             |                       |
+  |     8C | neg64 8B             |                       |
+  |     8D | neg128 16B           |                       |
+  |        |                      |                       |
 
-   - smallarray overhead: 1 byte (1.6−50%)
-   - array of size 64−255 overhead: 3 bytes (1.2−4.7%)
-   - array of size 256+ overhead: 4 bytes (0.006−1.6%)
+  - smallarray overhead: 1 byte (1.6−50%)
+  - array of size 64−255 overhead: 3 bytes (1.2−4.7%)
+  - array of size 256+ overhead: 4 bytes (0.006−1.6%)
 
 
-   Doesn't seem that great a gain for the added complexity (and loss
-   of available NS markers?).
+  Doesn't seem that great a gain for the added complexity (and loss
+  of available NS markers?).
 
 * Implementation notes
 ** Semantics beyond definitions
@@ -732,13 +727,6 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
   : |<---- 8 ---->| |<-------- 19 --------->| |<-------- 19 --------->| |< 4 ->|  2/4/8
 
   52/54/58 bytes + content
-
-  When doing hash bootstrapping blindly:
-
-  : ( version 1 1 ) ( ns 41 ( sha3 w64 8B ) ) ref # w? {size} {content}
-  : |<---- 8 ---->| |<-------- 19 --------->| |< 4 ->|  2/4/8
-
-  33/35/39 bytes + content
 
   When a profile is known (like a specific file extension for typed blobs):
 
