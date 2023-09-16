@@ -286,6 +286,14 @@
 	  {arg1}:Int stringenc {arg2}:Int )</spanx> are syntactly valid. They just have unspecified
 	  semantics, as far as this specification is concerned.
 	</t>
+	<t>
+	  Some identifiers are expected to be verifiable against a byte sequence. This means that
+	  there must be an algorithm that, given the byte sequence as input, produces the
+	  identifier as output and, given a different byte sequence, would produce a different
+	  identifier. Because this verification has security implications, the algorithm used
+	  should have the same guarantees than a cryptographic hash function in terms of
+	  collisions.
+	</t>
       </section>
     </section>
 
@@ -776,7 +784,7 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">ns</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( ns {marker}:Int {id}:UniqueID )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( ns {marker}:Int {id}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -789,13 +797,13 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">package</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( package {id}:UniqueID {namespaces} )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( package {id}:Expr {namespaces} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This creates a package identified by {id}. Packages are immutable, {id} MUST be
 	      verifiable against the byte sequence {namespaces}. {namespaces} must be a sequence of
-	      expressions of type UniqueID, each identifying a BULK namespace.
+	      expressions each identifying a BULK namespace.
 	    </t>
 	  </section>
 
@@ -803,12 +811,17 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">import</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( import {base}:Int {count}:Int {id}:UniqueID )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( import {base}:Int {count}:Int {id}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This associates the first {count} namespaces in the package identified by {id} with a
-	      continuous range of values starting at {base} within the scope of this expression.
+	      continuous range of marker bytes starting at {base} within the scope of this expression.
+	    </t>
+	    <t>
+	      Example: <spanx style="verb">( import 28 3 0x0123456789ABCDEF )</spanx> associates
+	      the first 3 namespaces of the package identified by <spanx
+	      style="verb">0x0123456789ABCDEF</spanx> to the marker bytes 28, 29 and 30.
 	    </t>
 	  </section>
 	</section>
@@ -898,8 +911,9 @@
 	      namespace. Else it MUST be <spanx style="verb">nil</spanx>.
 	    </t>
 	    <t>
-	      If more data than {id} is needed to verify {id} against {definitions}, this data
-	      should be provided by {data}. Else {data} MUST be <spanx style="verb">nil</spanx>.
+	      If more data than {id} is needed to verify {id} against {definitions} (like the salt
+	      of a hash function, or the namespace of a UUID), this data should be provided by
+	      {data}. Else {data} MUST be <spanx style="verb">nil</spanx>.
 	    </t>
 	  </section>
 
@@ -1088,7 +1102,7 @@
 	  </t>
 	  <t>
 	    In-between these two extremes, several options are available to produce a format that
-	    leverages the BULK parser a lot more while being more compact than a classiical BULK
+	    leverages the BULK parser a lot more while being more compact than a classical BULK
 	    format. The following forms provide a standard way to create such formats.
 	  </t>
 	  <t>
@@ -1097,37 +1111,52 @@
 	    come after operands. In the following forms, operators MUST be references.
 	  </t>
 	  <t>
-	    When evaluating a bytecode form, a processing application MAY try to transform it to an
-	    abstract syntax tree of its content and then evaluate expressions with the normal BULK
+	    The default semantics of a bytecode form is to transform it to an abstract syntax tree
+	    of its content and then evaluate the resulting expression with the normal BULK
 	    evaluation rules. When evaluating a bytecode form that doesn't provide arities, a
 	    processing application MUST abort this transformation as soon as it encounters a
 	    reference for which it cannot determine if it is an operator or its arity. When
 	    evaluating a bytecode form that provides arities, any reference that is not known to be
-	    an operator MUST be determined not to be an operator.
+	    an operator MUST be determined to be an operand.
 	  </t>
 	  <t>
 	    To transform a prefix bytecode form, a processing application creates an alternate
-	    context. If the first expression of the bytecode can be determined not to be an
-	    operator, it is removed from the beginning of the bytecode and appended as an atom at
-	    the end of the alternate context. If the first expression of the bytecode can be
-	    determined to be an operator, it is removed from the beginning of the bytecode along
-	    with as many next expressions as its arity and they all are appended as a form in the
-	    alternate context. The transformation continues until the bytecode is empty, in which
-	    case the alternate context becomes the inner context of the bytecode form and the
+	    context. If the first expression of the bytecode can be determined to be an operand, it
+	    is removed from the beginning of the bytecode and appended at the end of the alternate
+	    context. If the first expression of the bytecode is a reference that can be determined
+	    to be an operator, it is removed from the beginning of the bytecode and a sequence is
+	    created with the operator as the first expression, then as many next expressions as its
+	    arity are removed from the beginning of the bytecode and appended at the end of this
+	    sequence. Then that resulting sequence is appended at the end of the alternate
+	    context. The transformation continues until the bytecode is empty, in which case the
+	    alternate context becomes the inner context of the form that replaces the bytecode form
+	    and the transformation is complete.
+	  </t>
+	  <t> Example: the default semantics of </t>
+	  <t><spanx style="verb">( prefix* ( ( 2 sgf:black ) ) sgf:game sgf:black 1 2
+	  sgf:black 3 4 sgf:black 5 6 )</spanx> </t>
+	  <t>is that it's transformed into</t>
+	  <t><spanx style="verb">( sgf:game ( sgf:black 1 2 ) ( sgf:black 3 4 ) ( sgf:black 5 6 )
+	  )</spanx> </t>
+	  <t>
+	    To transform a postfix bytecode form, a processing application creates a data stack. If
+	    the first expression of the bytecode can be determined to be an operand, it is removed
+	    from the beginning of the bytecode and pushed on top of the stack. If the first
+	    expression of the bytecode can be determined to be an operator, it is removed from the
+	    beginning of the bytecode and a sequence is created with the operator as the first
+	    expression, then as many next expressions as its arity are popped from the stack and
+	    appended at the end of this sequence. Then that resulting sequence is pushed on top of
+	    the stack. The transformation continues until the bytecode is empty, in which case the
+	    sequence of the elements on the stack (with the top of the stack as the last element)
+	    becomes the inner context of the form that replaces the bytecode form and the
 	    transformation is complete.
 	  </t>
-	  <t>
-	    To transform a postfix bytecode form, a processing application creates an alternate
-	    context. If the first expression of the bytecode can be determined not to be an
-	    operator, it is removed from the beginning of the bytecode and appended as an atom at
-	    the end of the alternate context. If the first expression of the bytecode can be
-	    determined to be an operator, it is removed from the beginning of the bytecode and as
-	    many expressions as its arity are removed from the end of the alternate context. They
-	    all are appended as a form in the alternate context (with the operator as first element
-	    followed by the operands, kept in their previous order). The transformation continues
-	    until the bytecode is empty, in which case the alternate context becomes the inner
-	    context of the bytecode form and the transformation is complete.
-	  </t>
+	  <t> Example: the default semantics of </t>
+	  <t><spanx style="verb">( postfix* ( ( 2 sgf:black ) ) sgf:game 2 1 sgf:black
+	  4 3 sgf:black 6 5 sgf:black )</spanx> </t>
+	  <t>is that it's transformed into</t>
+	  <t><spanx style="verb">( sgf:game ( sgf:black 1 2 ) ( sgf:black 3 4 ) ( sgf:black 5 6 )
+	  )</spanx> </t>
 	  <t>
 	    If the overhead of several marker bytes in the operands of some operators is too much,
 	    even more compactness can be achieved by packing together small operands. For example,
@@ -1173,8 +1202,8 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x30</spanx> (mnemonic: <spanx
-		style="verb">prefix-bytecode</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( prefix-bytecode {bytecode} )</spanx></t>
+		style="verb">prefix</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( prefix {bytecode} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1186,17 +1215,33 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x31</spanx> (mnemonic: <spanx
-		style="verb">prefix-bytecode*</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( prefix-bytecode* ( {arities} ) {bytecode} )</spanx></t>
+		style="verb">prefix*</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( prefix* ( {arities} ) {bytecode}
+		)</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This is a prefix bytecode form that provides arities.
 	    </t>
 	    <t>
-	      {arities} MUST be a sequence of shapes <spanx style="verb">( {arity}:Int {refs}
-	      )</spanx>. {refs} MUST be a sequence of references. It indicates that all references
-	      in this sequence are operators of arity {arity}.
+	      <spanx style="verb">{arities}</spanx> MUST be a sequence of shapes <spanx
+	      style="verb">( {arity}:Int {refs} )</spanx>. {refs} MUST be a sequence of
+	      references. It indicates that all references in this sequence are operators of arity
+	      {arity}.
+	    </t>
+	    <t>
+	      Within the prefix bytecode of this form, if there is a <spanx
+	      style="verb">prefix</spanx> form, the arities declared in the outside form still
+	      apply. That is,
+	    </t>
+	    <t>
+	      <spanx style="verb">( prefix* ( {arities} ) {before} ( prefix {inner} ) {after}
+	      )</spanx>
+	    </t>
+	    <t>is equivalent to:</t>
+	    <t>
+	      <spanx style="verb">( prefix* ( {arities} ) {before} ( prefix* ( {arities} ) {inner}
+	      ) {after} )</spanx>
 	    </t>
 	  </section>
 
@@ -1204,8 +1249,8 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x32</spanx> (mnemonic: <spanx
-		style="verb">postfix-bytecode</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( postfix-bytecode {bytecode} )</spanx></t>
+		style="verb">postfix</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( postfix {bytecode} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1217,17 +1262,32 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x33</spanx> (mnemonic: <spanx
-		style="verb">postfix-bytecode*</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( postfix-bytecode* ( {arities} ) {bytecode} )</spanx></t>
+		style="verb">postfix*</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( postfix* ( {arities} ) {bytecode} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This is a postfix bytecode form that provides arities.
 	    </t>
 	    <t>
-	      {arities} MUST be a sequence of shapes <spanx style="verb">( {arity}:Int {refs}
-	      )</spanx>. {refs} MUST be a sequence of references. It indicates that all references
-	      in this sequence are operators of arity {arity}.
+	      <spanx style="verb">{arities}</spanx> MUST be a sequence of shapes <spanx
+	      style="verb">( {arity}:Int {refs} )</spanx>. {refs} MUST be a sequence of
+	      references. It indicates that all references in this sequence are operators of arity
+	      {arity}.
+	    </t>
+	    <t>
+	      Within the prefix bytecode of this form, if there is a <spanx
+	      style="verb">prefix</spanx> form, the arities declared in the outside form still
+	      apply. That is,
+	    </t>
+	    <t>
+	      <spanx style="verb">( postfix* ( {arities} ) {before} ( postfix {inner} ) {after}
+	      )</spanx>
+	    </t>
+	    <t>is equivalent to:</t>
+	    <t>
+	      <spanx style="verb">( postfix* ( {arities} ) {before} ( postfix* ( {arities} )
+	      {inner} ) {after} )</spanx>
 	    </t>
 	  </section>
 
@@ -1242,6 +1302,11 @@
 	    <t>
 	      {refs} MUST be a sequence of references. It indicates that all references in this
 	      sequence are operators of arity {arity}.
+	    </t>
+	    <t>
+	      Whenever a namespace definition provides arities for some references, all references
+	      in that namespace whose arities aren't provided MUST be determined to be operands by
+	      a processing application.
 	    </t>
 	  </section>
 
@@ -1541,7 +1606,7 @@
       <section title="Open authority">
 	<t>
 	  Any <spanx style="verb">ns</spanx> form for a unique identifier unknown to the processing
-	  application triggers the creation of a lasting namespace.
+	  application triggers the  of a lasting namespace.
 	</t>
 	<t>
 	  The disadvantage of this solution is that it opens a denial of service vulnerability. If
