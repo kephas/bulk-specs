@@ -33,8 +33,8 @@
 
     <abstract>
       <t>
-        This specification describes a uniform, decentrally extensible and efficient format for data
-        serialization.
+        This specification describes a uniform, decentrally extensible and efficient format for
+        data serialization.
       </t>
     </abstract>
 
@@ -69,9 +69,10 @@
 	  <t>
 	    By uniformity, we mean the property of a syntax that can be parsed even by an
 	    application that doesn't understand the semantics of every part of the processed
-	    data. Of course, almost all syntaxes that feature uniformity contain a limited number of
-	    non uniform elements. Also, uniformity really only has value in the face of extension,
-	    as a fixed syntax doesn't need uniformity (it only makes the implementation simpler).
+	    data. Of course, almost all syntaxes that feature uniformity contain a limited number
+	    of non uniform elements. Also, uniformity really only has value in the face of
+	    extension, as a fixed syntax doesn't need uniformity (it only makes the implementation
+	    simpler).
 	  </t>
 	  <t>
 	    Almost all extensible syntaxes have their extensible part uniform to a great degree. In
@@ -101,41 +102,41 @@
 	    data with a reasonable (or better yet, high) level of compactness and simplicity. For
 	    example, although both arrays and linked lists could be considered very general as they
 	    are both able to store any kind of data, they actually are at the respective cost of
-	    complexity (arrays need the embedding of data structure in the data or in the processing
-	    logic) and size (in-memory linked lists can waste as much as half or two third of the
-	    space for the overhead of the data structure).
+	    complexity (arrays need the embedding of data structure in the data or in the
+	    processing logic) and size (in-memory linked lists can waste as much as half or two
+	    third of the space for the overhead of the data structure).
 	  </t>
 	  <t>
-	    By decentralization, we mean the ability to extend the syntax in a way that avoid naming
-	    collisions without the use of a central registry. Note that the DNS, as we use it, is
-	    NOT decentralized in this sense, but distributed, as it cannot work without its root
-	    servers and not even without prior knowledge of their location.
+	    By decentralization, we mean the ability to extend the syntax in a way that avoid
+	    naming collisions without the use of a central registry. Note that the DNS, as we use
+	    it, is NOT decentralized in this sense, but distributed, as it cannot work without its
+	    root servers and not even without prior knowledge of their location.
 	  </t>
 	</section>
 	<section title="State of the art">
 	  <t>
 	    Uniformity, generality and extensibility are usually highly-valued traits in formats
-	    design. Programming languages obviously feature them foremost, although their generality
-	    usually stops at what they are supposed to express: procedures. Most of them are
-	    ill-suited to represent arbitrary data, but notable exceptions include Lisp (where "code
-	    is data") and Javascript, from which a subset has been extracted to exchange data, JSON,
-	    which has seen a tremendous success for this purpose. JSON may lack in generality and
-	    compactness, but its design makes its parsing really straightforward and fast. All of
-	    them, though, lack decentralization. Some of them make it possible to extend them in a
-	    distrubuted way if some discipline is followed (for example, by naming modules after
-	    domain names), but the discipline is not mandatory (and even with domain names, a change
-	    of ownership makes it possible for name collisions).
+	    design. Programming languages obviously feature them foremost, although their
+	    generality usually stops at what they are supposed to express: procedures. Most of them
+	    are ill-suited to represent arbitrary data, but notable exceptions include Lisp (where
+	    "code is data") and Javascript, from which a subset has been extracted to exchange
+	    data, JSON, which has seen a tremendous success for this purpose. JSON may lack in
+	    generality and compactness, but its design makes its parsing really straightforward and
+	    fast. All of them, though, lack decentralization. Some of them make it possible to
+	    extend them in a distrubuted way if some discipline is followed (for example, by naming
+	    modules after domain names), but the discipline is not mandatory (and even with domain
+	    names, a change of ownership makes it possible for name collisions).
 	  </t>
 	  <t>
-	    The SGML/XML family of formats also feature uniformity, generality and extensibility and
-	    actually fare much better than programming languages on the three fronts. XML namespaces
-	    also make XML naming distributed and there have been attempts at making it compact
-	    (e.g. EXI from W3C, Fast Infoset from ISO/ITU or EBML).
+	    The SGML/XML family of formats also feature uniformity, generality and extensibility
+	    and actually fare much better than programming languages on the three fronts. XML
+	    namespaces also make XML naming distributed and there have been attempts at making it
+	    compact (e.g. EXI from W3C, Fast Infoset from ISO/ITU or EBML).
 	  </t>
 	  <t>
 	    All the previously cited formats clearly lack compactness, although just applying
-	    standard compression techniques would sacrifice only very little processing time to gain
-	    huge size reductions on most of their intended use cases, but compression may not
+	    standard compression techniques would sacrifice only very little processing time to
+	    gain huge size reductions on most of their intended use cases, but compression may not
 	    address their ineffectiveness at storing arbitrary bytes.
 	  </t>
 	  <t>
@@ -149,29 +150,30 @@
 	    Actually, many binary formats are not so much formats but formats frameworks, and
 	    exclude extensibility by design. For each use case, an IDL compiler creates a brand new
 	    format that is essentially incompatible with all other formats created by the same
-	    compiler (EBML specifically cites this property among its own disadvantages). If the IDL
-	    compiler and framework are correctly designed, such a format usually represent an
+	    compiler (EBML specifically cites this property among its own disadvantages). If the
+	    IDL compiler and framework are correctly designed, such a format usually represent an
 	    optimum in compactness and speed of processing, as the compiler can also automatically
 	    generate an ad-hoc optimized parser.
 	  </t>
 	  <t>
-	    Where extensibility has been planned in existing formats, it often doesn't get used that
-	    much or at all because of the complications around it. Many binary formats include
+	    Where extensibility has been planned in existing formats, it often doesn't get used
+	    that much or at all because of the complications around it. Many binary formats include
 	    reserved values meant to extend them to future uses, like the <spanx
 	    style="verb">CM</spanx> field in the ZIP format. A case like this one faces an
 	    chicken-and-egg problem: if you don't write and get a specification officially adopted,
 	    implementations might not want to include your extension, but if your extension is
-	    purely theoretical and hasn't been tested in the wild, you may face resistance to get it
-	    officially adopted. This is probably why even though most compression formats include
-	    the ability to later encode other compression methods, each new compression method
-	    usually comes with its own format.
+	    purely theoretical and hasn't been tested in the wild, you may face resistance to get
+	    it officially adopted. This is probably why even though most compression formats
+	    include the ability to later encode other compression methods, each new compression
+	    method usually comes with its own format.
 	  </t>
 	  <t>
-	    When extensions are managed with any form of registry, another issue is that you usually
-	    need to reserve a large set of values for free experimentation, and once an extension
-	    gains any traction while in experimentation, its authors face the difficulty to switch
-	    all existing implementations to the definitive values they'll get. And how experimenters
-	    choose their temporary values makes them vulnerable to conflicts with others.
+	    When extensions are managed with any form of registry, another issue is that you
+	    usually need to reserve a large set of values for free experimentation, and once an
+	    extension gains any traction while in experimentation, its authors face the difficulty
+	    to switch all existing implementations to the definitive values they'll get. And how
+	    experimenters choose their temporary values makes them vulnerable to conflicts with
+	    others.
 	  </t>
 	</section>
       </section>
@@ -221,8 +223,8 @@
 	      namespace and every vocabulary would be parsed by the same mechanisms.
 	    </t>
 	    <t>
-	      Whenever a content must be stored as-is instead of serialized or a highly-optimized ad
-	      hoc serialization exists for some data, anything can always be stored within an
+	      Whenever a content must be stored as-is instead of serialized or a highly-optimized
+	      ad hoc serialization exists for some data, anything can always be stored within an
 	      array. They can contain arbitray bytes and there is no limit to their size.
 	    </t>
 	  </list>
@@ -257,7 +259,8 @@
 	</t>
 	<t>
 	  In the grammar, a shape is a pattern of bytes, following the rules of the text notation
-	  for a BULK stream. Apart from mnemonics and fixed sequences of bytes, a shape can contain:
+	  for a BULK stream. Apart from mnemonics and fixed sequences of bytes, a shape can
+	  contain:
 	  <list style="symbols">
 	    <t>an arbitrary sequence of a fixed number of bytes, represented by its size, i.e. a
 	    number of bytes in decimal immediately followed by a B uppercase letter (e.g. <spanx
@@ -274,10 +277,10 @@
 	</t>
 	<t>
 	  When an entire shape describes the byte sequence of an atom, it is the normative
-	  specification for parsing it, but shapes of forms are only normative with respect to their
-	  default evaluation. A reference defined with a form shape can be used in different shapes,
-	  albeit with different semantics and value and even when used in its default shape, a
-	  processing application MAY give it alternative semantics.
+	  specification for parsing it, but shapes of forms are only normative with respect to
+	  their default evaluation. A reference defined with a form shape can be used in different
+	  shapes, albeit with different semantics and value and even when used in its default
+	  shape, a processing application MAY give it alternative semantics.
 	</t>
 	<t>
 	  For example, this specification defines a way do specify a string encoding with forms of
@@ -328,8 +331,8 @@
       <section anchor="parsing" title="Parsing algorithm">
 	<t>
 	  The parser operates with a context, which is a sequence of expressions. Each time an
-	  expression is parsed, it is appended at the end of the context. The initial context is the
-	  abstract yield.
+	  expression is parsed, it is appended at the end of the context. The initial context is
+	  the abstract yield.
 	</t>
 	<t>
 	  At the beginning of a BULK stream and after having consumed the byte sequence denoting a
@@ -374,14 +377,14 @@
 	    namespace can have a value, which is what a reference associated to this name evaluates
 	    to. A reference whose marker value is associated to no namespace or whose name has no
 	    value evaluates to itself. How self-evaluating BULK expressions are represented in the
-	    concrete yield is application-dependent, but future specifications MAY define a standard
-	    API to access it, similar to the Document Object Model for XML.
+	    concrete yield is application-dependent, but future specifications MAY define a
+	    standard API to access it, similar to the Document Object Model for XML.
 	  </t>
 	  <t>
 	    The evaluation of a sequence obeys a special rule, though: if the first expression of
-	    the sequence has type <spanx style="verb">Function</spanx>, that function is called with
-	    an argument list and the sequence evaluates to the return value. If the function has
-	    type <spanx style="verb">LazyFunction</spanx>, the argument list is the rest of the
+	    the sequence has type <spanx style="verb">Function</spanx>, that function is called
+	    with an argument list and the sequence evaluates to the return value. If the function
+	    has type <spanx style="verb">LazyFunction</spanx>, the argument list is the rest of the
 	    sequence. If the function has type <spanx style="verb">EagerFunction</spanx>, the
 	    argument list is the rest of the sequence, where each expression is replaced by what it
 	    evaluates to. Any expression that has type <spanx style="verb">LazyFunction</spanx> or
@@ -444,7 +447,8 @@
 	<section title="nil">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x0</spanx> (mnemonic: <spanx style="verb">nil</spanx>)</t>
+	      <t hangText="marker"><spanx style="verb">0x0</spanx> (mnemonic: <spanx
+	      style="verb">nil</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">nil</spanx></t>
 	    </list>
 	  </t>
@@ -460,7 +464,8 @@
 	<section title="Array">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x3</spanx> (mnemonic: <spanx style="verb">#</spanx>)</t>
+	      <t hangText="marker"><spanx style="verb">0x3</spanx> (mnemonic: <spanx
+	      style="verb">#</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb"># Int {content}</spanx></t>
 	    </list>
 	  </t>
@@ -502,115 +507,136 @@
 	    signed words would basically wasting a bit of sign on every negative integer, while not
 	    avoiding a costly operation (converting an unsigned integer to its negation in two's
 	    complement is one instruction on x86 and two on RISC-V). Hence BULK includes unsigned
-	    words and negative words, containing a negative integer as its negation stored unsigned.
+	    words and negative words, containing a negative integer as its negation stored
+	    unsigned.
 	  </t>
 
 	  <section title="8 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">uw8</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0x4</spanx> (mnemonic: <spanx
+		style="verb">uw8</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw8 1B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word8</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word8</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="16 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">uw16</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0x5</spanx> (mnemonic: <spanx
+		style="verb">uw16</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw16 2B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word16</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word16</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="32 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">uw32</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
+		style="verb">uw32</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw32 4B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word32</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="64 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">uw64</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0x7</spanx> (mnemonic: <spanx
+		style="verb">uw64</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw64 8B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word64</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="128 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">uw128</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0x8</spanx> (mnemonic: <spanx
+		style="verb">uw128</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw128 16B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="8 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">nw8</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx
+		style="verb">nw8</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">nw8 1B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word8</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word8</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="16 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">nw16</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0xA</spanx> (mnemonic: <spanx
+		style="verb">nw16</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">nw16 2B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word16</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word16</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="32 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">nw32</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0xB</spanx> (mnemonic: <spanx
+		style="verb">nw32</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">nw32 4B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word32</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word32</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="64 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xC</spanx> (mnemonic: <spanx style="verb">nw64</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0xC</spanx> (mnemonic: <spanx
+		style="verb">nw64</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">nw64 8B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word64</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word64</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
 	  <section title="128 bits negative word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xD</spanx> (mnemonic: <spanx style="verb">nw128</spanx>)</t>
+		<t hangText="marker"><spanx style="verb">0xD</spanx> (mnemonic: <spanx
+		style="verb">nw128</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">nw128 16B</spanx></t>
 	      </list>
 	    </t>
-	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 	</section>
 
 	<section title="Reserved marker bytes">
 	  <t>
-	    Marker bytes <spanx style="verb">0xE−0x1F</spanx> are reserved for future major versions of
-	    BULK. It is a parser error if a BULK stream with major version 1 contains such a marker
-	    byte.
+	    Marker bytes <spanx style="verb">0xE−0x1F</spanx> are reserved for future major
+	    versions of BULK. It is a parser error if a BULK stream with major version 1 contains
+	    such a marker byte.
 	  </t>
 	</section>
 
@@ -621,21 +647,23 @@
 	    </list>
 	  </t>
 	  <t>
-	    The <spanx style="verb">{ns}</spanx> byte is a value associated with a namespace. Values
-	    <spanx style="verb">0x20−0x27</spanx> are reserved for namespaces defined by BULK
-	    specifications. Greater values can be associated with namespaces identified by a unique
-	    identifier.
+	    The <spanx style="verb">{ns}</spanx> byte is a value associated with a
+	    namespace. Values <spanx style="verb">0x20−0x27</spanx> are reserved for namespaces
+	    defined by BULK specifications. Greater values can be associated with namespaces
+	    identified by a unique identifier.
 	  </t>
 	  <t>
-	    The <spanx style="verb">{name}</spanx> byte is the name within the namespace. Vocabularies
-	    with more than 256 names thus need to be spread accross several namespaces.
+	    The <spanx style="verb">{name}</spanx> byte is the name within the
+	    namespace. Vocabularies with more than 256 names thus need to be spread accross several
+	    namespaces.
 	  </t>
 	  <t>
 	    The specification of a namespace SHOULD include a mnemonic for the namespace and for
-	    each defined name. When descriptions use several namespaces, the mnemonic of a reference
-	    SHOULD be the concatenation of the namespace mnemonic, ":" and the name mnemonic if
-	    there can be an ambiguity. For example, the <spanx style="verb">fp</spanx> name in
-	    namespace <spanx style="verb">math</spanx> becomes <spanx style="verb">math:fp</spanx>.
+	    each defined name. When descriptions use several namespaces, the mnemonic of a
+	    reference SHOULD be the concatenation of the namespace mnemonic, ":" and the name
+	    mnemonic if there can be an ambiguity. For example, the <spanx style="verb">fp</spanx>
+	    name in namespace <spanx style="verb">math</spanx> becomes <spanx
+	    style="verb">math:fp</spanx>.
 	  </t>
 	  <t>Type: <spanx style="verb">Ref</spanx></t>
 	  <section title="Special case">
@@ -655,21 +683,25 @@
 
     <section title="Standard namespaces">
       <t>
-	Standard namespaces have a fixed marker value and are not identified by a unique identifier.
+	Standard namespaces have a fixed marker value and are not identified by a unique
+	identifier.
       </t>
 
       <section title="BULK core namespace">
 	<t>
 	  <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x20</spanx> (mnemonic: <spanx style="verb">bulk</spanx>)</t>
+	      <t hangText="marker"><spanx style="verb">0x20</spanx> (mnemonic: <spanx
+	      style="verb">bulk</spanx>)</t>
 	  </list>
 	</t>
 
 	<section title="Version">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x0</spanx> (mnemonic: <spanx style="verb">version</spanx>)</t>
-	      <t hangText="shape"><spanx style="verb">( version {major}:Int {minor}:Int )</spanx></t>
+	      <t hangText="name"><spanx style="verb">0x0</spanx> (mnemonic: <spanx
+	      style="verb">version</spanx>)</t>
+	      <t hangText="shape"><spanx style="verb">( version {major}:Int {minor}:Int
+	      )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
@@ -693,7 +725,8 @@
 	    Two BULK versions with the same major version MUST share the same parsing rules and the
 	    same definitions of marker bytes. Changing the syntax or semantics of existing marker
 	    bytes and using marker bytes in the reserved interval warrants a new major
-	    version. Changing the syntax or semantics of existing names in standard namespaces also.
+	    version. Changing the syntax or semantics of existing names in standard namespaces
+	    also.
 	  </t>
 	  <t>
 	    Adding standard namespaces or adding names in existing standard namespaces warrants a
@@ -705,7 +738,8 @@
 	<section title="true">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x2</spanx> (mnemonic: <spanx style="verb">true</spanx>)</t>
+	      <t hangText="name"><spanx style="verb">0x2</spanx> (mnemonic: <spanx
+	      style="verb">true</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">true</spanx></t>
 	    </list>
 	  </t>
@@ -717,7 +751,8 @@
 	<section title="false">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x3</spanx> (mnemonic: <spanx style="verb">false</spanx>)</t>
+	      <t hangText="name"><spanx style="verb">0x3</spanx> (mnemonic: <spanx
+	      style="verb">false</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">false</spanx></t>
 	    </list>
 	  </t>
@@ -729,7 +764,8 @@
 	<section title="Strings encoding">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x4</spanx> (mnemonic: <spanx style="verb">stringenc</spanx>)</t>
+	      <t hangText="name"><spanx style="verb">0x4</spanx> (mnemonic: <spanx
+	      style="verb">stringenc</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">( stringenc {enc}:Encoding )</spanx></t>
 	    </list>
 	  </t>
@@ -742,16 +778,17 @@
 	    As the abstract yield doesn't contains strings but expressions that will be used as
 	    strings by the application, it is not a parsing error if the application doesn't
 	    recognize {enc}. In this situation, it is a parsing error when the application actually
-	    needs to decode a byte sequence as a string. It is not a parsing error when a processing
-	    application only transmits a byte sequence encoding a string, if it can accurately
-	    convey the encoding to the receiving application.
+	    needs to decode a byte sequence as a string. It is not a parsing error when a
+	    processing application only transmits a byte sequence encoding a string, if it can
+	    accurately convey the encoding to the receiving application.
 	  </t>
 	</section>
 
 	<section title="IANA registered character set">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx style="verb">iana-charset</spanx>)</t>
+	      <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx
+	      style="verb">iana-charset</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">( iana-charset {id}:Int )</spanx></t>
 	    </list>
 	  </t>
@@ -767,7 +804,8 @@
 	<section title="Windows code page">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx style="verb">code-page</spanx>)</t>
+	      <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
+	      style="verb">code-page</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">( code-page {id}:Int )</spanx></t>
 	    </list>
 	  </t>
@@ -783,7 +821,8 @@
 	  <section title="New namespace">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx style="verb">ns</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx
+		style="verb">ns</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( ns {marker}:Int {id}:Expr )</spanx></t>
 	      </list>
 	    </t>
@@ -796,8 +835,10 @@
 	  <section title="Package">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx style="verb">package</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( package {id}:Expr {namespaces} )</spanx></t>
+		<t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx
+		style="verb">package</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( package {id}:Expr {namespaces}
+		)</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -810,13 +851,16 @@
 	  <section title="Import">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx style="verb">import</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( import {base}:Int {count}:Int {id}:Expr )</spanx></t>
+		<t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx
+		style="verb">import</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( import {base}:Int {count}:Int {id}:Expr
+		)</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This associates the first {count} namespaces in the package identified by {id} with a
-	      continuous range of marker bytes starting at {base} within the scope of this expression.
+	      continuous range of marker bytes starting at {base} within the scope of this
+	      expression.
 	    </t>
 	    <t>
 	      Example: <spanx style="verb">( import 28 3 0x0123456789ABCDEF )</spanx> associates
@@ -838,28 +882,32 @@
 	  <t>
 	    When a BULK stream containing definitions for a namespace comes from a trusted source
 	    (i.e. in configuration files of the application, or in the communication with an agent
-	    that has been granted the relevant authority), an application MAY give those definitions
-	    long-lasting semantics (i.e. keep the values of the names at the end of parsing). This
-	    is the preferred mechanism for bulk namespace definition when the semantics of the
-	    defined expressions can be expressed completely by BULK forms.
+	    that has been granted the relevant authority), an application MAY give those
+	    definitions long-lasting semantics (i.e. keep the values of the names at the end of
+	    parsing). This is the preferred mechanism for bulk namespace definition when the
+	    semantics of the defined expressions can be expressed completely by BULK forms.
 	  </t>
 
 	  <section title="Simple definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx style="verb">define</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( define {ref}:Ref {value}:Expr )</spanx></t>
+		<t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx
+		style="verb">define</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( define {ref}:Ref {value}:Expr
+		)</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This defines the reference {ref} to the yield of {value} in the outer scope of this form.
+	      This defines the reference {ref} to the yield of {value} in the outer scope of this
+	      form.
 	    </t>
 	  </section>
 
 	  <section title="Named definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx style="verb">mnemonic/def</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx
+		style="verb">mnemonic/def</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( mnemonic/def {ref}:Ref {mnemonic}:String
 		{doc}:Expr {value} )</spanx></t>
 	      </list>
@@ -885,16 +933,17 @@
 	      </list>
 	    </t>
 	    <t>
-	      This suggest {mnemonic} as the mnemonic of the namespace designated by {ns} (which can
-	      be the integer to which this namespace is associated, a reference in this namespace or
-	      the unique identifier of this namespace).
+	      This suggest {mnemonic} as the mnemonic of the namespace designated by {ns} (which
+	      can be the integer to which this namespace is associated, a reference in this
+	      namespace or the unique identifier of this namespace).
 	    </t>
 	  </section>
 
 	  <section title="Verifiable namespace definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0D</spanx> (mnemonic: <spanx style="verb">verifiable-ns</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0x0D</spanx> (mnemonic: <spanx
+		style="verb">verifiable-ns</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( verifiable-ns {marker}:Int {id}:UniqueID
 		{data}:Expr {mnemonic}:Expr {definitions} )</spanx></t>
 	      </list>
@@ -920,7 +969,8 @@
 	  <section title="Array concatenation">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx style="verb">concat</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx
+		style="verb">concat</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( concat {array1} {array2} )</spanx></t>
 	      </list>
 	    </t>
@@ -937,7 +987,8 @@
 	    <section title="Substitution function">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx style="verb">subst</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx
+		  style="verb">subst</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
 		</list>
 	      </t>
@@ -945,16 +996,17 @@
 		<list style="hanging">
 		  <t hangText="Name's type">LazyFunction</t>
 		  <t hangText="Form's type">EagerFunction</t>
-		  <t hangText="Form's value">A substitution function whose return value is the value
-		  of {code}. Within {code}'s specific yield, the names <spanx style="verb">arg</spanx>
-		  and <spanx style="verb">rest</spanx> are defined:</t>
+		  <t hangText="Form's value">A substitution function whose return value is the
+		  value of {code}. Within {code}'s specific yield, the names <spanx
+		  style="verb">arg</spanx> and <spanx style="verb">rest</spanx> are defined:</t>
 		</list>
 	      </t>
 	    </section>
 	    <section title="Argument">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx style="verb">arg</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx
+		  style="verb">arg</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( arg {n}:Int )</spanx></t>
 		</list>
 	      </t>
@@ -970,7 +1022,8 @@
 	    <section title="Rest of arguments list">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x11</spanx> (mnemonic: <spanx style="verb">rest</spanx>)</t>
+		  <t hangText="name"><spanx style="verb">0x11</spanx> (mnemonic: <spanx
+		  style="verb">rest</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( rest {n}:Int )</spanx></t>
 		</list>
 	      </t>
@@ -984,8 +1037,8 @@
 	      </t>
 	      <section title="Examples">
 		<t>Here is a definition of the inverse followed by the number 1/2, 1/3 and 1/4:</t>
-		<t><spanx style="verb">( define inverse ( subst ( frac 1 ( arg 0 ) ) ) ) ( inverse 2 )
-		( inverse 3 ) ( inverse 4 )</spanx></t>
+		<t><spanx style="verb">( define inverse ( subst ( frac 1 ( arg 0 ) ) ) ) ( inverse
+		2 ) ( inverse 3 ) ( inverse 4 )</spanx></t>
 		<t>Substitution will splice multiple expressions in place:</t>
 		<t>The evaluation of <spanx style="verb">( ( subst 1 ( rest 0 ) 2 ) 3 4 )</spanx>
 		must yield the same as <spanx style="verb">( 1 3 4 2 )</spanx></t>
@@ -1011,7 +1064,8 @@
 	  <section title="Fraction">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x20</spanx> (mnemonic: <spanx style="verb">frac</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0x20</spanx> (mnemonic: <spanx
+		style="verb">frac</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( frac {num}:Int {div}:Int )</spanx></t>
 	      </list>
 	    </t>
@@ -1026,12 +1080,14 @@
 	  <section title="Arbitrary precision signed integer">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x21</spanx> (mnemonic: <spanx style="verb">bigint</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0x21</spanx> (mnemonic: <spanx
+		style="verb">bigint</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( bigint {bits}:Array )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      The bits contained in {bits} is the value of this integer in two's-complement notation.
+	      The bits contained in {bits} is the value of this integer in two's-complement
+	      notation.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx>.
@@ -1041,14 +1097,15 @@
 	  <section title="Binary floating-point number">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x22</spanx> (mnemonic: <spanx style="verb">binary</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0x22</spanx> (mnemonic: <spanx
+		style="verb">binary</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( binary {bits}:Bytes )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This is a floating-point number expressed in IEEE 754-2008 binary interchange format. If
-	      {bits} is an Array, the size of its contents must be a multiple of 32 bits, as per IEEE
-	      754-2008 rules. {bits} MUST NOT have type Word8.
+	      This is a floating-point number expressed in IEEE 754-2008 binary interchange
+	      format. If {bits} is an Array, the size of its contents must be a multiple of 32 bits,
+	      as per IEEE 754-2008 rules. {bits} MUST NOT have type Word8.
 	    </t>
 	    <t>
 	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Float</spanx>.
@@ -1058,7 +1115,8 @@
 	  <section title="Decimal floating-point number">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x23</spanx> (mnemonic: <spanx style="verb">decimal</spanx>)</t>
+		<t hangText="name"><spanx style="verb">0x23</spanx> (mnemonic: <spanx
+		style="verb">decimal</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( decimal {bits}:Bytes )</spanx></t>
 	      </list>
 	    </t>
@@ -1263,7 +1321,8 @@
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x33</spanx> (mnemonic: <spanx
 		style="verb">postfix*</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( postfix* ( {arities} ) {bytecode} )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( postfix* ( {arities} ) {bytecode}
+		)</spanx></t>
 	      </list>
 	    </t>
 	    <t>
