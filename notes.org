@@ -704,27 +704,26 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 ** Semantics beyond definitions
    When implementing a processing application that gives semantics
    beyond the evaluation of expressions, to benefit from all possible
-   evaluations, the application should just replace relevant
+   evaluations, the application should just replace relevant prior
    definitions with its own implementation while evaluating the BULK
-   streams defining the corresponding vocabularies (for example
-   predefine them and don't let BULK definitions overwrite them).
+   streams.
 
-* Bootstrapping any hashing vocabulary
+* Bootstrapping a hashing vocabulary
   - the problem is that this vocabulary provides hashes before any way
     of expressing a hash is possible, so its own hash is expressed
     with a name inside the vocabulary
-  - you read ( ns w8 0x28 ( 0x28 0x19 w64 {hashID} ) )
-  - how do you get to the point where you know 0x28 0x19 is hash:sha3?
+  - you read ~( ns w8 0x28 ( 0x28 0x19 w64 {hashID} ) )~
+  - how do you get to the point where you know ~0x28 0x19~ is ~hash:sha3~?
     - you get the list (hopefully with only one element) of
       vocabularies identified by a form whose sole element is a
-      64-bits word {hashid}
-    - for each of them, you check if 0x19 is a name associated with a
-      hashing algorithm
+      64-bits word ~{hashid}~
+    - for each of them, you check if ~0x19~ is a name associated with
+      a hashing algorithm
       - if yes, you check it that hash matches the definition
 
 * Minimal BULK
-  : ( version 1 1 ) ( ns 40 ( sha3 w64 8B ) ) ( ns 41 ( sha3 w64 8B ) ) ref # w? {size} {content}
-  : |<---- 8 ---->| |<-------- 19 --------->| |<-------- 19 --------->| |< 4 ->|  2/4/8
+  : ( version 1 1 ) ( ns 40 ( 40:sha3 w64 8B ) ) ( ns 41 ( 40:sha3 w64 8B ) ) 41:ref # w? {size} {content}
+  : |<---- 8 ---->| |<---------- 19 ---------->| |<---------- 19 ---------->| |<-- 4 -->|  2/4/8
 
   52/54/58 bytes + content
 
