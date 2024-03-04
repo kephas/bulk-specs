@@ -1,46 +1,40 @@
 * BULK
-  - final abstract yield = abstract yield after application of
-    transformation semantics
+** Trade-off
+   - uniformity :: as good as Lisp
+   - generality :: as good as Lisp
+   - extensibility :: 
+   - decentralization :: only decentralized binary format? on par with plain text formats using
+     decentralized IDs (like URI based on decentralized DNS)
+   - compactness :: 
+   - processing speed :: extremely simple to parse
+     - easy to evaluate
+     - possible to forbid evaluation for extremely restricted environments (embedded)
 
-** TODO false sense of extensibility
-   A number of binary formats include provisions for future extensions
-   (like the CM header in the gzip format) yet many have not been used
-   (examples of conflicting uses?) and new formats have been designed
-   instead (e.g. the xz format).
+** Syntax
 
-** syntax
-   - 0x00 :: nil
-   - 0x01 :: (
-   - 0x02 :: )
-   - 0x03 :: # {dim}:Int {content}:nB
-     - arrays are used whenever a vector or matrix is needed
-       - the semantics of the content must be inferred by the
-         application; where ambiguity can appear, an application
-         SHOULD enclose the array in a type-denoting form
-     - because BULK arrays have no end markers, the payload of a BULK
-       array can constitute the end of the stream
-     - an array can be skipped in constant time and mapped in memory
-     - unlimited size
-       - # Word128 {content} is of maximum size 2^128
-       - # ( bigint # Word128 {num} ) {content} is of maximum size 2^(2^128)
-       - the bigint's size can be a bigint too… ad infinitam
-   - 0x04 :: uw8 1B
-   - 0x05 :: uw16 2B
-   - 0x06 :: uw32 4B
-   - 0x07 :: uw64 8B
-   - 0x08 :: uw128 16B
-   - 0x09 :: nw8 1B
-   - 0x0A :: nw16 2B
-   - 0x0B :: nw32 4B
-   - 0x0C :: nw64 8B
-   - 0x0D :: nw128 16B
-
-*** signed words
-    Converting a negative word to 2's complement in 64bits RISC-V:
-    #+BEGIN_src riscv
-      XORI x2, x2, 4294967295
-      ADDI x2, x2, 0
-    #+END_src
+   | marker | shape                 | notes                  |
+   |--------+-----------------------+------------------------|
+   |     00 | nil                   |                        |
+   |     01 | (                     |                        |
+   |     02 | )                     |                        |
+   |     03 | # Int {content}       |                        |
+   |     04 | uw8 1B                |                        |
+   |     05 | uw16 2B               |                        |
+   |     06 | uw32 4B               |                        |
+   |     07 | uw64 8B               |                        |
+   |     08 | uw128 16B             |                        |
+   |     09 | sw8 1B                |                        |
+   |     0A | sw16 2B               |                        |
+   |     0B | sw32 4B               |                        |
+   |     0C | sw64 8B               |                        |
+   |     0D | sw128 16B             |                        |
+   |  0E–1F | reserved              |                        |
+   |  20–27 | BULK                  |                        |
+   |  28–BF | refs                  |                        |
+   |        |                       |                        |
+   |  C0–DF | uint[value]           | value = (marker && 1F) |
+   |  E0–FF | array[size] {content} | size = (marker && 1F)  |
+   |        |                       |                        |
 
 ** BULK core namespace
    NSID: 0x20
@@ -68,8 +62,8 @@
    - 
    - 0x20 :: ( frac Int Int )
    - 0x21 :: ( bigint Array )
-   - 0x22 :: ( binary {bits} )
-   - 0x23 :: ( decimal {bits} )
+   - 0x22 :: ( binfloat {bits} )
+   - 0x23 :: ( decfloat {bits} )
    - 
    - 0x30 :: ( prefix-bytecode {bytecode} )
    - 0x31 :: ( prefix-bytecode* ( {arities} ) {bytecode} )
@@ -670,36 +664,6 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
 
-* Redesign inspired by CBOR?
-
-  | marker | shape                | notes                 |
-  |--------+----------------------+-----------------------|
-  |  00−3F | {int}                |                       |
-  |  40−7F | smallarray {content} | size = (marker && 3F) |
-  |     80 | nil                  |                       |
-  |     81 | (                    |                       |
-  |     82 | )                    |                       |
-  |     83 | array Int {content}  |                       |
-  |     84 | w8 1B                |                       |
-  |     85 | w16 2B               |                       |
-  |     86 | w32 4B               |                       |
-  |     87 | w64 8B               |                       |
-  |     88 | w128 16B             |                       |
-  |     89 | neg8 1B              |                       |
-  |     8A | neg16 2B             |                       |
-  |     8B | neg32 4B             |                       |
-  |     8C | neg64 8B             |                       |
-  |     8D | neg128 16B           |                       |
-  |        |                      |                       |
-
-  - smallarray overhead: 1 byte (1.6−50%)
-  - array of size 64−255 overhead: 3 bytes (1.2−4.7%)
-  - array of size 256+ overhead: 4 bytes (0.006−1.6%)
-
-
-  Doesn't seem that great a gain for the added complexity (and loss
-  of available NS markers?).
-
 * Implementation notes
 ** Semantics beyond definitions
    When implementing a processing application that gives semantics
@@ -719,7 +683,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
       64-bits word ~{hashid}~
     - for each of them, you check if ~0x19~ is a name associated with
       a hashing algorithm
-      - if yes, you check it that hash matches the definition
+      - if yes, you check if that hash matches the definition
 
 * Minimal BULK
   : ( version 1 1 ) ( ns 40 ( 40:sha3 w64 8B ) ) ( ns 41 ( 40:sha3 w64 8B ) ) 41:ref # w? {size} {content}

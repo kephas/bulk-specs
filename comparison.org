@@ -1,27 +1,28 @@
-#+TITLE: Comparison of JSON, BSON, MsgPack, CBOR and BULK
+#+TITLE: Comparison of BULK, JSON, BSON, MsgPack and CBOR
 
 * Architecture
   The main architectural differences are the following:
 
   - structure
-    - JSON is a mapping from names to values (and complex structures use
-      mappings as values, recursively)
-      - BSON forces the top-level data structure to be a mapping
+    - the document in JSON is a single value that can be an atom or a
+      data structure; data structures can be heterogenous lists or
+      mappings from names to values (and complex structures use nested
+      mappings and arrays)
+      - BSON forces the top-level value to be a mapping
     - the document in MsgPack and CBOR is a length-carrying data
       structre
-    - a BULK stream is just a sequence of values (and complex
-      structures use sequences as values, recursively)
+    - a BULK stream is zero, one or several values (and complex
+      structures use nested lists)
   - identifiers
-    - JSON use text names, effectively creating a tree of directories
+    - JSON uses text names, effectively creating a tree of directories
       with named entries
-      - true for mappings in BSON, MsgPack and CBOR
-    - MsgPack, CBOR and BULK don't mandates the use of names
+      - true for mappings in BSON and MsgPack
+    - CBOR and BULK don't mandate the use of text names
       - a stream could be made almost entirely of data, except for a
         few marker bytes for nesting and primitive types, when a prior
         agreement on a schema exists
-      - names in MsgPack and CBOR are strings
-      - names in BULK are 136bits collision-free words, represented in
-        the stream as 16bits markers
+      - names in BULK are usually 136bits collision-free words,
+        represented in the stream as 16bits markers
 
 
   Now, why don't JSON users already use number as identifiers for
@@ -56,179 +57,95 @@
   the potential readability of JSON.
 
 * Feature grid
-  |                         | JSON   | BSON     | MsgPack  | CBOR     | BULK   |
-  |-------------------------+--------+----------+----------+----------+--------|
-  | decentralized           | no     | no       | no       | no       | yes    |
-  | streamable*             | yes    | no       | no       | yes      | yes    |
-  | smallest unit processed | byte   | byte     | bit      | bit      | byte   |
-  |-------------------------+--------+----------+----------+----------+--------|
-  | file size limit         | no     | 4G bytes | no       | no       | no     |
-  | container size limit    | no     | 4G bytes | 4G items | 4G items | no     |
-  |-------------------------+--------+----------+----------+----------+--------|
-  | smallest padding        | 1 byte | 2 bytes  | 1 byte   | 1 byte   | 1 byte |
-  | most probable padding   | 0x20   | ?        | 0x0      | 0x0      | 0x0    |
-  |-------------------------+--------+----------+----------+----------+--------|
-  | future extension slots  | n/a    | 235      | 13       | 254*     | 8.7e40 |
-  |-------------------------+--------+----------+----------+----------+--------|
+  |                        | BULK      | JSON   | BSON     | MsgPack  | CBOR     |
+  |------------------------+-----------+--------+----------+----------+----------|
+  | decentralized          | yes       | no     | no       | no       | no       |
+  | streamable             | yes       | no     | no       | no       | yes*     |
+  |------------------------+-----------+--------+----------+----------+----------|
+  | file size limit        | no        | no     | 4G bytes | no       | no       |
+  | container size limit   | no        | no     | 4G bytes | 4G items | 4G items |
+  |------------------------+-----------+--------+----------+----------+----------|
+  | smallest padding       | 1 byte    | 1 byte | 2 bytes  | 1 byte   | 1 byte   |
+  | most probable padding  | 0x00      | 0x20   | ?        | 0x00?    | 0x00?    |
+  |------------------------+-----------+--------+----------+----------+----------|
+  | future extension slots | unlimited | n/a    | 235      | 128      | 254*     |
+  |------------------------+-----------+--------+----------+----------+----------|
   
   - streamable means being able to be sent before all data is known
+    and that it can be parsed before the end of stream is reached
+    - CBOR was not initially streamable, but RFC 8742 adds a new
+      parsing rule that makes it streamable
   - CBOR has actually 1.8e19 names avalaible for extension, but only
     if the size of wire data is allowed to get bigger. Some names will
     take 3, 5 or 9 bytes and the first extensions will get the shorter
     names.
+  - MsgPack and CBOR may use 0x00 as padding, but it represents the
+    zero integer
 
 * Wire data
   Let's compare a few simple examples. The data in the table is the
   size of the example in bytes.
-
   
-  | format      |  1 |  2 |  3 |
-  |-------------+----+----+----|
-  | JSON        | 16 | 32 | 28 |
-  | BSON        | 21 | 47 | 25 |
-  | MsgPack     | 13 | 23 | 18 |
-  | CBOR        | 13 | 21 | 18 |
-  | BULK        | 14 | 27 | 12 |
-  | BULK*       | 10 | 23 |  8 |
-  | naive BULK  | 20 | 31 | 27 |
-  | naive BULK* | 16 | 27 | 23 |
+  | format     |   1 |  2 |        |
+  |------------+-----+----+--------|
+  | BULK       |  62 | 26 | 16n+8  |
+  | CBOR       | 100 | 49 | 27n+18 |
+  | MsgPack    | 106 | 49 | 33n+19 |
+  | Naive BULK | 119 | 52 | 36n+21 |
+  | JSON       | 145 | 60 | 39n+24 |
+  | BSON       | 178 | 65 | 47n+27 |
+  |------------+-----+----+--------|
 
-
-  The BULK* entries are 4 bytes shorter by dispensing with the
-  enclosing sequence and the marker which would be the idiomatic way
-  of doing with BULK. That is, instead of containing =( json name
-  value name value )=, it contains =name value name value=.
-
-  This idiomatic way provide type-safety and makes it possible to
-  recognize the binary content as BULK-encoded JSON, so this is an
-  added feature compared to the other formats. The BULK* entries make
-  it possible to compare them without this added feature.
-
-  The "naive BULK" entries store mapping names as string instead of
-  globally unique identifiers.
 
 ** JSON
-   1: ={"hello":"world}=
+   - 1 :: ={"status":"ok","data":[{"foo":"bar","baz":"quux","value":12.5},{"foo":"bar","baz":"quuux","value":0},{"foo":"fubar","baz":"quuuux","value":-40}]}=
 
-   2: ={"BSON":["awesome", 5.05, 1986]}=
+   - 2 :: ={"status":"error","code":735,"message":"delegation expired"}=
 
-   3: ={"compact": true,"schema":0}=
-
-** BSON
-   #+BEGIN_example
-   16 00 00 00  02  h  e  l 
-    l  o 00 06  00 00  w  o
-    r  l  d 00  00
-   #+END_example
-
-   #+BEGIN_example
-   31 00 00 00  04  B  S  O
-    N 00 26 00  00 00 20 00
-   08 00 00 00   a  w  e  s
-    o  m  e 00  11 00 33 33
-   33 33 33 33  14 40 01 02
-   00 CE 07 00  00 00 00
-   #+END_example
-
-   #+BEGIN_example
-   XX 00 00 00  08  c  o  m
-    p  a  c  t  00 01 10  s
-    h  e  m  a  00 00 00 00
-   00
-   #+END_example
-
-** MsgPack
-   #+BEGIN_example
-   81 A5  h  e   l  l  o A5
-    w  o  r  l   d
-   #+END_example
-
-   #+BEGIN_example
-   81 A4  B  S   O  N 93 A7
-    a  w  e  s   o  m  e CA
-   IE EE 07 54  CD 07 C2
-   #+END_example
-
-   #+BEGIN_example
-   82 A7  c  o   m  p  a  c
-    t C7 A6  s   c  h  e  m
-    a 00
-   #+END_example
-
-** CBOR
-   #+BEGIN_example
-   A1 65  h  e   l  l  o 65
-    w  o  r  l   d
-   #+END_example
-
-   #+BEGIN_example
-   A1 64  B  S   O  N 83 67
-    a  w  e  s   o  m  e F9
-   IE EE 1F 07  C2
-   #+END_example
-
-   #+BEGIN_example
-   A2 67  c  o   m  p  a  c
-    t F5 66  s   c  h  e  m
-    a 00
-   #+END_example
+   - 3 :: ={"status":"ok","data":[{"foo":"bar","baz":"quux","value":12.5} repeated n times]}=
 
 ** BULK
-   #+BEGIN_example
-   01 20 01 21  01 03 04 05
-    w  o  r  l   d 02
-   #+END_example
-
-   #+BEGIN_example
-   01 20 01 21  02 01 03 04
-   07  a  w  e   s  o  m  e
-   01 20 22 05  IE EE 02 05
-   07 C2 02
-   #+END_example
-
-   #+BEGIN_example
-   01 20 01 21  03 20 02 21
-   04 04 00 02
-   #+END_example
+   - 1 :: =( example:ok ( ( example:foobaz "bar" "quux" ( bulk:binfloat uw32 0x41480000 ) ) ( example:foobaz "bar" "quuux" 0 ) ( example:foobaz "fubar" "quuuux" -40 ) ) )=
+   - 2 :: =( example:error 735 "delegation expired" )=
+   - 3 :: =( example:ok ( bulk:prefix example:foobaz/f "bar" "quux" uw32 0x41480000 example:foobaz/f "bar" "quux" uw32 0x41480000 … ) )=
 
 *** Profile
-    These examples are intended to be used with the following profile
-    (*this is not a schema*, as it is *not needed to parse or use* the
-    data):
+    These examples are intended to be used with the following profile (*this is not a schema*, as
+    it is *not needed to parse* the data):
     #+BEGIN_src lisp
-    ( ns 20 {json} )
-    ( ns 21 {foo} )
-    ( define foo:1 "hello" )
-    ( define foo:2 "BSON" )
-    ( define foo:3 "compact" )
-    ( define foo:4 "schema" )
+      ( bulk:ns 29 uw128 0xe5f36902c4bf49db8ff0c3bc8a3a4afa )
+      ( bulk:ns-mnemonic 29 "example" )
+      ( bulk:mnemonic/def 0x1C00 "ok" "successful message containing data list" )
+      ( bulk:mnemonic/def 0x1C01 "error" "error message with code and message" )
+      ( bulk:mnemonic/dev 0x1C02 "foobaz" "foobaz data item" )
+      ( bulk:mnemonic/dev 0x1C02 "foobaz/f" "foobaz data item with float" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:binfloat ( bulk:arg 2 ) ) ) ) )
+      ( bulk:arity 3 example:foobar )
     #+END_src
 
-** naive BULK
-   #+BEGIN_example
-   01 20 01 03  04 05  h  e 
-    l  l  o 03  04 05  w  o
-    r  l  d 02
-   #+END_example
+    If the message format must be flexible to removing and adding fields, this example could be
+    used with the following profile where the form are evaluated into JSON-like maps:
 
-   #+BEGIN_example
-   01 20 01 03  04 04  B  S
-    O  N 03 04  07  a  w  e
-    s  o  m  e  01 20 22 05
-   IE EE 02 05  07 C2 02
-   #+END_example
-
-   #+BEGIN_example
-   01 20 01 03  04 07  c  o
-    m  p  a  c   t 20 02 03
-   04 06  s  c   h  e  m  a
-   04 00 02
-   #+END_example
-
-*** Profile
-    These examples are intended to be used with the following profile
-    (*this is not a schema*, as it is *not needed to parse or use* the
-    data):
     #+BEGIN_src lisp
-    ( ns 20 {json} )
+      ( bulk:ns-mnemonic 28 "example" )
+      ( bulk:mnemonic/def 0x1C00 "ok" "successful message containing data list" ( bulk:subst ( example:map "status" "ok" "data" ( bulk:arg 0 ) ) ) )
+      ( bulk:mnemonic/def 0x1C01 "error" "error message with code and message" ( bulk:subst ( example:map "status" "error" "code" ( bulk:arg 0 ) "message" ( bulk:arg 1 ) ) ) )
+      ( bulk:mnemonic/dev 0x1C02 "foobar" "foobaz data item" ( bulk:subst ( example:map "foo" ( bulk:arg 0 ) "baz" ( bulk:arg 1 ) "value" ( bulk:arg 2 ) ) )
+      ( bulk:mnemonic/dev 0x1C03 "map" "like JSON objects" )
+      ( bulk:arity 3 example:foobar )
     #+END_src
+
+** Naive BULK
+   This makes no use of BULK's ability to abstract common patterns, just encodes JSON maps and arrays as-is.
+
+   - 1 :: =( example:map "status" "ok" "data" ( ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binfloat uw32 0x41480000 ) ) ( example:map "foo" "bar" "baz" "quuux" "value" 0 ) ( example:map "foo" "fubar" "baz" "quuuux" "value" -40 ) ) )=
+   - 2 :: =( example:map "status" "error" "code" 735 "message" "delegation expired" )=
+   - 3 :: =( example:map "status" "ok" "data" ( ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binfloat uw32 0x41480000 ) ) ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binfloat uw32 0x41480000 ) ) … ) )=
+
+** BSON
+   https://euandreh.github.io/cl-BSON/api.html
+
+** MsgPack
+   https://msgpack.org/
+
+** CBOR
+   https://cbor.me/   

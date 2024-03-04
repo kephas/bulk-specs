@@ -28,7 +28,7 @@
       </address>
     </author>
 
-    <date day="05" month="09" year="2023" />
+    <date day="06" month="03" year="2024" />
     <keyword>binary</keyword>
 
     <abstract>
@@ -110,7 +110,7 @@
 	    By decentralization, we mean the ability to extend the syntax in a way that avoid
 	    naming collisions without the use of a central registry. Note that the DNS, as we use
 	    it, is NOT decentralized in this sense, but distributed, as it cannot work without its
-	    root servers and not even without prior knowledge of their location.
+	    root servers and prior knowledge of their location.
 	  </t>
 	</section>
 	<section title="State of the art">
@@ -254,7 +254,9 @@
 	   style="verb">what-the-%§!?#-is-that?</spanx>. They are always separated by white
 	   space. Outside the use of mnemonics, a sequence of bytes (of one or more bytes) can be
 	   represented by its hexadecimal value as an unsigned integer (e.g. <spanx
-	   style="verb">0x3F</spanx> or <spanx style="verb">0x3A0B770F</spanx>). Some types in this
+	   style="verb">0x3F</spanx> or <spanx style="verb">0x3A0B770F</spanx>). Such a sequence of
+	   bytes can include dashes to make it more readable (e.g. <spanx
+	   style="verb">0xDDA37D36-85E6-4E6D-9B51-959E1CCE366C</spanx>). Some types in this
 	   specification define a special syntax for their representation in the text notation.
 	</t>
 	<t>
@@ -343,14 +345,14 @@
 	  sequence.
 	</t>
 	<t>
-	  The <spanx style="verb">0x1</spanx> and <spanx style="verb">0x2</spanx> marker bytes are
-	  special cases. When the parser reads <spanx style="verb">0x1</spanx>, it immediately
+	  The <spanx style="verb">0x01</spanx> and <spanx style="verb">0x02</spanx> marker bytes are
+	  special cases. When the parser reads <spanx style="verb">0x01</spanx>, it immediately
 	  appends an empty sequence to the current context. This sequence becomes the new
 	  context. This new context has the previous context as parent. Then the parser returns to
-	  its dispatch stage. When the parser reads <spanx style="verb">0x2</spanx>, it appends
+	  its dispatch stage. When the parser reads <spanx style="verb">0x02</spanx>, it appends
 	  nothing to the context, but instead the parent of the current context becomes the new
 	  context and the parser returns to the dispatch stage. Thus it is a parsing error to read
-	  <spanx style="verb">0x2</spanx> when the context is the abstract yield.
+	  <spanx style="verb">0x02</spanx> when the context is the abstract yield.
 	</t>
 	<t>
 	  The scope of an expression is the part of its context that follows the expression.
@@ -398,7 +400,7 @@
 	<section title="starting marker byte">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x1</spanx></t>
+	      <t hangText="marker"><spanx style="verb">0x01</spanx></t>
 	      <t hangText="mnemonic"><spanx style="verb">(</spanx></t>
 	    </list>
 	  </t>
@@ -406,7 +408,7 @@
 	<section title="ending marker byte">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x2</spanx></t>
+	      <t hangText="marker"><spanx style="verb">0x02</spanx></t>
 	      <t hangText="mnemonic"><spanx style="verb">)</spanx></t>
 	    </list>
 	  </t>
@@ -447,51 +449,94 @@
 	<section title="nil">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x0</spanx> (mnemonic: <spanx
+	      <t hangText="marker"><spanx style="verb">0x00</spanx> (mnemonic: <spanx
 	      style="verb">nil</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">nil</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    Apart from being a possible short marker value, the fact that the <spanx
-	    style="verb">0x0</spanx> byte represents a valid atom means that a sequence of null
+	    style="verb">0x00</spanx> byte represents a valid atom means that a sequence of null
 	    bytes is a valid part of a BULK stream, thus making the format less fragile. In a
 	    network communication, nil atoms can be sent to keep the channel open. They can also be
 	    used as padding at the end of a form or between forms.
 	  </t>
 	</section>
 
-	<section title="Array">
+	<section title="Arrays">
 	  <t>
-	    <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x3</spanx> (mnemonic: <spanx
-	      style="verb">#</spanx>)</t>
-	      <t hangText="shape"><spanx style="verb"># Int {content}</spanx></t>
-	    </list>
+	    Arrays can be used to store arbitrary bytes, typically the content of a file or a binary
+	    message of another format. They can also be used to store a vector or matrix of
+	    fixed-size elements. The semantics of the content must be inferred by the processing
+	    application; where ambiguity can appear, an application SHOULD enclose the array in a
+	    type-denoting form.
 	  </t>
 	  <t>
-	    Arrays have a special parsing rule. After consuming the marker byte, the parser returns
-	    to the dispatch stage. It is a parser error if the parsed expression is not of type Int
-	    or if its value cannot be recognized. This integer is not added to any context, but the
-	    parser consumes as many bytes as this integer and they constitute the content of this
-	    array.
+	    Because BULK arrays have no end markers, the payload of a BULK array can constitute the
+	    end of the stream.
 	  </t>
 	  <t>
-	    If two arrays have the shapes <spanx style="verb"># {s1} {c1}</spanx> and <spanx
-	    style="verb"># {s2} {c2}</spanx> and if <spanx style="verb">{s1+s2}</spanx> denotes the
-	    sum of the integers <spanx style="verb">{s1}</spanx> and <spanx
-	    style="verb">{s2}</spanx>, then their concatenation is <spanx style="verb"># {s1+s2}
-	    {c1} {c2}</spanx>.
+	    The start and end of an array are known without reading its content, which means that
+	    its content can be skipped in constant time and mapped in memory.
 	  </t>
 	  <t>
-	    In the text notation, a quoted string represents an array containing the encoding of
-	    that string in the current encoding.
+	    Because BULK can use integers with arbitrary size to store the size of an array, BULK
+	    arrays have no limit in size.
 	  </t>
-	  <t>Types: <spanx style="verb">Array</spanx>, <spanx style="verb">Bytes</spanx></t>
-	  <t>
-	    In a shape, the type String is synonymous with Array, but means that the content of the
-	    array is supposed to be taken as a string.
-	  </t>
+	  
+	  <section title="Generic array">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0x03</spanx> (mnemonic: <spanx
+		style="verb">#</spanx>)</t>
+		<t hangText="shape"><spanx style="verb"># Int {content}</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      Arrays have a special parsing rule. After consuming the marker byte, the parser returns
+	      to the dispatch stage. It is a parser error if the parsed expression is not of type Int
+	      or if its value cannot be recognized. This integer is not added to any context, but the
+	      parser consumes as many bytes as this integer and they constitute the content of this
+	      array.
+	    </t>
+	    <t>
+	      In the text notation, a quoted string is the notation for an array containing the
+	      encoding of that string in the current encoding (except if the size of the encoding is
+	      below 32 bytes, cf. small arrays).
+	    </t>
+	    <t>Types: <spanx style="verb">Array</spanx>, <spanx style="verb">Bytes</spanx></t>
+	    <t>
+	      In a shape, the type String is synonymous with Array, but means that the content of the
+	      array is supposed to be taken as a string.
+	    </t>
+	  </section>
+
+	  <section title="Small array">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0xE0–0xFF</spanx> (mnemonic: <spanx
+		style="verb">#[size]</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">#[size] {content}</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      Small arrays have a special parsing rule. The 5 least significant bits of the marker
+	      byte are treated as un unsigned integer. This integer is not added to any context, but
+	      the parser consumes as many bytes as this integer and they constitute the content of
+	      this array.
+	    </t>
+	    <t>
+	      In the text notation, the marker byte of a small array of size X is written as <spanx
+	      style="verb">#[X]</spanx>. For example, <spanx style="verb">#[2] 0x1234</spanx> is a
+	      notation for the bytes <spanx style="verb">0xE2 0x12 0x34</spanx>.
+	    </t>
+	    <t>
+	      In the text notation, a quoted string is the notation for a small array containing the
+	      encoding of that string in the current encoding if the size of the encoding is below
+	      32 bytes.
+	    </t>
+	    <t>Types: <spanx style="verb">Array</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
 	</section>
 
 	<section title="Binary words">
@@ -503,18 +548,13 @@
 	    extent.
 	  </t>
 	  <t>
-	    As BULK is meant as a serialization format which include unsigned words, including
-	    signed words would basically wasting a bit of sign on every negative integer, while not
-	    avoiding a costly operation (converting an unsigned integer to its negation in two's
-	    complement is one instruction on x86 and two on RISC-V). Hence BULK includes unsigned
-	    words and negative words, containing a negative integer as its negation stored
-	    unsigned.
+	    A signed word contain the representation of a signed integer in two's complement.
 	  </t>
 
 	  <section title="8 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x4</spanx> (mnemonic: <spanx
+		<t hangText="marker"><spanx style="verb">0x04</spanx> (mnemonic: <spanx
 		style="verb">uw8</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw8 1B</spanx></t>
 	      </list>
@@ -526,7 +566,7 @@
 	  <section title="16 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x5</spanx> (mnemonic: <spanx
+		<t hangText="marker"><spanx style="verb">0x05</spanx> (mnemonic: <spanx
 		style="verb">uw16</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw16 2B</spanx></t>
 	      </list>
@@ -538,7 +578,7 @@
 	  <section title="32 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
+		<t hangText="marker"><spanx style="verb">0x06</spanx> (mnemonic: <spanx
 		style="verb">uw32</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw32 4B</spanx></t>
 	      </list>
@@ -550,7 +590,7 @@
 	  <section title="64 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x7</spanx> (mnemonic: <spanx
+		<t hangText="marker"><spanx style="verb">0x07</spanx> (mnemonic: <spanx
 		style="verb">uw64</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw64 8B</spanx></t>
 	      </list>
@@ -562,7 +602,7 @@
 	  <section title="128 bits unsigned word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x8</spanx> (mnemonic: <spanx
+		<t hangText="marker"><spanx style="verb">0x08</spanx> (mnemonic: <spanx
 		style="verb">uw128</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">uw128 16B</spanx></t>
 	      </list>
@@ -571,65 +611,89 @@
 	    style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="8 bits negative word">
+	  <section title="8 bits signed word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0x9</spanx> (mnemonic: <spanx
-		style="verb">nw8</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">nw8 1B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0x09</spanx> (mnemonic: <spanx
+		style="verb">sw8</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw8 1B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
 	    style="verb">Word8</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="16 bits negative word">
+	  <section title="16 bits signed word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xA</spanx> (mnemonic: <spanx
-		style="verb">nw16</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">nw16 2B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0x0A</spanx> (mnemonic: <spanx
+		style="verb">sw16</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw16 2B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
 	    style="verb">Word16</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="32 bits negative word">
+	  <section title="32 bits signed word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xB</spanx> (mnemonic: <spanx
-		style="verb">nw32</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">nw32 4B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0x0B</spanx> (mnemonic: <spanx
+		style="verb">sw32</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw32 4B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
 	    style="verb">Word32</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="64 bits negative word">
+	  <section title="64 bits signed word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xC</spanx> (mnemonic: <spanx
-		style="verb">nw64</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">nw64 8B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0x0C</spanx> (mnemonic: <spanx
+		style="verb">sw64</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw64 8B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
 	    style="verb">Word64</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
 
-	  <section title="128 bits negative word">
+	  <section title="128 bits signed word">
 	    <t>
 	      <list style="hanging">
-		<t hangText="marker"><spanx style="verb">0xD</spanx> (mnemonic: <spanx
-		style="verb">nw128</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">nw128 16B</spanx></t>
+		<t hangText="marker"><spanx style="verb">0x0D</spanx> (mnemonic: <spanx
+		style="verb">sw128</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">sw128 16B</spanx></t>
 	      </list>
 	    </t>
 	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
 	    style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
 	  </section>
+
+	  <section title="small unsigned integers">
+	    <t>
+	      <list style="hanging">
+		<t hangText="marker"><spanx style="verb">0xC0–0xDF</spanx> (mnemonic: <spanx
+		style="verb">uint[value]</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">uint[value]</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      Small unsigned integers have a special parsing rule. The 5 least significant bits of
+	      the marker byte are treated as un unsigned integer. This integer is the value denoted
+	      by this byte.
+	    </t>
+	    <t>
+	      In the text notation, the marker byte of a small unsigned integer of value X is
+	      written as <spanx style="verb">uint[X]</spanx>. For example, <spanx
+	      style="verb">uint[11]</spanx> is a notation for the byte <spanx
+	      style="verb">0xCB</spanx>.
+	    </t>
+	    <t>Types: <spanx style="verb">Int</spanx>, <spanx style="verb">Word</spanx>, <spanx
+	    style="verb">Word128</spanx>, <spanx style="verb">Bytes</spanx></t>
+	  </section>
+
 	</section>
 
 	<section title="Reserved marker bytes">
@@ -642,7 +706,7 @@
 
 	<section title="Reference">
 	  <t><list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x20−0xFF</spanx></t>
+	      <t hangText="marker"><spanx style="verb">0x20−0xBF</spanx></t>
 	      <t hangText="shape"><spanx style="verb">{ns}:1B {name}:1B</spanx></t>
 	    </list>
 	  </t>
@@ -669,11 +733,11 @@
 	  <section title="Special case">
 	    <t>
 	      References have a special parsing rule. In case a BULK stream needs an important
-	      number of namespaces, if the marker byte is <spanx style="verb">0xFF</spanx>, the
+	      number of namespaces, if the marker byte is <spanx style="verb">0xBF</spanx>, the
 	      parser continues to read bytes until it finds a byte different than 0xFF. The sum of
 	      each of those bytes taken as unsigned integers is the value associated with a
-	      namespace. For example, the reference denoted by the bytes <spanx style="verb">0xFF
-	      0xFF 0x8C 0x1A</spanx> is the name 26 in the namespace associated with 650.
+	      namespace. For example, the reference denoted by the bytes <spanx style="verb">0xBF
+	      0xFF 0x8C 0x1A</spanx> is the name 26 in the namespace associated with 586.
 	    </t>
 	  </section>
 	</section>
@@ -698,7 +762,7 @@
 	<section title="Version">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x0</spanx> (mnemonic: <spanx
+	      <t hangText="name"><spanx style="verb">0x00</spanx> (mnemonic: <spanx
 	      style="verb">version</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">( version {major}:Int {minor}:Int
 	      )</spanx></t>
@@ -738,7 +802,7 @@
 	<section title="true">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x2</spanx> (mnemonic: <spanx
+	      <t hangText="name"><spanx style="verb">0x02</spanx> (mnemonic: <spanx
 	      style="verb">true</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">true</spanx></t>
 	    </list>
@@ -751,7 +815,7 @@
 	<section title="false">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x3</spanx> (mnemonic: <spanx
+	      <t hangText="name"><spanx style="verb">0x03</spanx> (mnemonic: <spanx
 	      style="verb">false</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">false</spanx></t>
 	    </list>
@@ -764,7 +828,7 @@
 	<section title="Strings encoding">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x4</spanx> (mnemonic: <spanx
+	      <t hangText="name"><spanx style="verb">0x04</spanx> (mnemonic: <spanx
 	      style="verb">stringenc</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">( stringenc {enc}:Encoding )</spanx></t>
 	    </list>
@@ -787,7 +851,7 @@
 	<section title="IANA registered character set">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x5</spanx> (mnemonic: <spanx
+	      <t hangText="name"><spanx style="verb">0x05</spanx> (mnemonic: <spanx
 	      style="verb">iana-charset</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">( iana-charset {id}:Int )</spanx></t>
 	    </list>
@@ -804,7 +868,7 @@
 	<section title="Windows code page">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="name"><spanx style="verb">0x6</spanx> (mnemonic: <spanx
+	      <t hangText="name"><spanx style="verb">0x06</spanx> (mnemonic: <spanx
 	      style="verb">code-page</spanx>)</t>
 	      <t hangText="shape"><spanx style="verb">( code-page {id}:Int )</spanx></t>
 	    </list>
@@ -821,7 +885,7 @@
 	  <section title="New namespace">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x7</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x07</spanx> (mnemonic: <spanx
 		style="verb">ns</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( ns {marker}:Int {id}:Expr )</spanx></t>
 	      </list>
@@ -835,7 +899,7 @@
 	  <section title="Package">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x8</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x08</spanx> (mnemonic: <spanx
 		style="verb">package</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( package {id}:Expr {namespaces}
 		)</spanx></t>
@@ -851,7 +915,7 @@
 	  <section title="Import">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x9</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x09</spanx> (mnemonic: <spanx
 		style="verb">import</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( import {base}:Int {count}:Int {id}:Expr
 		)</spanx></t>
@@ -891,7 +955,7 @@
 	  <section title="Simple definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xA</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x0A</spanx> (mnemonic: <spanx
 		style="verb">define</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( define {ref}:Ref {value}:Expr
 		)</spanx></t>
@@ -906,7 +970,7 @@
 	  <section title="Named definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xB</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x0B</spanx> (mnemonic: <spanx
 		style="verb">mnemonic/def</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( mnemonic/def {ref}:Ref {mnemonic}:String
 		{doc}:Expr {value} )</spanx></t>
@@ -926,7 +990,7 @@
 	  <section title="Namespace description">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xC</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x0C</spanx> (mnemonic: <spanx
 		style="verb">ns-mnemonic</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( ns-mnemonic {ns}:Expr {mnemonic}:String
 		{doc} )</spanx></t>
@@ -969,7 +1033,7 @@
 	  <section title="Array concatenation">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0xE</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x0E</spanx> (mnemonic: <spanx
 		style="verb">concat</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( concat {array1} {array2} )</spanx></t>
 	      </list>
@@ -987,7 +1051,7 @@
 	    <section title="Substitution function">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0xF</spanx> (mnemonic: <spanx
+		  <t hangText="name"><spanx style="verb">0x0F</spanx> (mnemonic: <spanx
 		  style="verb">subst</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
 		</list>
@@ -1057,8 +1121,8 @@
 	  <t>
 	    In the text notation of a BULK stream, a decimal integer represent the smallest byte
 	    sequence that is represented by this integer. For example, <spanx style="verb">( 31 256
-	    )</spanx> is a notation for the bytes <spanx style="verb">0x1 0x4 0x1F 0x5 0x1 0x0
-	    0x2</spanx>.
+	    )</spanx> is a notation for the bytes <spanx style="verb">0x01 0x041F 0x050100
+	    0x02</spanx>.
 	  </t>
 
 	  <section title="Fraction">
@@ -1098,8 +1162,8 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x22</spanx> (mnemonic: <spanx
-		style="verb">binary</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( binary {bits}:Bytes )</spanx></t>
+		style="verb">binfloat</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( binfloat {bits}:Bytes )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1116,8 +1180,8 @@
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x23</spanx> (mnemonic: <spanx
-		style="verb">decimal</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( decimal {bits}:Bytes )</spanx></t>
+		style="verb">decfloat</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( decfloat {bits}:Bytes )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1160,13 +1224,13 @@
 	  </t>
 	  <t>
 	    In-between these two extremes, several options are available to produce a format that
-	    leverages the BULK parser a lot more while being more compact than a classical BULK
+	    leverages the BULK parser a lot more while being more compact than a basic BULK
 	    format. The following forms provide a standard way to create such formats.
 	  </t>
 	  <t>
-	    A flat sequence of operators and operands is called a bytecode. Prefix bytecodes are
-	    those where operators come before operands, postfix bytecodes are those where operators
-	    come after operands. In the following forms, operators MUST be references.
+	    A flat sequence of operators and operands is called a BULK bytecode. Prefix bytecodes
+	    are those where operators come before operands, postfix bytecodes are those where
+	    operators come after operands. In the following forms, operators MUST be references.
 	  </t>
 	  <t>
 	    The default semantics of a bytecode form is to transform it to an abstract syntax tree
@@ -1229,14 +1293,14 @@
 	  </t>
 	  <t>
 	    <list style="hanging">
-	      <t hangText="classical (8 bytes)"><spanx style="verb">( sgf:black/2 w8 0x04 w8 0x10
+	      <t hangText="basic (8 bytes)"><spanx style="verb">( sgf:black/2 uw8 0x21 uw8 0x2A
 	      )</spanx></t>
-	      <t hangText="packed classical (7 bytes)"><spanx style="verb">( sgf:black/1 w16 0x04
-	      0x10 )</spanx></t>
-	      <t hangText="bytecode (6 bytes)"><spanx style="verb">sgf:black/2 w8 0x04 w8
-	      0x10</spanx></t>
-	      <t hangText="packed bytecode (5 bytes)"><spanx style="verb">sgf:black/1 w16 0x04
-	      0x10</spanx></t>
+	      <t hangText="packed basic (7 bytes)"><spanx style="verb">( sgf:black/1 uw16 0x21 0x2A
+	      )</spanx></t>
+	      <t hangText="bytecode (6 bytes)"><spanx style="verb">sgf:black/2 uw8 0x21 uw8
+	      0x2A</spanx></t>
+	      <t hangText="packed bytecode (5 bytes)"><spanx style="verb">sgf:black/1 uw16 0x21
+	      0x2A</spanx></t>
 	    </list>
 	  </t>
 	  <t>
@@ -1251,9 +1315,9 @@
 	  <t>
 	    The cost of the bytecode format is that if it contains operators whose arity is unknown
 	    to a processing application, the whole sequence after the first occurrence of them is
-	    unreadable to that processing application, whereas in the classical format, the
-	    processing application can still process all the forms it understands (and it requires
-	    no anticipation by the application creating the BULK stream).
+	    unreadable to that processing application, whereas in the basic format, the processing
+	    application can still process all the forms it understands (and it requires no
+	    anticipation by the application creating the BULK stream).
 	  </t>
 
 	  <section title="Prefix bytecode">
@@ -1274,7 +1338,7 @@
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x31</spanx> (mnemonic: <spanx
 		style="verb">prefix*</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( prefix* ( {arities} ) {bytecode}
+		<t hangText="shape"><spanx style="verb">( prefix* {arities}:Expr {bytecode}
 		)</spanx></t>
 	      </list>
 	    </t>
@@ -1285,21 +1349,13 @@
 	      <spanx style="verb">{arities}</spanx> MUST be a sequence of shapes <spanx
 	      style="verb">( {arity}:Int {refs} )</spanx>. {refs} MUST be a sequence of
 	      references. It indicates that all references in this sequence are operators of arity
-	      {arity}.
+	      {arity}. <spanx style="verb">{arities}</spanx> can be a form or a reference defined to
+	      a sequence.
 	    </t>
 	    <t>
 	      Within the prefix bytecode of this form, if there is a <spanx
 	      style="verb">prefix</spanx> form, the arities declared in the outside form still
-	      apply. That is,
-	    </t>
-	    <t>
-	      <spanx style="verb">( prefix* ( {arities} ) {before} ( prefix {inner} ) {after}
-	      )</spanx>
-	    </t>
-	    <t>is equivalent to:</t>
-	    <t>
-	      <spanx style="verb">( prefix* ( {arities} ) {before} ( prefix* ( {arities} ) {inner}
-	      ) {after} )</spanx>
+	      apply.
 	    </t>
 	  </section>
 
@@ -1321,7 +1377,7 @@
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x33</spanx> (mnemonic: <spanx
 		style="verb">postfix*</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( postfix* ( {arities} ) {bytecode}
+		<t hangText="shape"><spanx style="verb">( postfix* {arities}:Expr {bytecode}
 		)</spanx></t>
 	      </list>
 	    </t>
@@ -1332,21 +1388,13 @@
 	      <spanx style="verb">{arities}</spanx> MUST be a sequence of shapes <spanx
 	      style="verb">( {arity}:Int {refs} )</spanx>. {refs} MUST be a sequence of
 	      references. It indicates that all references in this sequence are operators of arity
-	      {arity}.
+	      {arity}. <spanx style="verb">{arities}</spanx> can be a form or a reference defined to
+	      a sequence.
 	    </t>
 	    <t>
 	      Within the prefix bytecode of this form, if there is a <spanx
 	      style="verb">prefix</spanx> form, the arities declared in the outside form still
-	      apply. That is,
-	    </t>
-	    <t>
-	      <spanx style="verb">( postfix* ( {arities} ) {before} ( postfix {inner} ) {after}
-	      )</spanx>
-	    </t>
-	    <t>is equivalent to:</t>
-	    <t>
-	      <spanx style="verb">( postfix* ( {arities} ) {before} ( postfix* ( {arities} )
-	      {inner} ) {after} )</spanx>
+	      apply.
 	    </t>
 	  </section>
 
@@ -1363,9 +1411,9 @@
 	      sequence are operators of arity {arity}.
 	    </t>
 	    <t>
-	      Whenever a namespace definition provides arities for some references, all references
-	      in that namespace whose arities aren't provided MUST be determined to be operands by
-	      a processing application.
+	      Whenever arities have been provided for some references in a namespace, all references
+	      in that namespace whose arities aren't provided MUST be determined to be operands by a
+	      processing application.
 	    </t>
 	  </section>
 
@@ -1483,13 +1531,13 @@
 	  <t hangText="Optional parameters">none</t>
 	  <t hangText="Encoding considerations">none, content is self-describing</t>
 	  <t hangText="Security considerations">cf. <xref target="sec"/></t>
-	  <t hangText="Interoperability considerations">the constraint to start any BULK stream with
-	  a version form has the side-effect that classes of BULK streams can be identified by a
-	  sequence of bytes acting as "magic number":
+	  <t hangText="Interoperability considerations">the constraint to start any BULK file with a
+	  version form has the side-effect that classes of BULK streams can be identified by a
+	  sequence of bytes acting as "magic number", at offset 0:
 	  <list style="hanging">
 	    <t hangText="0x012000">any BULK stream</t>
-	    <t hangText="0x0120000401">a BULK stream of major version 1</t>
-	    <t hangText="0x0120000401040002">a BULK stream of version 1.0</t>
+	    <t hangText="0x012000C1">a BULK stream of major version 1</t>
+	    <t hangText="0x012000C1C002">a BULK stream of version 1.0</t>
 	  </list>
 	  </t>
 	  <t hangText="Published specification">this document</t>
