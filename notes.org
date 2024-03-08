@@ -5,36 +5,26 @@
    - extensibility :: 
    - decentralization :: only decentralized binary format? on par with plain text formats using
      decentralized IDs (like URI based on decentralized DNS)
-   - compactness :: 
+   - compactness :: better than all general binary formats because they lack abstraction, worse
+     than any ad hoc format (like ASN1)
    - processing speed :: extremely simple to parse
      - easy to evaluate
      - possible to forbid evaluation for extremely restricted environments (embedded)
 
 ** Syntax
 
-   | marker | shape                 | notes                  |
-   |--------+-----------------------+------------------------|
-   |     00 | nil                   |                        |
-   |     01 | (                     |                        |
-   |     02 | )                     |                        |
-   |     03 | # Int {content}       |                        |
-   |     04 | uw8 1B                |                        |
-   |     05 | uw16 2B               |                        |
-   |     06 | uw32 4B               |                        |
-   |     07 | uw64 8B               |                        |
-   |     08 | uw128 16B             |                        |
-   |     09 | sw8 1B                |                        |
-   |     0A | sw16 2B               |                        |
-   |     0B | sw32 4B               |                        |
-   |     0C | sw64 8B               |                        |
-   |     0D | sw128 16B             |                        |
-   |  0E–1F | reserved              |                        |
-   |  20–27 | BULK                  |                        |
-   |  28–BF | refs                  |                        |
-   |        |                       |                        |
-   |  C0–DF | uint[value]           | value = (marker && 1F) |
-   |  E0–FF | array[size] {content} | size = (marker && 1F)  |
-   |        |                       |                        |
+   | marker | shape             | notes                  |
+   |--------+-------------------+------------------------|
+   | 00     | nil               |                        |
+   | 01     | (                 |                        |
+   | 02     | )                 |                        |
+   | 03     | # Int {content}   |                        |
+   | 04–0F  | reserved          |                        |
+   | 10–17  | BULK              |                        |
+   | 18–7F  | refs              |                        |
+   | 80–BF  | w6[value]         | value = (marker && 3F) |
+   | C0–FF  | #[size] {content} | size = (marker && 3F)  |
+   |        |                   |                        |
 
 ** BULK core namespace
    NSID: 0x20
@@ -43,9 +33,9 @@
    - 0x01 :: true
    - 0x02 :: false
    - 0x03 :: ( stringenc {enc}:Encoding )
-   - 0x04 :: ( iana-charset Int ):Encoding
-   - 0x05 :: ( codepage Int ):Encoding
-   - 0x06 :: ( ns {marker}:Int {id}:UniqueID )
+   - 0x04 :: ( iana-charset Nat ):Encoding
+   - 0x05 :: ( codepage Nat ):Encoding
+   - 0x06 :: ( ns {marker}:Ref {id}:UniqueID )
    - 0x07 :: ( package {id}:UniqueID {namespaces} )
    - 0x08 :: ( import {base}:Int {count}:Int {uuid} )
    - 0x09 :: ( define Ref Expr )
@@ -60,10 +50,11 @@
    - 0x12 :: ( arg Int )
    - 0x13 :: ( rest Int )
    - 
-   - 0x20 :: ( frac Int Int )
-   - 0x21 :: ( bigint Array )
-   - 0x22 :: ( binfloat {bits} )
-   - 0x23 :: ( decfloat {bits} )
+   - 0x20 :: ( unsigned-int Bytes )
+   - 0x21 :: ( signed-int Bytes )
+   - 0x22 :: ( frac Int Int )
+   - 0x23 :: ( binfloat Bytes )
+   - 0x24 :: ( decfloat Bytes )
    - 
    - 0x30 :: ( prefix-bytecode {bytecode} )
    - 0x31 :: ( prefix-bytecode* ( {arities} ) {bytecode} )
@@ -676,24 +667,32 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
   - the problem is that this vocabulary provides hashes before any way
     of expressing a hash is possible, so its own hash is expressed
     with a name inside the vocabulary
-  - you read ~( ns w8 0x28 ( 0x28 0x19 w64 {hashID} ) )~
-  - how do you get to the point where you know ~0x28 0x19~ is ~hash:sha3~?
+  - you read ~( ns 24 ( 0x18 0x2E {hashID}:8B ) )~
+  - how do you get to the point where you know ~0x18 0x2E~ is ~hash:sha3~?
     - you get the list (hopefully with only one element) of
       vocabularies identified by a form whose sole element is a
       64-bits word ~{hashid}~
-    - for each of them, you check if ~0x19~ is a name associated with
+    - for each of them, you check if ~0x2E~ is a name associated with
       a hashing algorithm
       - if yes, you check if that hash matches the definition
 
 * Minimal BULK
-  : ( version 1 1 ) ( ns 40 ( 40:sha3 w64 8B ) ) ( ns 41 ( 40:sha3 w64 8B ) ) 41:ref # w? {size} {content}
-  : |<---- 8 ---->| |<---------- 19 ---------->| |<---------- 19 ---------->| |<-- 4 -->|  2/4/8
+  : ( version 1 0 ) ( ns 24 ( 24:sha3 #[8] 8B ) ) ( ns 25 ( 24:sha3 #[8] 8B ) ) 25:type #[0–63] {content}
+  : |<---- 6 ---->| |<----------- 18 ---------->| |<----------- 18 ---------->| |<---- 3 ---->|
 
-  52/54/58 bytes + content
+  : ( version 1 0 ) ( ns 24 ( 24:sha3 #[8] 8B ) ) ( ns 25 ( 24:sha3 #[8] 8B ) ) 25:type # {size} {content}
+  : |<---- 6 ---->| |<----------- 18 ---------->| |<----------- 18 ---------->| |<- 3 ->|  2/3/5/9
 
   When a profile is known (like a specific file extension for typed blobs):
 
-  : ( version 1 1 ) ref # w? {size} {content}
-  : |<---- 8 ---->| |< 4 ->|  2/4/8
+  : ( version 1 0 ) 24:type #…
+  : |<---- 8 ---->| |<- 3 ->|
 
-  14/16/20 bytes + content
+  | content | BULK overhead | with profile |
+  |---------+---------------+--------------|
+  | 63B     | 45B           | 11B          |
+  | 255B    | 47B           | 13B          |
+  | 65kB    | 48B           | 14B          |
+  | 4GB     | 50B           | 16B          |
+  | 18EB    | 54B           | 20B          |
+  |         |               |              |

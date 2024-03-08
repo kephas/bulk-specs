@@ -6,10 +6,10 @@ html: $(html)
 txt: $(txt)
 
 %.html: %.xml
-	xml2rfc --v2 --no-dtd --html $<
+	xml2rfc --v3 --html $<
 
 %.txt: %.xml
-	xml2rfc --v2 --no-dtd --text $<
+	xml2rfc --v3 --text $<
 
 clean:
 	rm -f $(html) $(txt)

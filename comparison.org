@@ -1,4 +1,4 @@
-#+TITLE: Comparison of BULK, JSON, BSON, MsgPack and CBOR
+#+TITLE: Comparison of JSON, BULK, CBOR, MsgPack and BSON
 
 * Architecture
   The main architectural differences are the following:
@@ -57,22 +57,23 @@
   the potential readability of JSON.
 
 * Feature grid
-  |                        | BULK      | JSON   | BSON     | MsgPack  | CBOR     |
-  |------------------------+-----------+--------+----------+----------+----------|
-  | decentralized          | yes       | no     | no       | no       | no       |
-  | streamable             | yes       | no     | no       | no       | yes*     |
-  |------------------------+-----------+--------+----------+----------+----------|
-  | file size limit        | no        | no     | 4G bytes | no       | no       |
-  | container size limit   | no        | no     | 4G bytes | 4G items | 4G items |
-  |------------------------+-----------+--------+----------+----------+----------|
-  | smallest padding       | 1 byte    | 1 byte | 2 bytes  | 1 byte   | 1 byte   |
-  | most probable padding  | 0x00      | 0x20   | ?        | 0x00?    | 0x00?    |
-  |------------------------+-----------+--------+----------+----------+----------|
-  | future extension slots | unlimited | n/a    | 235      | 128      | 254*     |
-  |------------------------+-----------+--------+----------+----------+----------|
+  |                        | JSON   | BULK      | CBOR     | MsgPack  | BSON     |
+  |------------------------+--------+-----------+----------+----------+----------|
+  | decentralized          | no     | yes       | no       | no       | no       |
+  | streamable             | no     | yes       | yes*     | no       | no       |
+  |------------------------+--------+-----------+----------+----------+----------|
+  | file size limit        | no     | no        | no       | no       | 4G bytes |
+  | container size limit   | no     | no        | 4G items | 4G items | 4G bytes |
+  |------------------------+--------+-----------+----------+----------+----------|
+  | smallest padding       | 1 byte | 1 byte    | 1 byte   | 1 byte   | 2 bytes  |
+  | most probable padding  | 0x20   | 0x00      | 0x00?    | 0x00?    | ?        |
+  |------------------------+--------+-----------+----------+----------+----------|
+  | future extension slots | n/a    | unlimited | 254*     | 128      | 235      |
+  |------------------------+--------+-----------+----------+----------+----------|
   
   - streamable means being able to be sent before all data is known
-    and that it can be parsed before the end of stream is reached
+    and that it can be parsed before the end of stream is reached,
+    without inspecting partially sent structures
     - CBOR was not initially streamable, but RFC 8742 adds a new
       parsing rule that makes it streamable
   - CBOR has actually 1.8e19 names avalaible for extension, but only
@@ -86,9 +87,9 @@
   Let's compare a few simple examples. The data in the table is the
   size of the example in bytes.
   
-  | format     |   1 |  2 |        |
+  | format     |   1 |  2 | 3      |
   |------------+-----+----+--------|
-  | BULK       |  62 | 26 | 16n+8  |
+  | BULK       |  58 | 26 | 16n+8  |
   | CBOR       | 100 | 49 | 27n+18 |
   | MsgPack    | 106 | 49 | 33n+19 |
   | Naive BULK | 119 | 52 | 36n+21 |
@@ -105,33 +106,39 @@
    - 3 :: ={"status":"ok","data":[{"foo":"bar","baz":"quux","value":12.5} repeated n times]}=
 
 ** BULK
-   - 1 :: =( example:ok ( ( example:foobaz "bar" "quux" ( bulk:binfloat uw32 0x41480000 ) ) ( example:foobaz "bar" "quuux" 0 ) ( example:foobaz "fubar" "quuuux" -40 ) ) )=
+   - 1 :: =( example:ok ( ( example:foobaz/f "bar" "quux" #[4] 0x41480000 ) ( example:foobaz/i "bar" "quuux" 0 ) ( example:foobaz "fubar" "quuuux" #[1] 0xD8 ) ) )=
    - 2 :: =( example:error 735 "delegation expired" )=
    - 3 :: =( example:ok ( bulk:prefix example:foobaz/f "bar" "quux" uw32 0x41480000 example:foobaz/f "bar" "quux" uw32 0x41480000 … ) )=
 
 *** Profile
-    These examples are intended to be used with the following profile (*this is not a schema*, as
-    it is *not needed to parse* the data):
+    These examples are intended to be used with the following profile
+    (*this is not a schema*, as it is *not needed to parse* the data):
+    
     #+BEGIN_src lisp
-      ( bulk:ns 29 uw128 0xe5f36902c4bf49db8ff0c3bc8a3a4afa )
-      ( bulk:ns-mnemonic 29 "example" )
-      ( bulk:mnemonic/def 0x1C00 "ok" "successful message containing data list" )
-      ( bulk:mnemonic/def 0x1C01 "error" "error message with code and message" )
-      ( bulk:mnemonic/dev 0x1C02 "foobaz" "foobaz data item" )
-      ( bulk:mnemonic/dev 0x1C02 "foobaz/f" "foobaz data item with float" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:binfloat ( bulk:arg 2 ) ) ) ) )
-      ( bulk:arity 3 example:foobar )
+      ( bulk:ns 0x1800 #[16] 0x4C89D12F-1D71-4132-92E9-6335797659EE )
+      ( bulk:ns-mnemonic 0x1800 "example" )
+      ( bulk:mnemonic/def 0x1800 "ok" "successful message containing data list" )
+      ( bulk:mnemonic/def 0x1801 "error" "error message with code and message" )
+      ( bulk:mnemonic/dev 0x1802 "foobaz" "foobaz data item" )
+      ( bulk:mnemonic/dev 0x1803 "foobaz/i" "foobaz data item with int" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:signed-int ( bulk:arg 2 ) ) ) ) )
+      ( bulk:mnemonic/dev 0x1804 "foobaz/f" "foobaz data item with float" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:binfloat ( bulk:arg 2 ) ) ) ) )
+      ( bulk:arity 3 example:foobaz example:foobaz/i example:foobaz/f )
     #+END_src
 
-    If the message format must be flexible to removing and adding fields, this example could be
-    used with the following profile where the form are evaluated into JSON-like maps:
+    If the message format must be flexible to removing and adding
+    fields, this example could be used with the following profile
+    where the forms are evaluated into JSON-like maps:
 
     #+BEGIN_src lisp
-      ( bulk:ns-mnemonic 28 "example" )
-      ( bulk:mnemonic/def 0x1C00 "ok" "successful message containing data list" ( bulk:subst ( example:map "status" "ok" "data" ( bulk:arg 0 ) ) ) )
-      ( bulk:mnemonic/def 0x1C01 "error" "error message with code and message" ( bulk:subst ( example:map "status" "error" "code" ( bulk:arg 0 ) "message" ( bulk:arg 1 ) ) ) )
-      ( bulk:mnemonic/dev 0x1C02 "foobar" "foobaz data item" ( bulk:subst ( example:map "foo" ( bulk:arg 0 ) "baz" ( bulk:arg 1 ) "value" ( bulk:arg 2 ) ) )
-      ( bulk:mnemonic/dev 0x1C03 "map" "like JSON objects" )
-      ( bulk:arity 3 example:foobar )
+      ( bulk:ns 0x1800 #[16] 0x4C89D12F-1D71-4132-92E9-6335797659EE )
+      ( bulk:ns-mnemonic 0x1800 "example" )
+      ( bulk:mnemonic/def 0x1800 "ok" "successful message containing data list" ( bulk:subst ( example:map "status" "ok" "data" ( bulk:arg 0 ) ) ) )
+      ( bulk:mnemonic/def 0x1801 "error" "error message with code and message" ( bulk:subst ( example:map "status" "error" "code" ( bulk:arg 0 ) "message" ( bulk:arg 1 ) ) ) )
+      ( bulk:mnemonic/dev 0x1802 "foobaz" "foobaz data item" ( bulk:subst ( example:map "foo" ( bulk:arg 0 ) "baz" ( bulk:arg 1 ) "value" ( bulk:arg 2 ) ) ) )
+      ( bulk:mnemonic/dev 0x1803 "foobaz/i" "foobaz data item with int" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:signed-int ( bulk:arg 2 ) ) ) ) )
+      ( bulk:mnemonic/dev 0x1804 "foobaz/f" "foobaz data item with float" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:binfloat ( bulk:arg 2 ) ) ) ) )
+      ( bulk:mnemonic/dev 0x1805 "map" "like JSON objects" )
+      ( bulk:arity 3 example:foobaz example:foobaz/i example:foobaz/f )
     #+END_src
 
 ** Naive BULK
