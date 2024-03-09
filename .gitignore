@@ -1,2 +1,9 @@
+# xml2rfc
 *.html
 *.txt
+
+# org-mode
+*.tex
+*.pdf
+
+.direnv
