@@ -52,9 +52,12 @@
    - 
    - 0x20 :: ( unsigned-int Bytes )
    - 0x21 :: ( signed-int Bytes )
-   - 0x22 :: ( frac Int Int )
-   - 0x23 :: ( binfloat Bytes )
-   - 0x24 :: ( decfloat Bytes )
+   - 0x22 :: ( fraction Int Int )
+   - 0x23 :: ( binary-float Bytes )
+   - 0x24 :: ( decimal-float Bytes )
+   - 0x25 :: ( binary-fixed Nat Bytes )
+   - 0x26 :: ( decimal-fixed Nat Bytes )
+   - 0x27 :: decimal2
    - 
    - 0x30 :: ( prefix-bytecode {bytecode} )
    - 0x31 :: ( prefix-bytecode* ( {arities} ) {bytecode} )
@@ -86,9 +89,8 @@
          support
 
 ** BULK API Model
-   - needed at least for hashing: access the bytes of an expression
-     (API to get positions to read the bytes independently or API to
-     get the bytes directly)
+   - needed at least for hashing: access the bytes of an expression (API to get positions to read
+     the bytes independently or API to get the bytes directly)
 
 ** Lambda expressions
    #+BEGIN_SRC bulk
@@ -97,37 +99,94 @@
 
    ( mnemonic/def nil "lambda" "( lambda {var}:Ref {body} )" )
 
-   ( define 0x28 0xff "This reference is intended to be used as lambda function variable." )
-   ( mnemonic/def nil "a" 0x28 0xff )
-   ( mnemonic/def nil "b" 0x28 0xff )
-   ( mnemonic/def nil "c" 0x28 0xff )
-   ( mnemonic/def nil "d" 0x28 0xff )
-   ( mnemonic/def nil "e" 0x28 0xff )
-   ( mnemonic/def nil "f" 0x28 0xff )
-   ( mnemonic/def nil "g" 0x28 0xff )
-   ( mnemonic/def nil "h" 0x28 0xff )
-   ( mnemonic/def nil "i" 0x28 0xff )
-   ( mnemonic/def nil "j" 0x28 0xff )
-   ( mnemonic/def nil "k" 0x28 0xff )
-   ( mnemonic/def nil "l" 0x28 0xff )
-   ( mnemonic/def nil "m" 0x28 0xff )
-   ( mnemonic/def nil "n" 0x28 0xff )
-   ( mnemonic/def nil "o" 0x28 0xff )
-   ( mnemonic/def nil "p" 0x28 0xff )
-   ( mnemonic/def nil "q" 0x28 0xff )
-   ( mnemonic/def nil "r" 0x28 0xff )
-   ( mnemonic/def nil "s" 0x28 0xff )
-   ( mnemonic/def nil "t" 0x28 0xff )
-   ( mnemonic/def nil "u" 0x28 0xff )
-   ( mnemonic/def nil "v" 0x28 0xff )
-   ( mnemonic/def nil "w" 0x28 0xff )
-   ( mnemonic/def nil "x" 0x28 0xff )
-   ( mnemonic/def nil "y" 0x28 0xff )
-   ( mnemonic/def nil "z" 0x28 0xff )
+   ( define 0x18FF "This reference is intended to be used as lambda function variable." )
+   ( mnemonic/def nil "a" 0x18FF )
+   ( mnemonic/def nil "b" 0x18FF )
+   ( mnemonic/def nil "c" 0x18FF )
+   ( mnemonic/def nil "d" 0x18FF )
+   ( mnemonic/def nil "e" 0x18FF )
+   ( mnemonic/def nil "f" 0x18FF )
+   ( mnemonic/def nil "g" 0x18FF )
+   ( mnemonic/def nil "h" 0x18FF )
+   ( mnemonic/def nil "i" 0x18FF )
+   ( mnemonic/def nil "j" 0x18FF )
+   ( mnemonic/def nil "k" 0x18FF )
+   ( mnemonic/def nil "l" 0x18FF )
+   ( mnemonic/def nil "m" 0x18FF )
+   ( mnemonic/def nil "n" 0x18FF )
+   ( mnemonic/def nil "o" 0x18FF )
+   ( mnemonic/def nil "p" 0x18FF )
+   ( mnemonic/def nil "q" 0x18FF )
+   ( mnemonic/def nil "r" 0x18FF )
+   ( mnemonic/def nil "s" 0x18FF )
+   ( mnemonic/def nil "t" 0x18FF )
+   ( mnemonic/def nil "u" 0x18FF )
+   ( mnemonic/def nil "v" 0x18FF )
+   ( mnemonic/def nil "w" 0x18FF )
+   ( mnemonic/def nil "x" 0x18FF )
+   ( mnemonic/def nil "y" 0x18FF )
+   ( mnemonic/def nil "z" 0x18FF )
 
    ( mnemonic/def nil "id" "Somestimes a form is needed just to add a semantic aspect to an expression without actually changing its value for most purposes. For these cases, a reference can be given the value of id. Some processing applications will substitute their own evaluation to this one to implement that semantic." ( lambda x x ) )
    )
    #+END_SRC
+
+** RDF namespace
+
+   - 0x01 :: uriref ⇔ λ:id
+   - 0x02 :: ( base Bytes )
+   - 0x03 :: prefix ⇔ ( uri( lambda u ( lambda s ( concat u s ) ) )
+   - 0x04 :: rdf# ⇔ ( uriref "[[http://www.w3.org/1999/02/22-rdf-syntax-ns#]]" )
+   - 0x05 :: blank
+   - 0x06 :: ( plain {lang} {literal} )
+   - 0x07 :: ( datatype {id}:URIRef {literal} )
+   - 0x08 :: xmlliteral ⇔ ( rdf# "XMLLiteral" )
+   - 0x09 :: ( triples {triples} )
+   - 0x0A :: ( turtle {statements} )
+   - 0x0B :: type ⇔ ( rdf# "type" )
+   - 0x0C :: property ⇔ ( rdf# "Property" )
+   - 0x0D :: statement ⇔ ( rdf# "Statement" )
+   - 0x0E :: subject ⇔ ( rdf# "subject" )
+   - 0x0F :: predicate ⇔ ( rdf# "predicate" )
+   - 0x10 :: object ⇔ ( rdf# "object" )
+   - 0x11 :: bag ⇔ ( rdf# "Bag" )
+   - 0x12 :: seq ⇔ ( rdf# "Seq" )
+   - 0x13 :: alt ⇔ ( rdf# "Alt" )
+   - 0x14 :: value ⇔ ( rdf# "value" )
+   - 0x15 :: list ⇔ ( rdf# "List" )
+   - 0x16 :: nil ⇔ ( rdf# "nil" )
+   - 0x17 :: first ⇔ ( rdf# "first" )
+   - 0x18 :: rest ⇔ ( rdf# "rest" )
+   - 0x19 :: plainliteral ⇔ ( rdf# "PlainLiteral" )
+   -
+   - 0x20 :: this-resource
+   - 0x21 :: uri
+
+
+*** Differences between complete triples (3s) and turtle-like (Tl)
+    In 3s, a single triple cannot cost less than 8 bytes:
+
+    : (:A:B:C)
+
+    For big graphs of mostly known references, this can already be a
+    valuable improvement. {triples} could be a packed sequence without
+    markers around triples, but that would mean that a single missing
+    or superfluous expression would wreck everything that's after
+    it. The fact that a triple is still a form limits the savings but
+    keeps a level of robustness (but it would be possible to define a
+    packing RDF form…).
+
+    Adding another triple cannot cost less than adding 8 bytes:
+
+    : (:A:B:C)(:A:B:D)
+
+    In Tl, a standalone triple cannot cost less than 10 bytes:
+
+    : (:A(:B:C))
+
+    But adding another triple can cost as few as 2 bytes:
+
+    : (:A(:B:C:D))
 
 ** XML
    XML is pretty complex, but most of it is unused (some even advised
@@ -140,33 +199,31 @@
    - Relax NG
 
 *** Document
-    "urn:uuid:8e9fbe9c-2b0c-5307-bb81-edb1a7727563" (BULK,
-    http://www.w3.org/XML/Core/)
-
-    XML content, not notation: no support for entities or
-    CDATA. =stringenc= can be used everywhere.
-
-    - ( xml1.0 {content} )
-    - ( xml1.1 {content} )
-    - ( pi {target} {content} )
-    - ( comment {content} )
-    - ( element {name} {content} )
-    - ( attribute {name} {value} )
-    - xml: ⇔ ( rdf:prefix "http://www.w3.org/XML/1998/namespace" )
-    - xmlns: ⇔ ( rdf:prefix "http://www.w3.org/2000/xmlns/" )
-    - preserve ⇔ ( define preserve ( attribute ( xml: "space" )
-      "preserve" ) )
+    XML content, not notation: no support for entities or CDATA. =stringenc= can be used
+    everywhere.
 
     : ( define ?rfc ( subst ( pi "rfc" ( rest 0 ) ) ) )
 
-*** Package?
+   #+BEGIN_SRC bulk
+   ( verifiable-ns 0x1800 {id} nil "xml"
+   "This vocabulary can be used to represent XML data."
+
+   ( mnemonic/def nil "xml1.0" "( xml1.0 {content} )"
+   ( mnemonic/def nil "xml1.1" "( xml1.1 {content} )"
+   ( mnemonic/def nil "pi" "( pi {target} {content} )"
+   ( mnemonic/def nil "comment" "( comment {content} )"
+   ( mnemonic/def nil "element" "( element {name} {content} )"
+   ( mnemonic/def nil "attribute" "( attribute {name} {value} )"
+   ( mnemonic/def nil "xml:" ( rdf:prefix "http://www.w3.org/XML/1998/namespace" )
+   ( mnemonic/def nil "xmlns:" "xmlns:" ( rdf:prefix "http://www.w3.org/2000/xmlns/" )
+   ( mnemonic/def nil "preserve" "preserve" ( attribute ( xml: "space" ) "preserve" ) )
+   #+END_SRC
+
+*** Default  package?
     RDF + Simple XML ( + XPath )
 ** XPath namespace
-   urn:uuid:2cdad14a-4e46-5f2d-b3e2-e105ebafa5f8 (BULK
-   http://www.w3.org/TR/1999/REC-xpath-19991116)
-
    #+BEGIN_SRC bulk
-   ( verifiable-ns 40 {id} nil "xpath"
+   ( verifiable-ns 0x1800 {id} nil "xpath"
    "This vocabulary can be used to represent XPath expressions."
 
    ( mnemonic/def nil "xpath" "( xpath {steps} )" )
@@ -205,67 +262,8 @@
 
 *** QName
     To maximize reuse between namespaces, URIRef and URIString
-    expressions also have the type QName. Any Array whose content
+    expressions also have the type QName. Any Bytes whose content
     satisfy the NCName production also has.
-
-** RDF namespace
-   urn:uuid:ed460331-a89b-5742-a8de-907dff727779 (BULK
-   [[http://www.w3.org/1999/02/22-rdf-syntax-ns#]])
-
-   - 0x01 :: uriref ⇔ λ:id
-   - 0x02 :: ( base Array )
-   - 0x03 :: prefix ⇔ ( lambda u ( lambda s ( concat u s ) ) )
-   - 0x04 :: rdf# ⇔ ( uriref "[[http://www.w3.org/1999/02/22-rdf-syntax-ns#]]" )
-   - 0x05 :: blank
-   - 0x06 :: ( plain {lang} {literal} )
-   - 0x07 :: ( datatype {id}:URIRef {literal} )
-   - 0x08 :: xmlliteral ⇔ ( rdf# "XMLLiteral" )
-   - 0x09 :: ( triples {triples} )
-   - 0x0A :: ( turtle {statements} )
-   - 0x0B :: type ⇔ ( rdf# "type" )
-   - 0x0C :: property ⇔ ( rdf# "Property" )
-   - 0x0D :: statement ⇔ ( rdf# "Statement" )
-   - 0x0E :: subject ⇔ ( rdf# "subject" )
-   - 0x0F :: predicate ⇔ ( rdf# "predicate" )
-   - 0x10 :: object ⇔ ( rdf# "object" )
-   - 0x11 :: bag ⇔ ( rdf# "Bag" )
-   - 0x12 :: seq ⇔ ( rdf# "Seq" )
-   - 0x13 :: alt ⇔ ( rdf# "Alt" )
-   - 0x14 :: value ⇔ ( rdf# "value" )
-   - 0x15 :: list ⇔ ( rdf# "List" )
-   - 0x16 :: nil ⇔ ( rdf# "nil" )
-   - 0x17 :: first ⇔ ( rdf# "first" )
-   - 0x18 :: rest ⇔ ( rdf# "rest" )
-   - 0x19 :: plainliteral ⇔ ( rdf# "PlainLiteral" )
-   - 
-   - 0x20 :: this-resource
-   - 0x21 :: uri
-
-
-*** Differences between complete triples (3s) and turtle-like (Tl)
-    In 3s, a single triple cannot cost less than 8 bytes:
-
-    : (:A:B:C)
-
-    For big graphs of mostly known references, this can already be a
-    valuable improvement. {triples} could be a packed sequence without
-    markers around triples, but that would mean that a single missing
-    or superfluous expression would wreck everything that's after
-    it. The fact that a triple is still a form limits the savings but
-    keeps a level of robustness (but it would be possible to define a
-    packing RDF form…).
-
-    Adding another triple cannot cost less than adding 8 bytes:
-
-    : (:A:B:C)(:A:B:D)
-
-    In Tl, a standalone triple cannot cost less than 10 bytes:
-
-    : (:A(:B:C))
-
-    But adding another triple can cost as few as 2 bytes:
-
-    : (:A(:B:C:D))
 
 ** MeTOD: Media Type Optimal Description
    - type as ref or form
@@ -273,19 +271,15 @@
      - html5
      - jpeg
    - composite type
-     - syntax
-       - ( main-type {sub-types} )
-       - ( A B C ) ⇔ ( ( A B ) C )
-	 - so you can have
-	   - xhtml* = ( xml xhtml )
-	   - ( xhtml* mathml svg )
+     - syntax: ( main-type {params} )
      - example: xml
        - ( xml xhtml rdf )
-     - example: mime
-       - ( mime txt jpeg )
-   - some MeTOD types may only make sense inside a form
+	 - meaning xml with xhtml document root and rdf elements
+       - xhtml* = ( subst ( xml xhtml ( rest 0 ) ) )
+	 - ( xhtml* mathml svg )
+   - some MeTOD types may only make sense as sub-types
      - e.g. xml NS that doesn't have a document element
-       - like dublin-core: ( xml xhtml xvg dublin-core )
+       - like dublin-core: ( xml nil xhtml svg dublin-core )
    - encoding as first-class type
      - ( gzip tar )
      - ( base64 zip )
@@ -304,11 +298,12 @@
    - 0x00 :: ( type {type}:Expr )
      - metadata form
    - 0x01 :: ( kind/type {kind}:Expr {type}:Expr )
+     - e.g. ( kind/type image jpeg )
    - 0x02 :: *
    - 0x03 :: bulk / ( bulk {namespaces} )
-   - 0x10 :: audio
-   - 0x11 :: video
-   - 0x12 :: image
+   - 0x10 :: image
+   - 0x11 :: audio
+   - 0x12 :: video
 
 
    MeTOD only defines kinds where a default software could be expected
@@ -317,38 +312,38 @@
    and text. But a MIME vocabulary could define them.
 
 ** Dates namespace
-   - Int123 := Int | Int Int | Int Int Int
-   - IntsF := Int* ( Float | Int )
+   - Nat123 := Nat | Nat Nat | Nat Nat Nat
+   - NatsF := Nat* ( Float | Nat )
    - Time = Date | TimeOfDay
 
 
-   - 0x00 :: ( calendar Int123 )
-   - 0x01 :: ( weekdate Int123 )
-   - 0x02 :: ( ordinal Int Int )
-   - 0x03 :: ( time IntsF )
+   - 0x00 :: ( calendar Nat123 )
+   - 0x01 :: ( weekdate Nat123 )
+   - 0x02 :: ( ordinal Nat Nat )
+   - 0x03 :: ( time NatsF )
    - 0x04 :: ( point Date TimeOfDay )
    - 0x05 :: ( zulu Time )
    - 0x06 :: ( offset TimeOfDay Time )
-   - 0x07 :: ( years IntsF )
-   - 0x08 :: ( months IntsF )
-   - 0x09 :: ( days IntsF )
-   - 0x0A :: ( hours IntsF )
-   - 0x0B :: ( minutes IntsF )
-   - 0x0C :: ( seconds IntsF )
-   - 0x0D :: ( weeks Int )
+   - 0x07 :: ( years NatsF )
+   - 0x08 :: ( months NatsF )
+   - 0x09 :: ( days NatsF )
+   - 0x0A :: ( hours NatsF )
+   - 0x0B :: ( minutes NatsF )
+   - 0x0C :: ( seconds NatsF )
+   - 0x0D :: ( weeks Nat )
    - 0x0E :: ( interval {exprs} )
      - {exprs} = Time Time | Duration Time | Time Duration |
        Duration
-   - 0x0F :: ( repeat Int Interval ) / ( repeat Interval )
+   - 0x0F :: ( repeat Nat Interval ) / ( repeat Interval )
    -  :: ( julian Number )
-   -  :: ( anno-mundi Int123 )
-   -  :: ( anno-hegirae Int123 )
+   -  :: ( anno-mundi Nat123 )
+   -  :: ( anno-hegirae Nat123 )
    -  :: ( unix SInt )
    -  :: ( ntp Word )
    -  :: ( tai64 Word64 )
-   -  :: ( tng-stardate Int Int )
+   -  :: ( tng-stardate Nat Nat )
 
-** BARF: BULK Archive Format
+** BARK: BULK Archive
    When needed, metadata can be any expression (nil SHOULD be used to
    indicate no metadata).
 
@@ -363,13 +358,12 @@
    - 0x02 :: ( stack {metadata}:Expr {entries-metadata} ) {entries}
      - to make BULK-unaware append possible
      - {entries-metadata} means {entries} last element can be a single
-       Array and the content of the entry is the end of the BULK file
+       Bytes and the content of the entry is the end of the BULK file
      - each entry metadata MUST identify entry (by number, hash, etc…)
    - 0x03 :: ( bulk-stream {stream} )
-   - 0x04 :: ( bulk-stream* {size} {stream} )
-     - {size} is number of bytes in {bulk}
-       - an explicitly parseable array
+   - 0x04 :: ( bulk-bytes {bulk}:Bytes )
    - 0x10 :: gbc|
+     - opaque GBC form
    - 0x11 :: gbc>
      - GBC form must not be preserved if payload is modified
    - 0x12 :: gbc*>
@@ -377,7 +371,7 @@
    - 0x13 :: gbc*~>
      - preservable GBC form whose payload was modified
    - 0x20 :: ( described {gbc-tag}:Expr {metadata}:Expr {content}:Expr )
-     - {content} can be an Array (e.g. a file's content) or BULK expression
+     - {content} can be an array (e.g. a file's content) or BULK expression
    - 0x21 :: ( description {metadata}:Expr )
      - can be inserted in many places in a BULK stream to annotate
        virtually anything
@@ -403,7 +397,7 @@
    - 0x2A :: ( after {marker}:Ref {skip} )
      - like before, but after…
    - 
-   - 0x30 :: ( compressed gbc| {method}:MeTOD Array )
+   - 0x30 :: ( compressed gbc| {method}:MeTOD Bytes )
    - 0x31 :: deflate
    - 0x32 :: deflate64
    - 0x33 :: lzma
@@ -411,8 +405,9 @@
    - Ox35 :: bz2
    - 0x36 :: lzw
    - 0x37 :: lzo
-   - 0x3E :: ( encrypted gbc| {method} Array )
-   - 0x3F :: ( hashed gbc> {signature}:Expr Expr )
+   - 0x3D :: ( hash {signature}:Expr )
+   - 0x3E :: ( hashed gbc> {signature}:Expr Expr )
+   - 0x3F :: ( encrypted gbc| {method} Bytes )
    - tar semantics
      - metadata
        - Ox40 :: ( path {components} )
@@ -424,7 +419,7 @@
                in the directory entries (that takes care of "/" but not
                of a ".." entry, this still needs checking, shame on Unix)
        - 0x41 :: ( user {name} )
-	 - {name} can be anything, incl. string and Int
+	 - {name} can be anything, incl. string and Nat
 	   - multiple entries (e.g. "pierre"/1000)
        - 0x42 :: ( group {name} )
        - 0x43 :: contiguous
@@ -439,10 +434,10 @@
 	 - 0x4C :: ( mask {mode} {defaults?} )
        - 0x4D :: ( xattr {xattr} )
 	 - {xattrs} = ( {name} {value} )+
-       - Ox4E :: ( offsets Int+ )
+       - Ox4E :: ( offsets Nat+ )
 	 - meant for forms not containing individual entries' metadata
 	 - TODO: base?
-       - 0x4F :: ( offset Int )
+       - 0x4F :: ( offset Nat )
 	 - meant for forms grouping an entry with its metadata
 	 - TODO: base?
      - entry
@@ -455,8 +450,8 @@
        - 0x54 :: directory
        - 0x55 :: fifo
        - 0x56 :: ( sparse-file {segments} )
-	 - Array
-	 - 0x57 :: ( hole {size}:Int )
+	 - Bytes
+	 - 0x57 :: ( hole {size}:Nat )
 	   - {size} in bytes
    - gzip semantics
      - 0x60 :: ( binary Boolean )
@@ -484,14 +479,14 @@
        - 0x82 :: THEOS
      - 0x63 :: maximum-compression
      - 0x64 :: fastest-comœpression
-     - 0x83 :: ( acorn-bbc-mos-file-type-info Array )
-     - 0x84 :: ( apollo-file-type-info Array )
-     - 0x85 :: ( cpio-compressed Array )
+     - 0x83 :: ( acorn-bbc-mos-file-type-info Bytes )
+     - 0x84 :: ( apollo-file-type-info Bytes )
+     - 0x85 :: ( cpio-compressed Bytes )
      - gzsig extra field should be created from a compatible
        cryptographic signature
-     - 0x86 :: ( keynote-assertion Array )
-     - 0x88 :: ( macintosh-info Array )
-     - 0x89 :: ( acorn-file-type-info Array )
+     - 0x86 :: ( keynote-assertion Bytes )
+     - 0x88 :: ( macintosh-info Bytes )
+     - 0x89 :: ( acorn-file-type-info Bytes )
    - dar semantics
      - split archives
        - advertised in container metadata
@@ -511,24 +506,40 @@
    : about-previous[2] ⇔ ( about ( previous 2 ) )
 
 *** BUlk possibly-Zipped archive (.buz)
+    A =foobar.buz= archive with multiple files:
+
     #+BEGIN_SRC bulk
-    ( pack ( metadata ( count 2 ))
-      ( describe ( metadata ( path "foo.txt" ) )
-        ( compressed gbc| lzma {foo.txt} ) )
-      ( describe ( metadata ( path "bar.jpg" ) ) {bar.jpg} ) )
+    ( pack ( metadata ( count 2 ) )
+      ( described ( metadata ( path "foo.txt" ) )
+        ( compressed gbc| lzma {foo.txt}:Bytes ) )
+      ( described ( metadata ( path "bar.jpg" ) )
+        {bar.jpg}:Bytes ) )
     #+END_SRC
+
+    A =foo.txt.buz= archive with a single file and hash for integrity:
 
     #+BEGIN_SRC bulk
     ( described ( metadata ( path "foo.txt" ) )
-      ( hashed gbc> ( sha3 w128 {hash} )
+      ( hashed gbc> ( sha3 {hash}:Bytes )
         ( compressed gbc| lzma {foo.txt} ) ) )
+    #+END_SRC
+
+    A =manifest.buz= manifest about other files:
+
+    #+BEGIN_SRC bulk
+    ( description ( metadata ( ( about ( path "foo.txt" ) )
+                               ( hash ( md5 {hash}:Bytes ) ) ) ) )
+    ( description ( metadata ( ( about ( path "bar.txt" ) )
+                               ( hash ( md5 {hash}:Bytes ) ) ) ) )
+    ( description ( metadata ( ( about ( path "baz.iso" ) )
+                               ( hash ( sha3 {hash}:Bytes ) ) ) ) )
     #+END_SRC
 
 *** BARF utility
     #+BEGIN_EXAMPLE
-    $ barf list <file>
-    $ barf check <file>
-    $ barf extract <file> [<members>]
+    $ bark list <file>
+    $ bark check <file>
+    $ bark extract <file> [<members>]
     #+END_EXAMPLE
 
 **** convert
@@ -590,48 +601,56 @@
     - gzip
     - cpio, pax
 
+*** BULK stream with size
+    BULK cannot contain a form like =( bulk/size {size}:Nat {bulk} )= because size could be
+    erroneous and then parsing the whole stream or skipping ={bulk}= would give two different
+    results (or more if ={bulk}= contains other such erroneous forms.
+
+    This could represent a security risk, with some parsers not seeing an issue and others
+    triggering it.
+
 ** Hash
    #+BEGIN_SRC bulk
-   ( verifiable-ns 40 {id} nil "hash"
+   ( verifiable-ns 0x1800 {id} nil "hash"
    "The forms in this vocabulary can be used to represent hashes along with the hashing algorithm instead of using an unmarked byte sequence. When an algorithm has other inputs than the message, they can be provided after the hash itself as a property list.
 
-When an algorithm can produce hashes in different sizes and the size used is a number of bits divisible by 8, the size property should be omitted from the property list and inferred by the processing application from the size of the BULK expression (e.g. `( sha3 # 24 {hash} )` is a 196-bits SHA3 hash).
+When an algorithm can produce hashes in different sizes and the size used is a number of bits divisible by 8, the size property should be omitted from the property list and inferred by the processing application from the size of the BULK expression (e.g. `( sha3 #[24] {hash}:24B )` is a 196-bits SHA3 hash).
 
-As a rule, each of these forms can contain `nil` as a first expression to denote not a hash but a choice of configuration in some application context. For example, `( uuid nil prepend {ns} )` could mean that subsequent v3 and v5 UUIDs will be produced with {ns} as UUID namespace."
+As a rule, each of these forms can contain `nil` as a first expression to denote not a hash but a choice of configuration in some application context. For example, `( uuid nil prepend {ns}:Bytes )` could mean that subsequent v3 and v5 UUIDs will be produced with {ns} as UUID namespace."
 
-   ( mnemonic/def nil "bsd" "( bsd Word16 )" )
-   ( mnemonic/def nil "sysv" "( sysv Word16 )" )
-   ( mnemonic/def nil "crc" "( crc Word )" )
-   ( mnemonic/def nil "fletcher" "( fletcher Word {config} )" )
-   ( mnemonic/def nil "adler32" "( adler32 Word32 )" ( λ:lambda λ:h ( fletcher λ:h key 65521 ) ) )
-   ( mnemonic/def nil "pjwhash" "( pjw Word )" )
-   ( mnemonic/def nil "elfhash" "( fnv Word )" )
+   ( mnemonic/def nil "bsd" "( bsd Bytes )" )
+   ( mnemonic/def nil "sysv" "( sysv Bytes )" )
+   ( mnemonic/def nil "crc" "( crc Bytes )" )
+   ( mnemonic/def nil "fletcher" "( fletcher Bytes {config} )" )
+   ( mnemonic/def nil "adler32" "( adler32 Bytes )" ( λ:lambda λ:h ( fletcher λ:h key 65521 ) ) )
+   ( mnemonic/def nil "pjwhash" "( pjwhash Bytes )" )
+   ( mnemonic/def nil "elfhash" "( elfhash Bytes )" )
 
-   ( mnemonic/def nil "murmur1" "( murmur1 Word )" )
-   ( mnemonic/def nil "murmur2" "( murmur2 Word )" )
-   ( mnemonic/def nil "murmur2a" "( murmur2a Word )" )
-   ( mnemonic/def nil "murmur64a" "( murmur64a Word )" )
-   ( mnemonic/def nil "murmur64b" "( murmur64b Word )" )
-   ( mnemonic/def nil "murmur3" "( murmur3 Word )" )
+   ( mnemonic/def nil "murmur1" "( murmur1 Bytes )" )
+   ( mnemonic/def nil "murmur2" "( murmur2 Bytes )" )
+   ( mnemonic/def nil "murmur2a" "( murmur2a Bytes )" )
+   ( mnemonic/def nil "murmur64a" "( murmur64a Bytes )" )
+   ( mnemonic/def nil "murmur64b" "( murmur64b Bytes )" )
+   ( mnemonic/def nil "murmur3" "( murmur3 Bytes )" )
 
-   ( mnemonic/def nil "umac" "( umac Word {config} )" )
-   ( mnemonic/def nil "vmac" "( vmac Word {config} )" )
+   ( mnemonic/def nil "umac" "( umac Bytes {config} )" )
+   ( mnemonic/def nil "vmac" "( vmac Bytes {config} )" )
 
-   ( mnemonic/def nil "uuid" "( uuid Word128 {config} )" )
-   ( mnemonic/def nil "md2" "( md2 Word128 )" )
-   ( mnemonic/def nil "md4" "( md4 Word128 )" )
-   ( mnemonic/def nil "md5" "( md5 Word128 )" )
+   ( mnemonic/def nil "uuid" "( uuid Bytes {config} )" )
+   ( mnemonic/def nil "md2" "( md2 Bytes )" )
+   ( mnemonic/def nil "md4" "( md4 Bytes )" )
+   ( mnemonic/def nil "md5" "( md5 Bytes )" )
    ( mnemonic/def nil "md6" "( md6 Bytes {config} )" )
    ( mnemonic/def nil "ripemd" "( ripemd Bytes )" )
    ( mnemonic/def nil "haval" "( haval Bytes )" )
-   ( mnemonic/def nil "gost" "( gost Array )" )
-   ( mnemonic/def nil "sha1" "( sha1 Array )" )
-   ( mnemonic/def nil "sha2" "( sha2 Array )" )
+   ( mnemonic/def nil "gost" "( gost Bytes )" )
+   ( mnemonic/def nil "sha1" "( sha1 Bytes )" )
+   ( mnemonic/def nil "sha2" "( sha2 Bytes )" )
    ( mnemonic/def nil "sha3" "( sha3 Bytes )" )
    ( mnemonic/def nil "tiger" "( tiger Bytes )" )
    ( mnemonic/def nil "tiger2" "( tiger2 Bytes )" )
-   ( mnemonic/def nil "whirlpool" "( whirlpool Array )" )
-   ( mnemonic/def nil "blake" "( blake Array )" )
+   ( mnemonic/def nil "whirlpool" "( whirlpool Bytes )" )
+   ( mnemonic/def nil "blake" "( blake Bytes )" )
    ( mnemonic/def nil "blake2" "( blake2 Bytes )" )
 
    ( mnemonic/def nil "size" )
@@ -667,8 +686,8 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
   - the problem is that this vocabulary provides hashes before any way
     of expressing a hash is possible, so its own hash is expressed
     with a name inside the vocabulary
-  - you read ~( ns 24 ( 0x18 0x2E {hashID}:8B ) )~
-  - how do you get to the point where you know ~0x18 0x2E~ is ~hash:sha3~?
+  - you read ~( ns 0x1800 ( 0x182E #[8] {hashID}:8B ) )~
+  - how do you get to the point where you know ~0x182E~ is ~hash:sha3~?
     - you get the list (hopefully with only one element) of
       vocabularies identified by a form whose sole element is a
       64-bits word ~{hashid}~
@@ -696,3 +715,101 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
   | 4GB     | 50B           | 16B          |
   | 18EB    | 54B           | 20B          |
   |         |               |              |
+
+* The power of abstraction
+** Explicit relationship between similar data
+   When a protocol makes it possible to express several different data that are related but
+   different in structure, most other formats can only express those relationships in human
+   readable documentation.
+
+   Example: an event format that includes information about the person doing the action and the
+   person logging it:
+
+   #+BEGIN_SRC json
+     { "eventType": "WallPainted",
+       "eventDate": "20210723T235601Z",
+       "wallId": "d9e62839-dafe-49e1-b4d2-ce99c035fa9f",
+       "logged": { "by": "alice", "date": "20210723T090145Z" },
+       "painted": { "by": "bob", "date": "20210722T193545Z" }
+     }
+   #+END_SRC
+
+   When the date for the action or logging is the same as the event, it might be omitted:
+
+   #+BEGIN_SRC json
+     { "eventType": "WallPainted",
+       "eventDate": "20210723T235601Z",
+       "wallId": "d9e62839-dafe-49e1-b4d2-ce99c035fa9f",
+       "logged": { "by": "alice" },
+       "painted": { "by": "bob" }
+     }
+   #+END_SRC
+
+   And the fomat might include a shortcut for those cases:
+
+   #+BEGIN_SRC json
+     { "eventType": "WallPainted",
+       "eventDate": "20210723T235601Z",
+       "wallId": "d9e62839-dafe-49e1-b4d2-ce99c035fa9f",
+       "loggedBy": "alice",
+       "paintedBy": "bob"
+     }
+   #+END_SRC
+
+   With almost all existing formats, there is not way to convey the relationship between =loggedBy=
+   and =logged=.
+
+   But in BULK, =loggedBy= can be explicitly defined in terms of =logged=:
+
+   #+BEGIN_SRC bulk
+   ( verifiable-ns 0x1800 {id} nil "wall"
+   "This vocabulary can be used to represent XML data."
+
+   ( mnemonic/def nil "event" "( event {properties} )"
+   ( mnemonic/def nil "type" "( type Expr )"
+   ( mnemonic/def nil "date" "( date Expr )"
+   ( mnemonic/def nil "wallId" "( comment {content} )"
+   ( mnemonic/def nil "logged" "( logged {properties} )"
+   ( mnemonic/def nil "painted" "( painted {properties} )"
+   ( mnemonic/def nil "by" "( by {person} )"
+   ( mnemonic/def nil "wallPaintedEvent" "( wallPaintedEvent {properties} )" ( subst ( event ( type "WallPainted" ) ( rest 1 ) ) )
+   ( mnemonic/def nil "loggedBy" "( loggedBy {person} )" ( subst ( logged ( by ( arg 0 ) ) ) )
+   ( mnemonic/def nil "paintedBy" "( paintedBy {person} )" ( subst ( painted ( by ( arg 0 ) ) ) )
+   #+END_SRC
+
+   Which means that the application processing this format doesn't even need to know about
+   =loggedBy= and =paintedBy= because BULK evaluation will transform them away:
+
+   #+BEGIN_SRC bulk
+   ( wallPaintedEvent
+     ( date "20210723T235601Z" )
+     ( loggedBy "alice" )
+     ( paintedBy "bob" ) )
+   #+END_SRC
+
+   will get evaluated into:
+
+   #+BEGIN_SRC bulk
+   ( event
+     ( type "WallPainted" )
+     ( date "20210723T235601Z" )
+     ( logged
+       ( by "alice" ) )
+     ( painted
+       ( by "bob" ) ) )
+   #+END_SRC
+
+** Forward compatibility
+   BULK makes it possible to create new versions of vocabularies that encompass previous versions,
+   in a way that minimizes implementation complexity. Whenever a new version of a vocabulary is
+   used, an application can use an alternative definition for the previous version that maps it to
+   the new version.
+
+   Example: let's define an extremely limited BARK with just manifests and SHA-3:
+
+   #+BEGIN_SRC bulk
+   ( verifiable-ns 0x1800 {id} nil "wall"
+   "This vocabulary can be used to represent XML data."
+
+   ( mnemonic/def nil "event" "( event {properties} )"
+   #+END_SRC

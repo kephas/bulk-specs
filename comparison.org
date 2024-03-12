@@ -92,7 +92,7 @@
   | BULK       |  58 | 26 | 16n+8  |
   | CBOR       | 100 | 49 | 27n+18 |
   | MsgPack    | 106 | 49 | 33n+19 |
-  | Naive BULK | 119 | 52 | 36n+21 |
+  | Naive BULK | 123 | 52 | 36n+21 |
   | JSON       | 145 | 60 | 39n+24 |
   | BSON       | 178 | 65 | 47n+27 |
   |------------+-----+----+--------|
@@ -106,7 +106,7 @@
    - 3 :: ={"status":"ok","data":[{"foo":"bar","baz":"quux","value":12.5} repeated n times]}=
 
 ** BULK
-   - 1 :: =( example:ok ( ( example:foobaz/f "bar" "quux" #[4] 0x41480000 ) ( example:foobaz/i "bar" "quuux" 0 ) ( example:foobaz "fubar" "quuuux" #[1] 0xD8 ) ) )=
+   - 1 :: =( example:ok ( ( example:foobaz/f "bar" "quux" #[4] 0x41480000 ) ( example:foobaz/i "bar" "quuux" 0 ) ( example:foobaz/i "fubar" "quuuux" #[1] 0xD8 ) ) )=
    - 2 :: =( example:error 735 "delegation expired" )=
    - 3 :: =( example:ok ( bulk:prefix example:foobaz/f "bar" "quux" uw32 0x41480000 example:foobaz/f "bar" "quux" uw32 0x41480000 … ) )=
 
@@ -136,7 +136,7 @@
       ( bulk:mnemonic/def 0x1801 "error" "error message with code and message" ( bulk:subst ( example:map "status" "error" "code" ( bulk:arg 0 ) "message" ( bulk:arg 1 ) ) ) )
       ( bulk:mnemonic/dev 0x1802 "foobaz" "foobaz data item" ( bulk:subst ( example:map "foo" ( bulk:arg 0 ) "baz" ( bulk:arg 1 ) "value" ( bulk:arg 2 ) ) ) )
       ( bulk:mnemonic/dev 0x1803 "foobaz/i" "foobaz data item with int" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:signed-int ( bulk:arg 2 ) ) ) ) )
-      ( bulk:mnemonic/dev 0x1804 "foobaz/f" "foobaz data item with float" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:binfloat ( bulk:arg 2 ) ) ) ) )
+      ( bulk:mnemonic/dev 0x1804 "foobaz/f" "foobaz data item with float" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:binary-float ( bulk:arg 2 ) ) ) ) )
       ( bulk:mnemonic/dev 0x1805 "map" "like JSON objects" )
       ( bulk:arity 3 example:foobaz example:foobaz/i example:foobaz/f )
     #+END_src
@@ -144,9 +144,9 @@
 ** Naive BULK
    This makes no use of BULK's ability to abstract common patterns, just encodes JSON maps and arrays as-is.
 
-   - 1 :: =( example:map "status" "ok" "data" ( ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binfloat uw32 0x41480000 ) ) ( example:map "foo" "bar" "baz" "quuux" "value" 0 ) ( example:map "foo" "fubar" "baz" "quuuux" "value" -40 ) ) )=
+   - 1 :: =( example:map "status" "ok" "data" ( ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) ( example:map "foo" "bar" "baz" "quuux" "value" 0 ) ( example:map "foo" "fubar" "baz" "quuuux" "value" -40 ) ) )=
    - 2 :: =( example:map "status" "error" "code" 735 "message" "delegation expired" )=
-   - 3 :: =( example:map "status" "ok" "data" ( ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binfloat uw32 0x41480000 ) ) ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binfloat uw32 0x41480000 ) ) … ) )=
+   - 3 :: =( example:map "status" "ok" "data" ( ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) … ) )=
 
 ** BSON
    https://euandreh.github.io/cl-BSON/api.html

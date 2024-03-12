@@ -15,11 +15,10 @@
 
 <rfc ipr="trust200902"
      category="exp"
-     docName="draft-thierry-bulk-barf-00"
-     xmlns:x="http://purl.org/net/xml2rfc/ext">
-  <x:feedback template="mailto:pierre@nothos.net"/>
+     submissionType="IETF"
+     docName="draft-thierry-bulk-bark-00">
   <front>
-    <title abbrev="BULK-BARF">BULK ARchive Format</title>
+    <title abbrev="BULK-BARK">BULK Archive</title>
 
     <author initials="P." surname="Thierry" fullname="Pierre Thierry">
       <organization>Thierry Technologies</organization>
@@ -28,7 +27,7 @@
       </address>
     </author>
 
-    <date day="7" month="August" year="2013" />
+    <date day="31" month="03" year="2024" />
     <keyword>binary</keyword>
 
     <abstract>
@@ -80,7 +79,7 @@
 
       <section title="Format overview">
 	<t>
-	  A BARF file is basically a set of metadata fields followed by data entries. Each entry
+	  A BARK file is basically a set of metadata fields followed by data entries. Each entry
 	  consists of a set of metadata fields followed by its content. The interesting property of
 	  using BULK is that any portion of that structure is dynamic (no fixed metadata fields, and
 	  an entry without metadata is serialized as its content, either an array or a BULK form
@@ -103,11 +102,11 @@
 	  signatures or access offsets for random access.
 	</t>
 	<t>
-	  This extends the use case of BARF archives outside of archives for multiple files. An
-	  extensible image format could be based on a BARF structure, allowing seamless transition
+	  This extends the use case of BARK archives outside of archives for multiple files. An
+	  extensible image format could be based on a BARK structure, allowing seamless transition
 	  from a simple format to a full-featured one, whereas existing formats usually add complex
 	  extensions that fail to be widely adopted (to add support for layers, transparency,
-	  different compression or metadata). Although BARF would probably be ill-suited for
+	  different compression or metadata). Although BARK would probably be ill-suited for
 	  playable audio and video, it would still provide a perfect fit for the storage of raw
 	  audio and video for editing programs.
 	</t>
@@ -155,20 +154,19 @@
 	</t>
 	<t>
 	  For example, a GBC-compliant checksum form could have the shape <spanx style="verb">( crc32c
-	  gbc> {crc}:Word32 {payload} )</spanx>, where {crc} is the checksum of the byte sequence
+	  gbc> {crc}:Word32 {payload}:Expr )</spanx>, where {crc} is the checksum of the byte sequence
 	  {payload}. On the other hand, a GBC-compliant AES encryption form, where obviously the payload
 	  is unreadable without proper knowledge of the form, could have the shape <spanx
-	  style="verb">( aes gbc| {ciphertext} )</spanx>.
+	  style="verb">( aes gbc| {ciphertext}:Bytes )</spanx>.
 	</t>
       </section>
     </section>
 
-    <section title="BULK archive namespace">
+    <section title="BARK namespace">
       <t>
-	The archive namespace (mnemonic: <spanx style="verb">barf</spanx>) is an official namespace
-	identified by the UUID <eref target="urn:uuid:8beba7c6-c65d-5256-a2da-3763513953f3"/> (BULK,
-	"Stack 'em. Pack 'em. And rack 'em."). It provides a standard way to pack one or more data
-	elements together with metadata.
+	The BARK namespace (mnemonic: <spanx style="verb">bark</spanx>) is defined as a verifiable
+	namespace. It provides a standard way to pack one or more data elements together with
+	metadata.
       </t>
 
       <section title="Packing">
@@ -225,7 +223,7 @@
 	</t>
 	<t>
 	  This form associates arbitrary metadata with an arbitrary payload. It is intended to
-	  constitute most entries in BARF archives. In the context of {metadata}, <spanx
+	  constitute most entries in BARK archives. In the context of {metadata}, <spanx
 	  style="verb">rdf:this-resource</spanx> designates the payload.
 	</t>
 	<t>Type: <spanx style="verb">GBCForm</spanx></t>
@@ -466,13 +464,13 @@
       <reference anchor="BULK1">
 	<front>
 	  <title>Binary Uniform Language Kit 1.0</title>
-	  <date day="7" month="August" year="2013"/>
 	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
 	    <organization>Thierry Technologies</organization>
 	    <address>
 	      <email>pierre@nothos.net</email>
 	    </address>
 	  </author>
+	  <date day="7" month="August" year="2013"/>
 	</front>
 	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-02"/>
       </reference>
@@ -480,13 +478,13 @@
       <reference anchor="BULK-RDF">
 	<front>
 	  <title>BULK RDF namespace</title>
-	  <date day="7" month="August" year="2013"/>
 	  <author initials="P." surname="Thierry" fullname="Pierre Thierry">
 	    <organization>Thierry Technologies</organization>
 	    <address>
 	      <email>pierre@nothos.net</email>
 	    </address>
 	  </author>
+	  <date day="7" month="August" year="2013"/>
 	</front>
 	<seriesInfo name="Internet-Draft" value="draft-thierry-bulk-rdf-00"/>
       </reference>
@@ -498,6 +496,7 @@
 	<front>
 	  <title>ISO 8601:2004 Data elements and interchange formats -- Information interchange -- Representation
 	  of dates and times</title>
+	  <author/>
 	  <date year="2004"/>
 	</front>
       </reference>
