@@ -66,31 +66,265 @@
    - 0x33 :: ( postfix-bytecode* ( {arities} ) {bytecode} )
    - 0x34 :: ( arity Int {refs} )
 
-** Mobile code
-   - language = namespace
-   - language-agnostic encoding
-     - 1 lexeme = 1 ref
-       - not for Python
-     - preprocessor macros
-   - AST encoding
-   - LA/AST
-     - could embed macrology if BULK reader supports it
-     - separate debug symbols
-       - ref ↔ name
-       - BULK offset ↔ source code position
-   - general use of macrology coupled with C/S content negociation
-     - client advertises known namespaces
-       - but only relevant, security risk otherwise
-     - server disk is cheaper than bandwidth: BULK stream with
-       macrology is preprocessed to get rid of macrology, both
-       versions available (small w/ macros, bigger w/o)
-       - possibly on-demand w/ cache
-       - selective evaluation: only evaluate what the client doesn't
-         support
-
 ** BULK API Model
    - needed at least for hashing: access the bytes of an expression (API to get positions to read
      the bytes independently or API to get the bytes directly)
+
+** BARK: BULK Archive
+   When needed, metadata can be any expression (=nil= SHOULD be used to indicate no metadata).
+
+   When reading expressions as entries, ignore =nil= and process =description= forms. Entries and
+   descriptions both are numbered (not =nil=).
+
+   - 0x00 :: ( bark {content} )
+     - can also be used as a reference after imports, to signal that the stream is a BARK stream
+   - 0x01 :: ( entry {gbc-tag}:Expr {metadata}:Expr {content}:Expr )
+     - {content} can be an array (e.g. a file's content) or BULK expression
+   - 0x03 :: ( description {metadata}:Expr )
+     - can be inserted in many places in a BULK stream to annotate virtually anything
+   - 0x04 :: ( metadata {data} )
+   - 0x05 :: ( count {num} )
+   - 0x06 :: ( about {what} )
+     - {what} is a sequence of expressions, each identifying the entry
+   - 0x25 :: ( entry {num} )
+   - 0x26 :: ( previous {skip} )
+     - within a metadata form, designates the expression before that
+       metadata form (possibly after skipping {skip} expressions)
+   - 0x27 :: ( next {skip} )
+     - within a metadata form, designates the expression after that
+       metadata form (possibly after skipping {skip} expressions)
+   - 0x28 :: everything-before
+     - within a metadata form, designates the whole sequence of
+       expressions before that metadata form
+   - 0x29 :: ( before {marker}:Ref {skip} )
+     - within a metadata form, designates the expression in the outer
+       context of the metadata form that is before the occurrence of
+       {marker} (possibly after skipping {skip} expressions)
+       - undefined if multiple occurrences
+   - 0x2A :: ( after {marker}:Ref {skip} )
+     - like before, but after…
+   - 0x10 :: gbc|
+     - opaque GBC form
+   - 0x11 :: gbc>
+     - GBC form must not be preserved if payload is modified
+   - 0x12 :: gbc*>
+     - preservable GBC form
+   - 0x13 :: gbc*~>
+     - preservable GBC form whose payload was modified
+   - 0x03 :: ( bulk-stream {stream} )
+   - 0x04 :: ( bulk-bytes {bulk}:Bytes )
+   -
+   - 0x30 :: ( compressed gbc| {method}:MeTOD Bytes )
+   - 0x31 :: deflate
+   - 0x32 :: deflate64
+   - 0x33 :: lzma
+   - 0x34 :: lzma2
+   - Ox35 :: bz2
+   - 0x36 :: lzw
+   - 0x37 :: lzo
+   - 0x3D :: ( hash {signature}:Expr )
+   - 0x3E :: ( hashed gbc> {signature}:Expr Expr )
+   - 0x3F :: ( encrypted gbc| {method} Bytes )
+   - tar semantics
+     - metadata
+       - Ox40 :: ( path {components} )
+	 - by design, there is no way to express an absolute FS path
+	   - an application is free to define insecure forms to express
+             absolute paths and links
+	   - TODO: what if a component contain "/"?
+	     - implementation should not resolve the name but look it up
+               in the directory entries (that takes care of "/" but not
+               of a ".." entry, this still needs checking, shame on Unix)
+       - 0x41 :: ( user {name} )
+	 - {name} can be anything, incl. string and Nat
+	   - multiple entries (e.g. "pierre"/1000)
+       - 0x42 :: ( group {name} )
+       - 0x43 :: contiguous
+       - 0x44 :: ( access {time} )
+       - 0x45 :: ( modification {time} )
+       - 0x46 :: ( change {time} )
+       - 0x47 :: ( mode {mode} )
+       - 0x48 :: ( posix-acl {acls} )
+	 - 0x49 :: ( user {id} {mode} {default?} )
+	 - 0x4A :: ( group {id} {mode} {defaults?} )
+	 - 0x4B :: ( other {mode} {defaults?} )
+	 - 0x4C :: ( mask {mode} {defaults?} )
+       - 0x4D :: ( xattr {xattr} )
+	 - {xattrs} = ( {name} {value} )+
+       - Ox4E :: ( offsets Nat+ )
+	 - meant for forms not containing individual entries' metadata
+	 - TODO: base?
+       - 0x4F :: ( offset Nat )
+	 - meant for forms grouping an entry with its metadata
+	 - TODO: base?
+     - entry
+       - an array as an entry (possibly within GBC forms) is presumed
+         to be a regular file
+       - 0x50 :: ( hard-link Path )
+       - 0x51 :: ( sym-link Path )
+       - 0x52 :: ( char-dev {major}:Int {minor}:Int )
+       - 0x53 :: ( block-dev {major}:Int {minor}:Int )
+       - 0x54 :: directory
+       - 0x55 :: fifo
+       - 0x56 :: ( sparse-file {segments} )
+	 - Bytes
+	 - 0x57 :: ( hole {size}:Nat )
+	   - {size} in bytes
+   - gzip semantics
+     - 0x60 :: ( binary Boolean )
+     - 0x61 :: ( comment Expr )
+     - 0x62 :: ( os Expr )
+       - vocabularies may provide additional expressions for OSes
+       - 0x70 :: FAT file system (DOS, OS/2, NT) + PKZIPW 2.50 VFAT, NTFS
+       - 0x71 :: Amiga
+       - 0x72 :: VMS (VAX or Alpha AXP)
+       - 0x73 :: Unix
+       - 0x74 :: VM/CMS
+       - 0x75 :: Atari
+       - 0x76 :: HPFS file system (OS/2, NT 3.x)
+       - 0x77 :: Macintosh
+       - 0x78 :: Z-System
+       - 0x79 :: CP/M
+       - 0x7A :: TOPS-20
+       - 0x7B :: NTFS file system (NT)
+       - 0x7C :: SMS/QDOS
+       - 0x7D :: Acorn RISC OS
+       - 0x7E :: VFAT file system (Win95, NT)
+       - 0x7F :: MVS (code also taken for PRIMOS)
+       - 0x80 :: BeOS (BeBox or PowerMac)
+       - 0x81 :: Tandem/NSK
+       - 0x82 :: THEOS
+     - 0x63 :: maximum-compression
+     - 0x64 :: fastest-comœpression
+     - 0x83 :: ( acorn-bbc-mos-file-type-info Bytes )
+     - 0x84 :: ( apollo-file-type-info Bytes )
+     - 0x85 :: ( cpio-compressed Bytes )
+     - gzsig extra field should be created from a compatible
+       cryptographic signature
+     - 0x86 :: ( keynote-assertion Bytes )
+     - 0x88 :: ( macintosh-info Bytes )
+     - 0x89 :: ( acorn-file-type-info Bytes )
+   - dar semantics
+     - split archives
+       - advertised in container metadata
+	 - 0x90 :: ( split-archive {archive-id} {member-id} {members} )
+	   - members are *description* forms that MAY contain filename
+             or hash
+     - FS-specific attributes
+     - incremental backup?
+     - fast member extract? (how does DAR does that?)
+
+
+   One could define a whole namespace of compact versions, like
+   : about-num ⇔ ( lambda n ( about ( entry n ) ) )
+   : about-previous ⇔ ( about ( previous ) )
+   : about-previous* ⇔ ( lambda n ( about ( previous n ) ) )
+   : about-num[3] ⇔ ( about ( entry 3 ) )
+   : about-previous[2] ⇔ ( about ( previous 2 ) )
+
+*** BUlk possibly-Zipped archive (.buz)
+    A =foobar.buz= archive with multiple files:
+
+    #+BEGIN_SRC bulk
+    ( pack ( metadata ( count 2 ) )
+      ( described gbc*> ( metadata ( path "foo.txt" ) )
+        ( compressed gbc| lzma {foo.txt}:Bytes ) )
+      ( described ( metadata ( path "bar.jpg" ) )
+        {bar.jpg}:Bytes ) )
+    #+END_SRC
+
+    A =foo.txt.buz= archive with a single file and hash for integrity:
+
+    #+BEGIN_SRC bulk
+    ( described ( metadata ( path "foo.txt" ) )
+      ( hashed gbc> ( sha3 {hash}:Bytes )
+        ( compressed gbc| lzma {foo.txt} ) ) )
+    #+END_SRC
+
+    A =manifest.buz= manifest about other files:
+
+    #+BEGIN_SRC bulk
+    ( description ( metadata ( ( about ( path "foo.txt" ) )
+                               ( hash ( md5 {hash}:Bytes ) ) ) ) )
+    ( description ( metadata ( ( about ( path "bar.txt" ) )
+                               ( hash ( md5 {hash}:Bytes ) ) ) ) )
+    ( description ( metadata ( ( about ( path "baz.iso" ) )
+                               ( hash ( sha3 {hash}:Bytes ) ) ) ) )
+    #+END_SRC
+
+*** BARK utility
+    #+BEGIN_EXAMPLE
+    $ bark list <file>
+    $ bark check <file>
+    $ bark extract <file> [<members>]
+    #+END_EXAMPLE
+
+**** convert
+     #+BEGIN_EXAMPLE
+     $ barf convert --to gzip <file>
+     $ barf convert --from dar <file>
+     #+END_EXAMPLE
+
+     This command convert from and to BULK. Converting to and then
+     from BULK should produce a file at least semantically identical,
+     (it may be bytewise identical, and it might be an implementation
+     goal to achieve that, but no metadata is stored to that end by
+     default).
+
+     - mode of operation
+       - lossless :: refuse conversion if semantic information would
+                     be lost (i.e. if a string is not encodable in the
+                     target format, but not if random padding is
+                     present)
+       - lossy :: not lossless (i.e. a one-member tar archive
+                  converted to BULK might then be converted to gzip,
+                  at the price of losing ACLs)
+       - transform :: change data representation to fit target format
+                      (i.e. if target is gzip, LZMA data would be
+                      recompressed to deflate, a UTF-8 string encoded
+                      in ISO-8859-1)
+       - maintain :: refuse conversion if data representation in the
+                     source format doesn't fit target format
+	 - should never need to refuse if BULK is target?
+       - default is *lossless transform*
+
+     Targets:
+     - manifests
+       - SFV
+     - compression formats
+
+*** BARF Object Model
+    - access to metadata
+      - consolidated metadata when forms overwrite each other?
+	- API for history?
+    - access to entries
+      - across manifests/packs/stacks within a common context
+    - ability to add entries/metadata while not breaking hashes
+      - when hash is recomputable:
+	- app knows algo/has all data to hash (key, etc…)
+	- modify/delete/append in place
+	- rehash
+      - when hash is not recomputable:
+	- app doesn't know algo/lacks some data
+	- modify/delete raise error
+	- append after original data
+
+*** Comparison
+    - tar
+      - +compression
+    - zip
+    - XZ
+      - has a limited choice of compression/hash
+    - gzip
+    - cpio, pax
+
+*** BULK stream with size
+    BULK cannot contain a form like =( bulk/size {size}:Nat {bulk} )= because size could be
+    erroneous and then parsing the whole stream or skipping ={bulk}= would give two different
+    results (or more if ={bulk}= contains other such erroneous forms.
+
+    This could represent a security risk, with some parsers not seeing an issue and others
+    triggering it.
 
 ** Lambda expressions
    #+BEGIN_SRC bulk
@@ -131,7 +365,10 @@
    )
    #+END_SRC
 
-** RDF namespace
+* Useful vocabularies
+** RDF 1.0
+
+   TODO: update to RDF 1.1 or 1.2
 
    - 0x01 :: uriref ⇔ λ:id
    - 0x02 :: ( base Bytes )
@@ -161,7 +398,6 @@
    -
    - 0x20 :: this-resource
    - 0x21 :: uri
-
 
 *** Differences between complete triples (3s) and turtle-like (Tl)
     In 3s, a single triple cannot cost less than 8 bytes:
@@ -343,272 +579,6 @@
    -  :: ( tai64 Word64 )
    -  :: ( tng-stardate Nat Nat )
 
-** BARK: BULK Archive
-   When needed, metadata can be any expression (nil SHOULD be used to
-   indicate no metadata).
-
-   When reading expressions as entries, ignore *nil* and process
-   *description* forms but don't count them as entries themselves.
-
-   - 0x00 :: ( manifest {metadata}:Expr {entries-metadata} )
-     - used to express metadata about data outside the BULK stream (or
-       in arbitrary positions in it)
-   - 0x01 :: ( pack {metadata}:Expr {entries} )
-     - byte offsets based on first byte after {metadata}
-   - 0x02 :: ( stack {metadata}:Expr {entries-metadata} ) {entries}
-     - to make BULK-unaware append possible
-     - {entries-metadata} means {entries} last element can be a single
-       Bytes and the content of the entry is the end of the BULK file
-     - each entry metadata MUST identify entry (by number, hash, etc…)
-   - 0x03 :: ( bulk-stream {stream} )
-   - 0x04 :: ( bulk-bytes {bulk}:Bytes )
-   - 0x10 :: gbc|
-     - opaque GBC form
-   - 0x11 :: gbc>
-     - GBC form must not be preserved if payload is modified
-   - 0x12 :: gbc*>
-     - preservable GBC form
-   - 0x13 :: gbc*~>
-     - preservable GBC form whose payload was modified
-   - 0x20 :: ( described {gbc-tag}:Expr {metadata}:Expr {content}:Expr )
-     - {content} can be an array (e.g. a file's content) or BULK expression
-   - 0x21 :: ( description {metadata}:Expr )
-     - can be inserted in many places in a BULK stream to annotate
-       virtually anything
-   - 0x22 :: ( metadata {data} )
-   - 0x23 :: ( count {num} )
-   - 0x24 :: ( about {what} )
-     - {what} is a sequence of expressions, each identifying the entry
-   - 0x25 :: ( entry {num} )
-   - 0x26 :: ( previous {skip} )
-     - within a metadata form, designates the expression before that
-       metadata form (possibly after skipping {skip} expressions)
-   - 0x27 :: ( next {skip} )
-     - within a metadata form, designates the expression after that
-       metadata form (possibly after skipping {skip} expressions)
-   - 0x28 :: everything-before
-     - within a metadata form, designates the whole sequence of
-       expressions before that metadata form
-   - 0x29 :: ( before {marker}:Ref {skip} )
-     - within a metadata form, designates the expression in the outer
-       context of the metadata form that is before the occurrence of
-       {marker} (possibly after skipping {skip} expressions)
-       - undefined if multiple occurrences
-   - 0x2A :: ( after {marker}:Ref {skip} )
-     - like before, but after…
-   - 
-   - 0x30 :: ( compressed gbc| {method}:MeTOD Bytes )
-   - 0x31 :: deflate
-   - 0x32 :: deflate64
-   - 0x33 :: lzma
-   - 0x34 :: lzma2
-   - Ox35 :: bz2
-   - 0x36 :: lzw
-   - 0x37 :: lzo
-   - 0x3D :: ( hash {signature}:Expr )
-   - 0x3E :: ( hashed gbc> {signature}:Expr Expr )
-   - 0x3F :: ( encrypted gbc| {method} Bytes )
-   - tar semantics
-     - metadata
-       - Ox40 :: ( path {components} )
-	 - by design, there is no way to express an absolute FS path
-	   - an application is free to define insecure forms to express
-             absolute paths and links
-	   - TODO: what if a component contain "/"?
-	     - implementation should not resolve the name but look it up
-               in the directory entries (that takes care of "/" but not
-               of a ".." entry, this still needs checking, shame on Unix)
-       - 0x41 :: ( user {name} )
-	 - {name} can be anything, incl. string and Nat
-	   - multiple entries (e.g. "pierre"/1000)
-       - 0x42 :: ( group {name} )
-       - 0x43 :: contiguous
-       - 0x44 :: ( access {time} )
-       - 0x45 :: ( modification {time} )
-       - 0x46 :: ( change {time} )
-       - 0x47 :: ( mode {mode} )
-       - 0x48 :: ( posix-acl {acls} )
-	 - 0x49 :: ( user {id} {mode} {default?} )
-	 - 0x4A :: ( group {id} {mode} {defaults?} )
-	 - 0x4B :: ( other {mode} {defaults?} )
-	 - 0x4C :: ( mask {mode} {defaults?} )
-       - 0x4D :: ( xattr {xattr} )
-	 - {xattrs} = ( {name} {value} )+
-       - Ox4E :: ( offsets Nat+ )
-	 - meant for forms not containing individual entries' metadata
-	 - TODO: base?
-       - 0x4F :: ( offset Nat )
-	 - meant for forms grouping an entry with its metadata
-	 - TODO: base?
-     - entry
-       - an array as an entry (possibly within GBC forms) is presumed
-         to be a regular file
-       - 0x50 :: ( hard-link Path )
-       - 0x51 :: ( sym-link Path )
-       - 0x52 :: ( char-dev {major}:Int {minor}:Int )
-       - 0x53 :: ( block-dev {major}:Int {minor}:Int )
-       - 0x54 :: directory
-       - 0x55 :: fifo
-       - 0x56 :: ( sparse-file {segments} )
-	 - Bytes
-	 - 0x57 :: ( hole {size}:Nat )
-	   - {size} in bytes
-   - gzip semantics
-     - 0x60 :: ( binary Boolean )
-     - 0x61 :: ( comment Expr )
-     - 0x62 :: ( os Expr )
-       - vocabularies may provide additional expressions for OSes
-       - 0x70 :: FAT file system (DOS, OS/2, NT) + PKZIPW 2.50 VFAT, NTFS
-       - 0x71 :: Amiga
-       - 0x72 :: VMS (VAX or Alpha AXP)
-       - 0x73 :: Unix
-       - 0x74 :: VM/CMS
-       - 0x75 :: Atari
-       - 0x76 :: HPFS file system (OS/2, NT 3.x)
-       - 0x77 :: Macintosh
-       - 0x78 :: Z-System
-       - 0x79 :: CP/M
-       - 0x7A :: TOPS-20
-       - 0x7B :: NTFS file system (NT)
-       - 0x7C :: SMS/QDOS
-       - 0x7D :: Acorn RISC OS
-       - 0x7E :: VFAT file system (Win95, NT)
-       - 0x7F :: MVS (code also taken for PRIMOS)
-       - 0x80 :: BeOS (BeBox or PowerMac)
-       - 0x81 :: Tandem/NSK
-       - 0x82 :: THEOS
-     - 0x63 :: maximum-compression
-     - 0x64 :: fastest-comœpression
-     - 0x83 :: ( acorn-bbc-mos-file-type-info Bytes )
-     - 0x84 :: ( apollo-file-type-info Bytes )
-     - 0x85 :: ( cpio-compressed Bytes )
-     - gzsig extra field should be created from a compatible
-       cryptographic signature
-     - 0x86 :: ( keynote-assertion Bytes )
-     - 0x88 :: ( macintosh-info Bytes )
-     - 0x89 :: ( acorn-file-type-info Bytes )
-   - dar semantics
-     - split archives
-       - advertised in container metadata
-	 - 0x90 :: ( split-archive {archive-id} {member-id} {members} )
-	   - members are *description* forms that MAY contain filename
-             or hash
-     - FS-specific attributes
-     - incremental backup?
-     - fast member extract? (how does DAR does that?)
-
-
-   One could define a whole namespace of compact versions, like
-   : about-num ⇔ ( lambda n ( about ( entry n ) ) )
-   : about-previous ⇔ ( about ( previous ) )
-   : about-previous* ⇔ ( lambda n ( about ( previous n ) ) )
-   : about-num[3] ⇔ ( about ( entry 3 ) )
-   : about-previous[2] ⇔ ( about ( previous 2 ) )
-
-*** BUlk possibly-Zipped archive (.buz)
-    A =foobar.buz= archive with multiple files:
-
-    #+BEGIN_SRC bulk
-    ( pack ( metadata ( count 2 ) )
-      ( described ( metadata ( path "foo.txt" ) )
-        ( compressed gbc| lzma {foo.txt}:Bytes ) )
-      ( described ( metadata ( path "bar.jpg" ) )
-        {bar.jpg}:Bytes ) )
-    #+END_SRC
-
-    A =foo.txt.buz= archive with a single file and hash for integrity:
-
-    #+BEGIN_SRC bulk
-    ( described ( metadata ( path "foo.txt" ) )
-      ( hashed gbc> ( sha3 {hash}:Bytes )
-        ( compressed gbc| lzma {foo.txt} ) ) )
-    #+END_SRC
-
-    A =manifest.buz= manifest about other files:
-
-    #+BEGIN_SRC bulk
-    ( description ( metadata ( ( about ( path "foo.txt" ) )
-                               ( hash ( md5 {hash}:Bytes ) ) ) ) )
-    ( description ( metadata ( ( about ( path "bar.txt" ) )
-                               ( hash ( md5 {hash}:Bytes ) ) ) ) )
-    ( description ( metadata ( ( about ( path "baz.iso" ) )
-                               ( hash ( sha3 {hash}:Bytes ) ) ) ) )
-    #+END_SRC
-
-*** BARF utility
-    #+BEGIN_EXAMPLE
-    $ bark list <file>
-    $ bark check <file>
-    $ bark extract <file> [<members>]
-    #+END_EXAMPLE
-
-**** convert
-     #+BEGIN_EXAMPLE
-     $ barf convert --to gzip <file>
-     $ barf convert --from dar <file>
-     #+END_EXAMPLE
-
-     This command convert from and to BULK. Converting to and then
-     from BULK should produce a file at least semantically identical,
-     (it may be bytewise identical, and it might be an implementation
-     goal to achieve that, but no metadata is stored to that end by
-     default).
-
-     - mode of operation
-       - lossless :: refuse conversion if semantic information would
-                     be lost (i.e. if a string is not encodable in the
-                     target format, but not if random padding is
-                     present)
-       - lossy :: not lossless (i.e. a one-member tar archive
-                  converted to BULK might then be converted to gzip,
-                  at the price of losing ACLs)
-       - transform :: change data representation to fit target format
-                      (i.e. if target is gzip, LZMA data would be
-                      recompressed to deflate, a UTF-8 string encoded
-                      in ISO-8859-1)
-       - maintain :: refuse conversion if data representation in the
-                     source format doesn't fit target format
-	 - should never need to refuse if BULK is target?
-       - default is *lossless transform*
-
-     Targets:
-     - manifests
-       - SFV
-     - compression formats
-
-*** BARF Object Model
-    - access to metadata
-      - consolidated metadata when forms overwrite each other?
-	- API for history?
-    - access to entries
-      - across manifests/packs/stacks within a common context
-    - ability to add entries/metadata while not breaking hashes
-      - when hash is recomputable:
-	- app knows algo/has all data to hash (key, etc…)
-	- modify/delete/append in place
-	- rehash
-      - when hash is not recomputable:
-	- app doesn't know algo/lacks some data
-	- modify/delete raise error
-	- append after original data
-
-*** Comparison
-    - tar
-      - +compression
-    - zip
-    - XZ
-      - has a limited choice of compression/hash
-    - gzip
-    - cpio, pax
-
-*** BULK stream with size
-    BULK cannot contain a form like =( bulk/size {size}:Nat {bulk} )= because size could be
-    erroneous and then parsing the whole stream or skipping ={bulk}= would give two different
-    results (or more if ={bulk}= contains other such erroneous forms.
-
-    This could represent a security risk, with some parsers not seeing an issue and others
-    triggering it.
-
 ** Hash
    #+BEGIN_SRC bulk
    ( verifiable-ns 0x1800 {id} nil "hash"
@@ -763,7 +733,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 
    #+BEGIN_SRC bulk
    ( verifiable-ns 0x1800 {id} nil "wall"
-   "This vocabulary can be used to represent XML data."
+   "This vocabulary can be used to represent wall painting events."
 
    ( mnemonic/def nil "event" "( event {properties} )"
    ( mnemonic/def nil "type" "( type Expr )"
@@ -772,7 +742,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    ( mnemonic/def nil "logged" "( logged {properties} )"
    ( mnemonic/def nil "painted" "( painted {properties} )"
    ( mnemonic/def nil "by" "( by {person} )"
-   ( mnemonic/def nil "wallPaintedEvent" "( wallPaintedEvent {properties} )" ( subst ( event ( type "WallPainted" ) ( rest 1 ) ) )
+   ( mnemonic/def nil "wallPaintedEvent" "( wallPaintedEvent {properties} )" ( subst ( event ( type "WallPainted" ) ( rest 0 ) ) )
    ( mnemonic/def nil "loggedBy" "( loggedBy {person} )" ( subst ( logged ( by ( arg 0 ) ) ) )
    ( mnemonic/def nil "paintedBy" "( paintedBy {person} )" ( subst ( painted ( by ( arg 0 ) ) ) )
    #+END_SRC
@@ -808,8 +778,8 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    Example: let's define an extremely limited BARK with just manifests and SHA-3:
 
    #+BEGIN_SRC bulk
-   ( verifiable-ns 0x1800 {id} nil "wall"
-   "This vocabulary can be used to represent XML data."
+   ( verifiable-ns 0x1800 {id} nil "bark alpha"
+   "This vocabulary can be used to represent manifests."
 
-   ( mnemonic/def nil "event" "( event {properties} )"
+   ( mnemonic/def nil "description" "( event {properties} )"
    #+END_SRC
