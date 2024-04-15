@@ -27,7 +27,7 @@
       </address>
     </author>
 
-    <date day="31" month="03" year="2024" />
+    <date day="16" month="04" year="2024" />
     <keyword>binary</keyword>
 
     <abstract>
@@ -121,7 +121,7 @@
 	    data, JSON, which has seen a tremendous success for this purpose. JSON may lack in
 	    generality and compactness, but its design makes its parsing really straightforward and
 	    fast. All of them, though, lack decentralization. Some of them make it possible to
-	    extend them in a distrubuted way if some discipline is followed (for example, by naming
+	    extend them in a distributed way if some discipline is followed (for example, by naming
 	    modules after domain names), but the discipline is not mandatory (and even with domain
 	    names, a change of ownership makes it possible for name collisions).
 	  </t>
@@ -145,9 +145,9 @@
 	    extremely fast to parse.
 	  </t>
 	  <t>
-	    Actually, many binary formats are not so much formats but formats frameworks, and
-	    exclude extensibility by design. For each use case, an IDL compiler creates a brand new
-	    format that is essentially incompatible with all other formats created by the same
+	    Actually, many binary formats are not so much formats as they are formats frameworks,
+	    and exclude extensibility by design. For each use case, an IDL compiler creates a brand
+	    new format that is essentially incompatible with all other formats created by the same
 	    compiler (EBML specifically cites this property among its own disadvantages). If the
 	    IDL compiler and framework are correctly designed, such a format usually represent an
 	    optimum in compactness and speed of processing, as the compiler can also automatically
@@ -222,7 +222,7 @@
 	      namespace and every vocabulary would be parsed by the same mechanisms.
 	    </t>
 	    <t>
-	      Whenever a content must be stored as-is instead of serialized or a highly-optimized
+	      Whenever a content must be stored as-is instead of serialized, or a highly-optimized
 	      ad hoc serialization exists for some data, anything can always be stored within an
 	      array. They can contain arbitray bytes and there is no limit to their size.
 	    </t>
@@ -568,7 +568,7 @@
 	    <t>
 	      In the text notation, the marker byte of a small array of size X is written as <spanx
 	      style="verb">#[X]</spanx>. For example, <spanx style="verb">#[2] 0x1234</spanx> is a
-	      notation for the bytes <spanx style="verb">0xE2 0x12 0x34</spanx>.
+	      notation for the bytes <spanx style="verb">0xC2-1234</spanx>.
 	    </t>
 	    <t>
 	      In the text notation, a quoted string is the notation for a small array containing the
@@ -595,7 +595,8 @@
 	      In the text notation, the marker byte of a small unsigned integer of value X is
 	      written as <spanx style="verb">w6[X]</spanx>. For example, <spanx
 	      style="verb">w6[11]</spanx> is a notation for the byte <spanx
-	      style="verb">0xCB</spanx> (as is <spanx style="verb">11</spanx>).
+	      style="verb">0x8B</spanx> (as is <spanx style="verb">11</spanx>, cf. <xref
+	      target="arithmetic"/>).
 	    </t>
 	    <t>Types: <spanx style="verb">Bytes</spanx>, <spanx style="verb">Nat</spanx></t>
 	  </section>
@@ -682,7 +683,7 @@
 	    When parsing a BULK stream, a processing application MUST determine explicitely the
 	    major and minor version of the BULK specification that the stream obeys. This
 	    information MAY be exchanged out-of-band, if BULK is used to exchange a number a very
-	    small messages, where repeated headers of 8 bytes might become too big an overhead. A
+	    small messages, where repeated headers of 6 bytes might become too big an overhead. A
 	    processing application MUST NOT assume a default version.
 	  </t>
 	  <t>
@@ -712,7 +713,7 @@
 	  <section title="true">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x02</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x01</spanx> (mnemonic: <spanx
 		style="verb">true</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">true</spanx></t>
 	      </list>
@@ -725,7 +726,7 @@
 	  <section title="false">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x03</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x02</spanx> (mnemonic: <spanx
 		style="verb">false</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">false</spanx></t>
 	      </list>
@@ -740,7 +741,7 @@
 	  <section anchor="stringenc" title="Current encoding">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x04</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x03</spanx> (mnemonic: <spanx
 		style="verb">stringenc</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( stringenc {enc}:Encoding )</spanx></t>
 	      </list>
@@ -763,7 +764,7 @@
 	  <section title="IANA registered character set">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x05</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x04</spanx> (mnemonic: <spanx
 		style="verb">iana-charset</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( iana-charset {id}:Nat )</spanx></t>
 	      </list>
@@ -780,7 +781,7 @@
 	  <section title="Windows code page">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x06</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x05</spanx> (mnemonic: <spanx
 		style="verb">code-page</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( code-page {id}:Nat )</spanx></t>
 	      </list>
@@ -798,7 +799,7 @@
 	  <section title="New namespace">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x07</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x06</spanx> (mnemonic: <spanx
 		style="verb">ns</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( ns {marker}:Ref {id}:Expr )</spanx></t>
 	      </list>
@@ -812,7 +813,7 @@
 	  <section title="Package">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x08</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x07</spanx> (mnemonic: <spanx
 		style="verb">package</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( package {id}:Expr {namespaces}
 		)</spanx></t>
@@ -828,7 +829,7 @@
 	  <section title="Import">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x09</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x08</spanx> (mnemonic: <spanx
 		style="verb">import</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( import {base}:Nat {count}:Nat {id}:Expr
 		)</spanx></t>
@@ -868,7 +869,7 @@
 	  <section title="Simple definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0A</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x09</spanx> (mnemonic: <spanx
 		style="verb">define</spanx>)</t>
 		<t hangText="shape">
 		  <spanx style="verb">( define {ref}:Ref {value}:Expr )</spanx>
@@ -892,7 +893,7 @@
 	  <section title="Named definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0B</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x0A</spanx> (mnemonic: <spanx
 		style="verb">mnemonic/def</spanx>)</t>
 		<t hangText="shape">
 		  <spanx style="verb">( mnemonic/def {ref}:Ref {mnemonic}:String
@@ -926,7 +927,7 @@
 	  <section title="Namespace description">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0C</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x0B</spanx> (mnemonic: <spanx
 		style="verb">ns-mnemonic</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( ns-mnemonic {ns}:Expr {mnemonic}:String
 		{doc} )</spanx></t>
@@ -942,9 +943,9 @@
 	  <section anchor="verifiable" title="Verifiable namespace definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0D</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x0C</spanx> (mnemonic: <spanx
 		style="verb">verifiable-ns</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( verifiable-ns {marker}:Nat {id}:UniqueID
+		<t hangText="shape"><spanx style="verb">( verifiable-ns {marker}:Ref {id}:Expr
 		{data}:Expr {mnemonic}:Expr {definitions} )</spanx></t>
 		<t hangText="inner scope"><spanx style="verb">{id} {data} {mnemonic} {definitions}</spanx></t>
 	      </list>
@@ -954,7 +955,8 @@
 	      within the scope of this form. Verifiable namespaces are immutable, {id} MUST be
 	      verifiable against the byte sequence <spanx style="verb">{data} {mnemonic}
 	      {definitions}</spanx>. The semantics of this form is to define in its scope any
-	      definition made within <spanx style="verb">{definitions}</spanx>.
+	      definition made in the designated namespace within <spanx
+	      style="verb">{definitions}</spanx>.
 	    </t>
 	    <t>
 	      If {mnemonic} is of type <spanx style="verb">String</spanx>, then this suggests it as
@@ -982,7 +984,7 @@
 	  <section title="Array concatenation">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0E</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx
 		style="verb">concat</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( concat {array1}:Bytes {array2}:Bytes )</spanx></t>
 	      </list>
@@ -1004,7 +1006,7 @@
 	    <section title="Substitution function">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x0F</spanx> (mnemonic: <spanx
+		  <t hangText="name"><spanx style="verb">0x11</spanx> (mnemonic: <spanx
 		  style="verb">subst</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
 		</list>
@@ -1022,7 +1024,7 @@
 	    <section title="Argument">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx
+		  <t hangText="name"><spanx style="verb">0x12</spanx> (mnemonic: <spanx
 		  style="verb">arg</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( arg {n}:Nat )</spanx></t>
 		</list>
@@ -1039,7 +1041,7 @@
 	    <section title="Rest of arguments list">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x11</spanx> (mnemonic: <spanx
+		  <t hangText="name"><spanx style="verb">0x13</spanx> (mnemonic: <spanx
 		  style="verb">rest</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( rest {n}:Nat )</spanx></t>
 		</list>
@@ -1052,20 +1054,20 @@
 		  first {n} elements.</t>
 		</list>
 	      </t>
-	      <section title="Examples">
-		<t>Here is a definition of the inverse followed by the number 1/2, 1/3 and 1/4:</t>
-		<t><spanx style="verb">( define inverse ( subst ( frac 1 ( arg 0 ) ) ) ) ( inverse
-		2 ) ( inverse 3 ) ( inverse 4 )</spanx></t>
-		<t>Substitution will splice multiple expressions in place:</t>
-		<t>The evaluation of <spanx style="verb">( ( subst 1 ( rest 0 ) 2 ) 3 4 )</spanx>
-		must yield the same as <spanx style="verb">( 1 3 4 2 )</spanx></t>
-	      </section>
+	    </section>
+	    <section title="Examples">
+	      <t>Here is a definition of the inverse followed by the numbers 1/2, 1/3 and 1/4:</t>
+	      <t><spanx style="verb">( define inverse ( subst ( frac 1 ( arg 0 ) ) ) ) ( inverse 2
+	      ) ( inverse 3 ) ( inverse 4 )</spanx></t>
+	      <t>Substitution will splice multiple expressions in place:</t>
+	      <t>The evaluation of <spanx style="verb">( ( subst 1 ( rest 0 ) 2 ) 3 4 )</spanx>
+	      must yield the same as <spanx style="verb">( 1 3 4 2 )</spanx></t>
 	    </section>
 
 	  </section>
 	</section>
 
-	<section title="Arithmetic">
+	<section anchor="arithmetic" title="Arithmetic">
 	  <t>
 	    A processing application must recognize the type of all expressions defined in this
 	    specification that have the type Number, but an application MAY consider a number as
@@ -1074,7 +1076,7 @@
 	  <t>
 	    In the text notation of a BULK stream, a decimal integer represents the smallest byte
 	    sequence that yields this integer. For example, <spanx style="verb">( 31 256 )</spanx>
-	    is a notation for the bytes <spanx style="verb">0x01 0xDF 0xE20100 0x02</spanx>.
+	    is a notation for the bytes <spanx style="verb">0x01 0x9F 0xC2-0100 0x02</spanx>.
 	  </t>
 
 	  <section title="Unsigned integer">
@@ -1410,8 +1412,8 @@
 	      style="verb">{arities}</spanx> can be a form or a reference defined to a list.
 	    </t>
 	    <t>
-	      Within the prefix bytecode of this form, if there is a <spanx
-	      style="verb">prefix</spanx> form, the arities declared in the outside form still
+	      Within the postfix bytecode of this form, if there is a <spanx
+	      style="verb">postfix</spanx> form, the arities declared in the outside form still
 	      apply.
 	    </t>
 	  </section>
@@ -1573,9 +1575,9 @@
     <section title="Acknowledgements">
       <t>
 	The original author of this specification read <eref
-	target="http://www.schnada.de/grapt/eriknaggum-xmlrant.html">Erik Naggum's famous rant about
-	XML</eref> several years before, and while forgotten as such, it clearly was the seed that
-	slowly bloomed into the design of BULK. This format is dedicated to Erik.
+	target="http://www.schnada.de/grapt/eriknaggum-xmlrant.html">Erik Naggum's famous rant
+	about XML</eref> several years before, and while forgotten as such for a time, it clearly
+	was the seed that slowly bloomed into the design of BULK. This format is dedicated to Erik.
       </t>
     </section>
   </middle>
@@ -1731,7 +1733,7 @@
       <section title="Open authority">
 	<t>
 	  Any <spanx style="verb">ns</spanx> form for a unique identifier unknown to the processing
-	  application triggers the  of a lasting namespace.
+	  application triggers the creation of a lasting namespace.
 	</t>
 	<t>
 	  The disadvantage of this solution is that it opens a denial of service vulnerability. If
