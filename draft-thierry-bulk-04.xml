@@ -665,7 +665,7 @@
       <section title="BULK core namespace">
 	<t>
 	  <list style="hanging">
-	      <t hangText="marker"><spanx style="verb">0x20</spanx> (mnemonic: <spanx
+	      <t hangText="marker"><spanx style="verb">0x10</spanx> (mnemonic: <spanx
 	      style="verb">bulk</spanx>)</t>
 	  </list>
 	</t>
@@ -690,7 +690,8 @@
 	    If the version is expressed within a BULK stream, this form MUST be the first in the
 	    stream. In any other place, this form has no semantics attached to it. This
 	    specification defines BULK 1.0. When writing a BULK stream, an application MUST denote
-	    {major} and {minor} by the smallest byte sequence possible.
+	    <spanx style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the
+	    smallest byte sequence possible.
 	  </t>
 	  <t>
 	    An application writing a BULK stream to long-term storage (e.g. in a file or a database
@@ -748,16 +749,16 @@
 	    </t>
 	    <t>
 	      This tells the processing application that, in the scope of this expression, all
-	      expressions that are understood by the application as character strings will be encoded
-	      with the encoding designated by {enc}.
+	      expressions that are understood by the application as character strings will be
+	      encoded with the encoding designated by <spanx style="verb">{enc}</spanx>.
 	    </t>
 	    <t>
 	      As the abstract yield doesn't contain strings but expressions that will be used as
 	      strings by the application, it is not a parsing error if the application doesn't
-	      recognize {enc}. In this situation, it is a parsing error when the application actually
-	      needs to decode a byte sequence as a string. It is not a parsing error when a processing
-	      application only transmits a byte sequence encoding a string, if it can accurately
-	      convey the encoding to the receiving application.
+	      recognize <spanx style="verb">{enc}</spanx>. In this situation, it is a parsing error
+	      when the application actually needs to decode a byte sequence as a string. It is not
+	      a parsing error when a processing application only transmits a byte sequence encoding
+	      a string, if it can accurately convey the encoding to the receiving application.
 	    </t>
 	  </section>
 
@@ -771,7 +772,8 @@
 	    </t>
 	    <t>
 	      This designates the string encoding registered among the <xref
-	      target="IANA-Charsets">IANA Character Sets</xref> whose MIBenum is {id}.
+	      target="IANA-Charsets">IANA Character Sets</xref> whose MIBenum is <spanx
+	      style="verb">{id}</spanx>.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Encoding</spanx>.
@@ -787,7 +789,8 @@
 	      </list>
 	    </t>
 	    <t>
-	      This designates the string encoding among Windows code pages whose identifier is {id}.
+	      This designates the string encoding among Windows code pages whose identifier is
+	      <spanx style="verb">{id}</spanx>.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Encoding</spanx>.
@@ -820,9 +823,10 @@
 	      </list>
 	    </t>
 	    <t>
-	      This creates a package identified by {id}. Packages are immutable, {id} MUST be
-	      verifiable against the byte sequence {namespaces}. {namespaces} must be a series of
-	      expressions each identifying a BULK namespace.
+	      This creates a package identified by <spanx style="verb">{id}</spanx>. Packages are
+	      immutable, {id} MUST be verifiable against the byte sequence <spanx
+	      style="verb">{namespaces}</spanx>. <spanx style="verb">{namespaces}</spanx>must be a
+	      series of expressions each identifying a BULK namespace.
 	    </t>
 	  </section>
 
@@ -836,8 +840,9 @@
 	      </list>
 	    </t>
 	    <t>
-	      This associates the first {count} namespaces in the package identified by {id} with a
-	      continuous range of marker bytes starting at {base} within the scope of this
+	      This associates the first <spanx style="verb">{count}</spanx> namespaces in the
+	      package identified by <spanx style="verb">{id}</spanx> with a continuous range of
+	      marker bytes starting at <spanx style="verb">{base}</spanx> within the scope of this
 	      expression.
 	    </t>
 	    <t>
@@ -934,9 +939,10 @@
 	      </list>
 	    </t>
 	    <t>
-	      This suggest {mnemonic} as the mnemonic of the namespace designated by {ns} (which
-	      can be the integer to which this namespace is associated, a reference in this
-	      namespace or the unique identifier of this namespace).
+	      This suggest <spanx style="verb">{mnemonic}</spanx> as the mnemonic of the namespace
+	      designated by <spanx style="verb">{ns}</spanx> (which can be the integer to which
+	      this namespace is associated, a reference in this namespace or the unique identifier
+	      of this namespace).
 	    </t>
 	  </section>
 
@@ -951,21 +957,25 @@
 	      </list>
 	    </t>
 	    <t>
-	      This associates the namespace identified by {id} to the namespace marker of {marker},
-	      within the scope of this form. Verifiable namespaces are immutable, {id} MUST be
+	      This associates the namespace identified by <spanx style="verb">{id}</spanx> to the
+	      namespace marker of <spanx style="verb">{marker}</spanx>, within the scope of this
+	      form. Verifiable namespaces are immutable, <spanx style="verb">{id}</spanx> MUST be
 	      verifiable against the byte sequence <spanx style="verb">{data} {mnemonic}
 	      {definitions}</spanx>. The semantics of this form is to define in its scope any
 	      definition made in the designated namespace within <spanx
 	      style="verb">{definitions}</spanx>.
 	    </t>
 	    <t>
-	      If {mnemonic} is of type <spanx style="verb">String</spanx>, then this suggests it as
-	      the mnemonic of the namespace. Else it MUST be <spanx style="verb">nil</spanx>.
+	      If <spanx style="verb">{mnemonic}</spanx> is of type <spanx
+	      style="verb">String</spanx>, then this suggests it as the mnemonic of the
+	      namespace. Else it MUST be <spanx style="verb">nil</spanx>.
 	    </t>
 	    <t>
-	      If more data than {id} is needed to verify {id} against {definitions} (like the salt
-	      of a hash function, or the namespace of a UUID), this data should be provided by
-	      {data}. Else {data} MUST be <spanx style="verb">nil</spanx>.
+	      If more data than <spanx style="verb">{id}</spanx> is needed to verify <spanx
+	      style="verb">{id}</spanx> against <spanx style="verb">{definitions}</spanx> (like the
+	      salt of a hash function, or the namespace of a UUID), this data should be provided by
+	      <spanx style="verb">{data}</spanx>. Else <spanx style="verb">{data}</spanx> MUST be
+	      <spanx style="verb">nil</spanx>.
 	    </t>
 	    <t>
 	      A verifiable namespace wouldn't really be immutable if it used definitions from other
@@ -1016,7 +1026,8 @@
 		  <t hangText="Name's type">LazyFunction</t>
 		  <t hangText="Form's type">EagerFunction</t>
 		  <t hangText="Form's value">A substitution function whose return value is the
-		  value of {code}. Within {code}'s specific yield, the names <spanx
+		  value of <spanx style="verb">{code}</spanx>. Within <spanx
+		  style="verb">{code}</spanx>'s specific yield, the names <spanx
 		  style="verb">arg</spanx> and <spanx style="verb">rest</spanx> are defined:</t>
 		</list>
 	      </t>
@@ -1033,8 +1044,8 @@
 		<list style="hanging">
 		  <t hangText="Name's type">EagerFunction</t>
 		  <t hangText="Form's type">Expr</t>
-		  <t hangText="Form's value">the element number {n} (starting at zero) of the
-		  substitution function's arguments list</t>
+		  <t hangText="Form's value">the element number <spanx style="verb">{n}</spanx>
+		  (starting at zero) of the substitution function's arguments list</t>
 		</list>
 	      </t>
 	    </section>
@@ -1051,7 +1062,7 @@
 		  <t hangText="Name's type">EagerFunction</t>
 		  <t hangText="Form's type">Expr</t>
 		  <t hangText="Form's value">the substitution function's arguments list without its
-		  first {n} elements.</t>
+		  first <spanx style="verb">{n}</spanx> elements.</t>
 		</list>
 	      </t>
 	    </section>
@@ -1088,8 +1099,9 @@
 	      </list>
 	    </t>
 	    <t>
-	      The bits contained in {bits} is the value of this integer in binary notation. This
-	      form exists in case disambiguation of the semantics is necessary.
+	      The bits contained in <spanx style="verb">{bits}</spanx> is the value of this integer
+	      in binary notation. This form exists in case disambiguation of the semantics is
+	      necessary.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx>, <spanx
@@ -1106,8 +1118,8 @@
 	      </list>
 	    </t>
 	    <t>
-	      The bits contained in {bits} is the value of this integer in two's-complement
-	      notation.
+	      The bits contained in <spanx style="verb">{bits}</spanx> is the value of this integer
+	      in two's-complement notation.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx>.
@@ -1123,7 +1135,8 @@
 	      </list>
 	    </t>
 	    <t>
-	      This is the number {num}/{div}.
+	      This is the number <spanx style="verb">{num}</spanx>/<spanx
+	      style="verb">{div}</spanx>.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Number</spanx>.
@@ -1140,8 +1153,8 @@
 	    </t>
 	    <t>
 	      This is a floating-point number expressed in IEEE 754-2008 binary interchange
-	      format. {bits} can be of size 16, 32, 64, 128 or any bigger multiple of 32 bits, as
-	      per IEEE 754-2008 rules.
+	      format. <spanx style="verb">{bits}</spanx> can be of size 16, 32, 64, 128 or any
+	      bigger multiple of 32 bits, as per IEEE 754-2008 rules.
 	    </t>
 	    <t>
 	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Float</spanx>.
@@ -1158,8 +1171,8 @@
 	    </t>
 	    <t>
 	      This is a floating-point number expressed in IEEE 754-2008 decimal interchange
-	      format. {bits} can be of size 32, 64, 128 or any bigger multiple of 32 bits, as per
-	      IEEE 754-2008 rules.
+	      format. <spanx style="verb">{bits}</spanx> can be of size 32, 64, 128 or any bigger
+	      multiple of 32 bits, as per IEEE 754-2008 rules.
 	    </t>
 	    <t>
 	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Float</spanx>.
@@ -1276,10 +1289,10 @@
 	    form can then be evaluated in turn.
 	  </t>
 	  <t> Example: the default semantics of </t>
-	  <t><spanx style="verb">( prefix* ( ( 2 sgf:black ) ) sgf:game sgf:black 1 2
-	  sgf:black 3 4 sgf:black 5 6 )</spanx> </t>
+	  <t><spanx style="verb">( prefix* ( ( 2 go:black ) ) go:game go:black 1 2
+	  go:black 3 4 go:black 5 6 )</spanx> </t>
 	  <t>is that it's transformed into</t>
-	  <t><spanx style="verb">( sgf:game ( sgf:black 1 2 ) ( sgf:black 3 4 ) ( sgf:black 5 6 )
+	  <t><spanx style="verb">( go:game ( go:black 1 2 ) ( go:black 3 4 ) ( go:black 5 6 )
 	  )</spanx> </t>
 	  <t>
 	    To transform a postfix bytecode form, a processing application creates a data stack. If
@@ -1288,19 +1301,39 @@
 	    expression of the bytecode can be determined to be an operator, it is removed from the
 	    beginning of the bytecode and a list is created with the operator as the first
 	    expression, then as many next expressions as its arity are popped from the stack and
-	    appended at the end of this list. Then that resulting list is pushed on top of the
-	    stack. The transformation continues until the bytecode is empty, in which case the list
-	    of the elements on the stack (with the top of the stack as the last element) replaces
-	    the bytecode form and the transformation is complete. The resulting form can then be
-	    evaluated in turn.
+	    appended at the end of this list (with the top of the stack as the last element). Then
+	    that resulting list is pushed on top of the stack. The transformation continues until
+	    the bytecode is empty, in which case the list of the elements on the stack (with the
+	    top of the stack as the last element) replaces the bytecode form and the transformation
+	    is complete. The resulting form can then be evaluated in turn.
 	  </t>
 	  <t> Example: the default semantics of </t>
-	  <t><spanx style="verb">( postfix* ( ( 2 sgf:black ) ) sgf:game 2 1 sgf:black
-	  4 3 sgf:black 6 5 sgf:black )</spanx> </t>
+	  <t><figure><artwork>( bulk:postfix*
+  ( ( 2 go:black go:white go:comment go:alternative ) )
+  go:game
+  1 2 go:black
+  "white tried an unorthodox opening" 3 4 go:white go:comment
+  "a more classical opening would be" 8 9 go:white go:comment
+  go:alternative
+  2 3 go:black
+  4 5 go:white )</artwork></figure></t>
 	  <t>is that it's transformed into</t>
-	  <t><spanx style="verb">( sgf:game ( sgf:black 1 2 ) ( sgf:black 3 4 ) ( sgf:black 5 6 )
-	  )</spanx> </t>
-	  <t>
+	  <t><figure><artwork>( go:game
+  ( go:black 1 2 )
+  ( go:alternative
+    ( go:comment "white tried an unorthodox opening" ( go:white 3 4 ) )
+    ( go:comment "a more classical opening would be" ( go:white 8 9 ) ) )
+  ( go:black 2 3 )
+  ( go:white 4 5 ) )</artwork></figure>
+	  </t>
+          <t>
+	    The obivous advantage of postfix bytecode is that it makes it possible to compact
+	    nested forms when they have a known arity. When a reference in a vocabulary can be used
+	    in a form containing a variable number of expressions, if some arity is used frequently
+	    enough, an application can define a specific form for it. The trade-offs for this are
+	    explained in <xref target="arityForm"/>
+	  </t>
+          <t>
 	    If the overhead of several marker bytes in the operands of some operators is too much,
 	    even more compactness can be achieved by packing together small operands. For example,
 	    instead of an operator with two integers as its operands, one could specify an operator
@@ -1309,36 +1342,47 @@
 	    of the integers by dividing the size of the word by two).
 	  </t>
 	  <t>
-	    For example, a BULK format representing player moves with a pair of coordinates might
-	    represent a single move with the following shapes:
+	    For example, a BULK format representing player moves with a pair of coordinates on a
+	    large board might represent a single move with the following shapes:
 	  </t>
 	  <t>
 	    <list style="hanging">
-	      <t hangText="basic (8 bytes)"><spanx style="verb">( sgf:black/2 #[1] 0x41 #[1] 0x5A
+	      <t hangText="basic (8 bytes)"><spanx style="verb">( game:black/2 #[1] 0x41 #[1] 0x5A
 	      )</spanx></t>
-	      <t hangText="packed basic (7 bytes)"><spanx style="verb">( sgf:black/1 #[2] 0x41 0x5A
+	      <t hangText="packed basic (7 bytes)"><spanx style="verb">( game:black/1 #[2] 0x41 0x5A
 	      )</spanx></t>
-	      <t hangText="bytecode (6 bytes)"><spanx style="verb">sgf:black/2 #[1] 0x41 #[1]
+	      <t hangText="bytecode (6 bytes)"><spanx style="verb">game:black/2 #[1] 0x41 #[1]
 	      0x5A</spanx></t>
-	      <t hangText="packed bytecode (5 bytes)"><spanx style="verb">sgf:black/1 #[2] 0x41
+	      <t hangText="packed bytecode (5 bytes)"><spanx style="verb">game:black/1 #[2] 0x41
 	      0x5A</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    The transformation defined for the bytecode forms makes it possible to mix literal
-	    expressions and operations represented by a list of operators and operands. In the
-	    previous scenario, for example, one might represent alternating moves by two players as
-	    a list of words, lowering the weight of each move to 3 bytes when coordinates are
-	    below 256. The difference between all these schemes and an array is that you keep the
-	    ability to insert other forms, for example to represent comments on the game or
-	    variants.
+	    expressions and operations represented by a sequence of operators and operands. In the
+	    previous scenario, for example, one might represent each alternating move by the two
+	    players as two integers, lowering the weight of each move to 2 bytes as coordinates are
+	    below 64:
+	  </t>
+	  <t><figure><artwork>( bulk:postfix*
+  ( ( 2 go:white go:comment go:alternative ) )
+  go:game
+  1 2
+  "white tried an unorthodox opening" 3 4 go:white go:comment
+  "a more classical opening would be" 8 9 go:white go:comment
+  go:alternative
+  2 3
+  4 5 )</artwork></figure></t>
+          <t>
+            The difference between all these schemes and an array is that you keep the ability to
+            insert other forms, for example here to represent comments on the game or variants.
 	  </t>
 	  <t>
 	    The cost of the bytecode format is that if it contains operators whose arity is unknown
 	    to a processing application, the whole list after the first occurrence of them is
 	    unreadable to that processing application, whereas in the basic format, the processing
-	    application can still process all the forms it understands (and it requires no
-	    anticipation by the application creating the BULK stream).
+	    application can still process all the forms it understands, and that requires no
+	    anticipation by the application creating the BULK stream.
 	  </t>
 
 	  <section title="Prefix bytecode">
@@ -1367,11 +1411,11 @@
 	      This is a prefix bytecode form that provides arities.
 	    </t>
 	    <t>
-	      <spanx style="verb">{arities}</spanx> MUST be a list of shapes <spanx
-	      style="verb">( {arity}:Nat {refs} )</spanx>. {refs} MUST be a series of
+	      <spanx style="verb">{arities}</spanx> MUST be a list of shapes <spanx style="verb">(
+	      {arity}:Nat {refs} )</spanx>. <spanx style="verb">{refs}</spanx> MUST be a series of
 	      references. It indicates that all references in this series are operators of arity
-	      {arity}. <spanx style="verb">{arities}</spanx> can be a form or a reference defined to
-	      a list.
+	      <spanx style="verb">{arity}</spanx>. <spanx style="verb">{arities}</spanx> can be a
+	      form or a reference defined to a list.
 	    </t>
 	    <t>
 	      Within the prefix bytecode of this form, if there is a <spanx
@@ -1407,9 +1451,10 @@
 	    </t>
 	    <t>
 	      <spanx style="verb">{arities}</spanx> MUST be a list of shapes <spanx style="verb">(
-	      {arity}:Nat {refs} )</spanx>. {refs} MUST be a series of references. It indicates that
-	      all references in this series are operators of arity {arity}. <spanx
-	      style="verb">{arities}</spanx> can be a form or a reference defined to a list.
+	      {arity}:Nat {refs} )</spanx>. <spanx style="verb">{refs}</spanx> MUST be a series of
+	      references. It indicates that all references in this series are operators of arity
+	      <spanx style="verb">{arity}</spanx>. <spanx style="verb">{arities}</spanx> can be a
+	      form or a reference defined to a list.
 	    </t>
 	    <t>
 	      Within the postfix bytecode of this form, if there is a <spanx
@@ -1427,13 +1472,14 @@
 	      </list>
 	    </t>
 	    <t>
-	      {refs} MUST be a series of references. It indicates that all references in this series
-	      are operators of arity {arity}.
+	      <spanx style="verb">{refs}</spanx> MUST be a series of references. It indicates that
+	      all references in this series are operators of arity <spanx
+	      style="verb">{arity}</spanx>.
 	    </t>
 	    <t>
-	      Whenever arities have been provided for some references in a namespace, all references
-	      in that namespace whose arities aren't provided MUST be determined to be operands by a
-	      processing application.
+	      Whenever arities have been provided by this form for some references in a namespace,
+	      all references in that namespace whose arities aren't provided MUST be determined to
+	      be operands by a processing application.
 	    </t>
 	  </section>
 
@@ -1746,6 +1792,72 @@
 	  and safe (the burden is not on the BULK processing application).
 	</t>
       </section>
+    </section>
+
+    <section anchor="arityForm" title="Arity-carrying forms">
+      <t>
+	Sometimes a vocabulary will include forms that can contain an arbitrary number of
+	expressions. When such a form is used in postfix bytecode, the simplest solution is just to
+	use a nested <spanx style="verb">postfix</spanx> form:
+      </t>
+      <t><figure><artwork>( bulk:postfix*
+  ( ( 2 go:black go:white go:comment ) )
+  go:game
+  1 2 go:black
+  ( bulk:postfix go:alternative
+    "white tried an unorthodox opening" 3 4 go:white go:comment
+    "a more classical opening would be" 8 9 go:white go:comment )
+  2 3 go:black
+  ( bulk:postfix go:alternative 
+    "white played a bad move" 4 5 go:white go:comment
+    "white could have played a decent move" 5 6 go:white go:comment
+    "white could have played a great move" 5 7 go:white go:comment ) )</artwork></figure></t>
+      <t>
+        The nested <spanx style="verb">postfix</spanx> form costs 4 bytes, compared to an
+	equivalent postfix bytecode.
+      </t>
+      <t>
+	If those 4 bytes add up to too much space through repetition, an application could define a
+	form for the sole purpose of assigning it an arity, while the evaluation of the
+	arity-carrying form would just replace it with the original one. For example, after
+	evaluating the postfix bytecode transformation and the resulting form of the last
+	expression of
+      </t>
+      <t><figure><artwork>( bulk:ns-mnemonic 0x1800 "go2" )
+( bulk:mnemonic/def 0x1801 "alt/2" nil ( bulk:subst ( alternative ( rest 0 ) ) ) )
+( bulk:mnemonic/def 0x1801 "alt/3" nil ( bulk:subst ( alternative ( rest 0 ) ) ) )
+
+( bulk:postfix*
+  ( ( 2 go:black go:white go:comment go2:alt/2 ) ( 3 go2:alt/3 ) )
+  go:game
+  1 2 go:black
+  "white tried an unorthodox opening" 3 4 go:white go:comment
+  "a more classical opening would be" 8 9 go:white go:comment
+  go2:alt/2
+  2 3 go:black
+  "white played a bad move" 4 5 go:white go:comment
+  "white could have played a decent move" 5 6 go:white go:comment
+  "white could have played a great move" 5 7 go:white go:comment
+  go2:alt/3
+  )</artwork></figure></t>
+      <t>it would be transformed into</t>
+      <t><figure><artwork>( go:game
+  ( go:black 1 2 )
+  ( go:alternative
+    ( go:comment "white tried an unorthodox opening" ( go:white 3 4 ) )
+    ( go:comment "a more classical opening would be" ( go:white 8 9 ) ) )
+  ( go:black 2 3 )
+  ( go:alternative
+    ( go:comment "white played a bad move" ( go:white 4 5 ) )
+    ( go:comment "white could have played a decent move" ( go:white 5 6 ) )
+    ( go:comment "white could have played a great move" ( go:white 5 7 ) ) )
+  ( go:white 4 5 ) )decent</artwork></figure>
+      </t>
+      <t>
+	Without the mnemonics, such an arity-carrying form basically costs 24 or 27 bytes to be
+	usable. Which means that compared to the nested <spanx style="verb">postfix</spanx> form,
+	it pays for itself if it is used at least 7 times.
+      </t>
     </section>
 
   </back>
