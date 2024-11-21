@@ -379,7 +379,7 @@
 	    </tbody>
 	  </table>
 	</section>
-	<section title="Evaluation">
+	<section anchor="eval" title="Evaluation">
 	  <t>
 	    A processing application MAY implement evaluation of BULK expressions and streams. When
 	    evaluating a BULK stream, when the parser gets to the dispatch stage and the context is
@@ -541,7 +541,7 @@
 	      In the text notation, a quoted string is the notation for an array containing the
 	      encoding of that string in the <xref target="stringenc">current encoding</xref>,
 	      except if the size of the encoding is below 64 bytes, cf. <xref
-	      target="smallarray" sectionFormat="bare">small arrays</xref>.
+	      target="smallarray">small arrays</xref>.
 	    </t>
 	    <t>Types: <spanx style="verb">Bytes</spanx>, <spanx style="verb">Nat</spanx></t>
 	    <t>
@@ -1563,6 +1563,20 @@
 	  bigger than the remaining data SHOULD trigger an error. When a BULK stream's size is not
 	  known in advance, the application SHOULD use a growable data structure.
 	</t>
+	<t>
+	  Evaluation opens up some known attacks that appear whenever a format provides a way to
+	  express abstraction, like the billion laughs attack. As it is explained in <xref
+	  target="eval" format="title"/>, an implementation MAY stop evaluation after a predefined
+	  number of evaluation steps. As this has been demonstrated not to be sufficient to prevent
+	  attacks based on expansion, an implementation SHOULD also put predefined limits on the
+	  space that the abstract yield can take on disk or in memory.
+	</t>
+	<t>
+	  Applications MAY use out-of-band information to select size limits (like HTTP
+	  attributes), or a BULK namespace MAY provide hints. An implementation SHOULD emit
+	  warnings when the size of the abstract yield would exceed the size limits set by such
+	  out-of-band or in-band information.
+	</t>
       </section>
       <section title="Forwarding">
 	<t>
@@ -1601,9 +1615,9 @@
 	  version form has the side-effect that classes of BULK streams can be identified by a
 	  sequence of bytes acting as "magic number", at offset 0:
 	  <list style="hanging">
-	    <t hangText="0x012000">any BULK stream</t>
-	    <t hangText="0x012000C1">a BULK stream of major version 1</t>
-	    <t hangText="0x012000C1C002">a BULK stream of version 1.0</t>
+	    <t hangText="0x011000">any BULK stream</t>
+	    <t hangText="0x01100081">a BULK stream of major version 1</t>
+	    <t hangText="0x011000818002">a BULK stream of version 1.0</t>
 	  </list>
 	  </t>
 	  <t hangText="Published specification">this document</t>

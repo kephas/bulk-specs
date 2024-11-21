@@ -293,7 +293,7 @@
        - SFV
      - compression formats
 
-*** BARF Object Model
+*** BARK Object Model
     - access to metadata
       - consolidated metadata when forms overwrite each other?
 	- API for history?
@@ -328,7 +328,7 @@
 
 ** Lambda expressions
    #+BEGIN_SRC bulk
-   ( verifiable-ns 40 {id} nil "λ"
+   ( verifiable-ns 24 {id} nil "λ"
    "This vocabulary can be used to represent functions that can be evaluated."
 
    ( mnemonic/def nil "lambda" "( lambda {var}:Ref {body} )" )
@@ -515,12 +515,12 @@
 	 - ( xhtml* mathml svg )
    - some MeTOD types may only make sense as sub-types
      - e.g. xml NS that doesn't have a document element
-       - like dublin-core: ( xml nil xhtml svg dublin-core )
+       - like dublin-core: ( xml xhtml svg dublin-core )
    - encoding as first-class type
      - ( gzip tar )
      - ( base64 zip )
-   - complex structures
-     - ( mime ( alternatives ( qp txt ) ( qp html5 ) ) ( base64 zip )
+   - complex structures?
+     - ( mime ( alternatives ( qp ( text utf-8 ) ) ( qp html5 ) ) ( base64 zip )
        ( signature ( base64 openpgp ) ) )
    - accept patterns
      - ( xml * )
@@ -533,13 +533,19 @@
 
    - 0x00 :: ( type {type}:Expr )
      - metadata form
-   - 0x01 :: ( kind/type {kind}:Expr {type}:Expr )
-     - e.g. ( kind/type image jpeg )
    - 0x02 :: *
    - 0x03 :: bulk / ( bulk {namespaces} )
-   - 0x10 :: image
-   - 0x11 :: audio
-   - 0x12 :: video
+   - 0x10 :: ( text {encoding} {subtype} )
+     - means that it can be shown as-is to a user
+     - ( text {encoding} ) means plain text
+     - ( text utf-8 markdown )
+     - ( text utf-8 ( source-code c++ ) )
+   - 0x11 :: ( source {langs} )
+     - only as subtype of =text=, means that if available, a code editor should be used to view
+       this format
+   - 0x12 :: ( image {subtype} )
+   - 0x13 :: ( audio {subtype} )
+   - 0x14 :: ( video {subtype} )
 
 
    MeTOD only defines kinds where a default software could be expected

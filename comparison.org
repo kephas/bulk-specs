@@ -108,7 +108,7 @@
 ** BULK
    - 1 :: =( example:ok ( ( example:foobaz/f "bar" "quux" #[4] 0x41480000 ) ( example:foobaz/i "bar" "quuux" 0 ) ( example:foobaz/i "fubar" "quuuux" #[1] 0xD8 ) ) )=
    - 2 :: =( example:error 735 "delegation expired" )=
-   - 3 :: =( example:ok ( bulk:prefix example:foobaz/f "bar" "quux" uw32 0x41480000 example:foobaz/f "bar" "quux" uw32 0x41480000 … ) )=
+   - 3 :: =( example:ok ( bulk:prefix example:foobaz/f "bar" "quux" #[4] 0x41480000 example:foobaz/f "bar" "quux" #[4] 0x41480000 … ) )=
 
 *** Profile
     These examples are intended to be used with the following profile
