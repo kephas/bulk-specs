@@ -784,8 +784,27 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    Example: let's define an extremely limited BARK with just manifests and SHA-3:
 
    #+BEGIN_SRC bulk
-   ( verifiable-ns 0x1800 {id} nil "bark alpha"
+   ( verifiable-ns 0x1800 ({bark-alpha} nil "bark-alpha"
    "This vocabulary can be used to represent manifests."
 
-   ( mnemonic/def nil "description" "( event {properties} )"
+   ( mnemonic/def nil "description" )
+   ( mnemonic/def nil "metadata" )
+   ( mnemonic/def nil "about" )
+   ( mnemonic/def nil "path" )
+   ( mnemonic/def nil "hash" )
+   ( mnemonic/def nil "sha-3" )
+   #+END_SRC
+
+   A manifest file could look like:
+
+   #+BEGIN_SRC bulk
+   ( bark
+     ( description
+       ( metadata
+         ( about ( path "movie.mp4" ) )
+         ( hash ( sha-3 {hash} ) ) ) )
+     ( description
+       ( metadata
+         ( about ( path "en.srt" ) )
+         ( hash ( sha-3 {hash} ) ) ) )
    #+END_SRC
