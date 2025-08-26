@@ -650,13 +650,19 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
 
-* Implementation notes
+* [0%] Implementation notes
 ** Semantics beyond definitions
    When implementing a processing application that gives semantics
    beyond the evaluation of expressions, to benefit from all possible
    evaluations, the application should just replace relevant prior
    definitions with its own implementation while evaluating the BULK
    streams.
+
+** TODO Bad Unicode handling?
+   https://www.tbray.org/ongoing/When/202x/2025/08/14/RFC9839
+
+** TODO UBF
+   https://github.com/ubf/ubf
 
 * Bootstrapping a hashing vocabulary
   - the problem is that this vocabulary provides hashes before any way
