@@ -952,15 +952,15 @@
 		<t hangText="name"><spanx style="verb">0x0C</spanx> (mnemonic: <spanx
 		style="verb">verifiable-ns</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( verifiable-ns {marker}:Ref {id}:Expr
-		{data}:Expr {mnemonic}:Expr {definitions} )</spanx></t>
-		<t hangText="inner scope"><spanx style="verb">{id} {data} {mnemonic} {definitions}</spanx></t>
+		{data}:Expr {mnemonic}:Expr {doc}:Expr {definitions} )</spanx></t>
+		<t hangText="inner scope"><spanx style="verb">{id} {data} {mnemonic} {doc} {definitions}</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This associates the namespace identified by <spanx style="verb">{id}</spanx> to the
 	      namespace marker of <spanx style="verb">{marker}</spanx>, within the scope of this
 	      form. Verifiable namespaces are immutable, <spanx style="verb">{id}</spanx> MUST be
-	      verifiable against the byte sequence <spanx style="verb">{data} {mnemonic}
+	      verifiable against the byte sequence <spanx style="verb">{data} {mnemonic} {doc}
 	      {definitions}</spanx>. The semantics of this form is to define in its scope any
 	      definition made in the designated namespace within <spanx
 	      style="verb">{definitions}</spanx>.
