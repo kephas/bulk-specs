@@ -27,7 +27,7 @@
    |        |                   |                        |
 
 ** BULK core namespace
-   NSID: 0x20
+   NSID: 0x10
 
    - 0x00 :: ( version Int Int )
    - 0x01 :: true
@@ -59,11 +59,11 @@
    - 0x26 :: ( decimal-fixed Nat Bytes )
    - 0x27 :: decimal2
    - 
-   - 0x30 :: ( prefix-bytecode {bytecode} )
-   - 0x31 :: ( prefix-bytecode* ( {arities} ) {bytecode} )
+   - 0x30 :: ( prefix {bytecode} )
+   - 0x31 :: ( prefix* ( {arities} ) {bytecode} )
      - {arities} is a sequence of: ( Int {refs} )
-   - 0x32 :: ( postfix-bytecode {bytecode} )
-   - 0x33 :: ( postfix-bytecode* ( {arities} ) {bytecode} )
+   - 0x32 :: ( postfix {bytecode} )
+   - 0x33 :: ( postfix* ( {arities} ) {bytecode} )
    - 0x34 :: ( arity Int {refs} )
 
 ** BULK API Model
@@ -750,13 +750,13 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    ( mnemonic/def nil "event" "( event {properties} )"
    ( mnemonic/def nil "type" "( type Expr )"
    ( mnemonic/def nil "date" "( date Expr )"
-   ( mnemonic/def nil "wallId" "( comment {content} )"
+   ( mnemonic/def nil "wallId" "( wallId Expr )"
    ( mnemonic/def nil "logged" "( logged {properties} )"
    ( mnemonic/def nil "painted" "( painted {properties} )"
    ( mnemonic/def nil "by" "( by {person} )"
    ( mnemonic/def nil "wallPaintedEvent" "( wallPaintedEvent {properties} )" ( subst ( event ( type "WallPainted" ) ( rest 0 ) ) )
-   ( mnemonic/def nil "loggedBy" "( loggedBy {person} )" ( subst ( logged ( by ( arg 0 ) ) ) )
-   ( mnemonic/def nil "paintedBy" "( paintedBy {person} )" ( subst ( painted ( by ( arg 0 ) ) ) )
+   ( mnemonic/def nil "loggedBy" "( loggedBy {person}:Expr )" ( subst ( logged ( by ( arg 0 ) ) ) )
+   ( mnemonic/def nil "paintedBy" "( paintedBy {person}:Expr )" ( subst ( painted ( by ( arg 0 ) ) ) )
    #+END_SRC
 
    Which means that the application processing this format doesn't even need to know about
@@ -765,6 +765,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    #+BEGIN_SRC bulk
    ( wallPaintedEvent
      ( date "20210723T235601Z" )
+     ( wallId #[16] 0xD9E62839-DAFE-49E1-B4D2-CE99C035FA9F )
      ( loggedBy "alice" )
      ( paintedBy "bob" ) )
    #+END_SRC
@@ -775,6 +776,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    ( event
      ( type "WallPainted" )
      ( date "20210723T235601Z" )
+     ( wallId #[16] 0xD9E62839-DAFE-49E1-B4D2-CE99C035FA9F )
      ( logged
        ( by "alice" ) )
      ( painted
@@ -790,7 +792,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    Example: let's define an extremely limited BARK with just manifests and SHA-3:
 
    #+BEGIN_SRC bulk
-   ( verifiable-ns 0x1800 ({bark-alpha} nil "bark-alpha"
+   ( verifiable-ns 0x1800 ( bark-alpha:sha-3 {bark-alpha-hash} ) nil "bark-alpha"
    "This vocabulary can be used to represent manifests."
 
    ( mnemonic/def nil "description" )
@@ -804,13 +806,13 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    A manifest file could look like:
 
    #+BEGIN_SRC bulk
-   ( bark
+     ( bulk:ns 0x1800 ( sha-3 {bark-alpha-hash} ) )
      ( description
        ( metadata
-         ( about ( path "movie.mp4" ) )
-         ( hash ( sha-3 {hash} ) ) ) )
+	 ( about ( path "movie.mp4" ) )
+	 ( hash ( sha-3 {hash} ) ) ) )
      ( description
        ( metadata
-         ( about ( path "en.srt" ) )
-         ( hash ( sha-3 {hash} ) ) ) )
+	 ( about ( path "en.srt" ) )
+	 ( hash ( sha-3 {hash} ) ) ) )
    #+END_SRC

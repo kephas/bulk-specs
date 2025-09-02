@@ -112,7 +112,7 @@
 
 *** Profile
     These examples are intended to be used with the following profile
-    (*this is not a schema*, as it is *not needed to parse* the data):
+    (*this is not a schema*, in the sense that it is *not needed to parse* the data):
     
     #+BEGIN_src lisp
       ( bulk:ns 0x1800 #[16] 0x4C89D12F-1D71-4132-92E9-6335797659EE )
