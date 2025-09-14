@@ -32,23 +32,26 @@
    - 0x00 :: ( version Int Int )
    - 0x01 :: true
    - 0x02 :: false
-   - 0x03 :: ( stringenc {enc}:Encoding )
-   - 0x04 :: ( iana-charset Nat ):Encoding
-   - 0x05 :: ( codepage Nat ):Encoding
-   - 0x06 :: ( ns {marker}:Ref {id}:UniqueID )
-   - 0x07 :: ( package {id}:UniqueID {namespaces} )
-   - 0x08 :: ( import {base}:Int {count}:Int {uuid} )
-   - 0x09 :: ( define Ref Expr )
-   - 0x0A :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )
-   - 0x0B :: ( ns-mnemonic {ns}:Expr {mnemonic}:String {doc} )
-   - 0x0C :: ( verifiable-ns {marker}:Int {id}:UniqueID
+   - 0x03 :: ( ns {marker}:Ref {id}:UniqueID )
+   - 0x04 :: ( package {id}:UniqueID {namespaces} )
+   - 0x05 :: ( import {base}:Int {count}:Int {uuid} )
+   - 0x06 :: ( define Ref Expr )
+   - 0x07 :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )
+   - 0x08 :: ( ns-mnemonic {ns}:Expr {mnemonic}:String {doc} )
+   - 0x09 :: ( verifiable-ns {marker}:Int {id}:UniqueID
              {mnemonic}:Expr {doc}:Expr {definitions} )
      - ( mnemonic/def nil {…} ) defines the next unattributed ref
        (starting at 0)
-   - 0x10 :: ( concat {a1} {a2} )
-   - 0x11 :: ( subst {code} )
-   - 0x12 :: ( arg Int )
-   - 0x13 :: ( rest Int )
+   - 0x0A :: ( concat {a1} {a2} )
+   - 0x0B :: ( subst {code} )
+   - 0x0C :: ( arg Int )
+   - 0x0D :: ( rest Int )
+   - 0x10 :: ( stringenc {enc}:Encoding )
+   - 0x11 :: ( iana-charset Nat ):Encoding
+   - 0x12 :: ( codepage Nat ):Encoding
+   - 0x13 :: ( string Bytes )
+   - 0x14 :: ( string* Encoding Bytes )
+   - 0x15 :: ( blob Bytes )
    - 
    - 0x20 :: ( unsigned-int Bytes )
    - 0x21 :: ( signed-int Bytes )
@@ -237,7 +240,7 @@
 
     #+BEGIN_SRC bulk
     ( described ( metadata ( path "foo.txt" ) )
-      ( hashed gbc> ( sha3 {hash}:Bytes )
+      ( hashed gbc> ( sha-3 {hash}:Bytes )
         ( compressed gbc| lzma {foo.txt} ) ) )
     #+END_SRC
 
@@ -249,7 +252,7 @@
     ( description ( metadata ( ( about ( path "bar.txt" ) )
                                ( hash ( md5 {hash}:Bytes ) ) ) ) )
     ( description ( metadata ( ( about ( path "baz.iso" ) )
-                               ( hash ( sha3 {hash}:Bytes ) ) ) ) )
+                               ( hash ( sha-3 {hash}:Bytes ) ) ) ) )
     #+END_SRC
 
 *** BARK utility
@@ -590,7 +593,7 @@
    ( verifiable-ns 0x1800 {id} nil "hash"
    "The forms in this vocabulary can be used to represent hashes along with the hashing algorithm instead of using an unmarked byte sequence. When an algorithm has other inputs than the message, they can be provided after the hash itself as a property list.
 
-When an algorithm can produce hashes in different sizes and the size used is a number of bits divisible by 8, the size property should be omitted from the property list and inferred by the processing application from the size of the BULK expression (e.g. `( sha3 #[24] {hash}:24B )` is a 196-bits SHA3 hash).
+When an algorithm can produce hashes in different sizes and the size used is a number of bits divisible by 8, the size property should be omitted from the property list and inferred by the processing application from the size of the BULK expression (e.g. `( sha-3 #[48] {hash}:48B )` is a 384-bits SHA-3 hash).
 
 As a rule, each of these forms can contain `nil` as a first expression to denote not a hash but a choice of configuration in some application context. For example, `( uuid nil prepend {ns}:Bytes )` could mean that subsequent v3 and v5 UUIDs will be produced with {ns} as UUID namespace."
 
@@ -622,7 +625,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    ( mnemonic/def nil "gost" "( gost Bytes )" )
    ( mnemonic/def nil "sha1" "( sha1 Bytes )" )
    ( mnemonic/def nil "sha2" "( sha2 Bytes )" )
-   ( mnemonic/def nil "sha3" "( sha3 Bytes )" )
+   ( mnemonic/def nil "sha-3" "( sha-3 Bytes )" )
    ( mnemonic/def nil "tiger" "( tiger Bytes )" )
    ( mnemonic/def nil "tiger2" "( tiger2 Bytes )" )
    ( mnemonic/def nil "whirlpool" "( whirlpool Bytes )" )
@@ -669,7 +672,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
     of expressing a hash is possible, so its own hash is expressed
     with a name inside the vocabulary
   - you read ~( ns 0x1800 ( 0x182E #[8] {hashID}:8B ) )~
-  - how do you get to the point where you know ~0x182E~ is ~hash:sha3~?
+  - how do you get to the point where you know ~0x182E~ is ~hash:sha-3~?
     - you get the list (hopefully with only one element) of
       vocabularies identified by a form whose sole element is a
       64-bits word ~{hashid}~
@@ -678,24 +681,25 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
       - if yes, you check if that hash matches the definition
 
 * Minimal BULK
-  : ( version 1 0 ) ( ns 24 ( 24:sha3 #[8] 8B ) ) ( ns 25 ( 24:sha3 #[8] 8B ) ) 25:type #[0–63] {content}
-  : |<---- 6 ---->| |<----------- 18 ---------->| |<----------- 18 ---------->| |<---- 3 ---->|
+  : ( version 1 0 ) ( import 24 2 ( hash:shake256 #[8] 8B ) ) some:type #[0–63] {content}
+  : |<---- 6 ---->| |<----------------- 19 ---------------->| |<----- 3 ----->|
 
-  : ( version 1 0 ) ( ns 24 ( 24:sha3 #[8] 8B ) ) ( ns 25 ( 24:sha3 #[8] 8B ) ) 25:type # {size} {content}
-  : |<---- 6 ---->| |<----------- 18 ---------->| |<----------- 18 ---------->| |<- 3 ->|  2/3/5/9
+  : ( version 1 0 ) ( import 24 2 ( hash:shake256 #[8] 8B ) ) some:type # {size} {content}
+  : |<---- 6 ---->| |<----------------- 19 ---------------->| |<-- 3 -->| 2/3/5/9
+
 
   When a profile is known (like a specific file extension for typed blobs):
 
-  : ( version 1 0 ) 24:type #…
+  : ( version 1 0 ) some:type #…
   : |<---- 8 ---->| |<- 3 ->|
 
   | content | BULK overhead | with profile |
   |---------+---------------+--------------|
-  | 63B     | 45B           | 11B          |
-  | 255B    | 47B           | 13B          |
-  | 65kB    | 48B           | 14B          |
-  | 4GB     | 50B           | 16B          |
-  | 18EB    | 54B           | 20B          |
+  | 63B     | 28B           | 11B          |
+  | 255B    | 30B           | 13B          |
+  | 65kB    | 31B           | 14B          |
+  | 4GB     | 33B           | 16B          |
+  | 18EB    | 37B           | 20B          |
   |         |               |              |
 
 * The power of abstraction

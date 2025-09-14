@@ -252,9 +252,10 @@
 	   style="verb">this-is-one-mnemonic</spanx> or <spanx
 	   style="verb">what-the-%§!?#-is-that?</spanx>. They are always separated by white
 	   space. Outside the use of mnemonics, a sequence of bytes (of one or more bytes) can be
-	   represented by its hexadecimal value as an unsigned integer (e.g. <spanx
-	   style="verb">0x3F</spanx> or <spanx style="verb">0x3A0B770F</spanx>). Such a sequence of
-	   bytes can include dashes to make it more readable (e.g. <spanx
+	   represented by its hexadecimal value as an unsigned integer prefixed by <spanx
+	   style="verb">0x</spanx> (e.g. <spanx style="verb">0x3F</spanx> or <spanx
+	   style="verb">0x3A0B770F</spanx>). Such a sequence of bytes can include dashes to make it
+	   more readable (e.g. <spanx
 	   style="verb">0xDDA37D36-85E6-4E6D-9B51-959E1CCE366C</spanx>). Some types in this
 	   specification define a special syntax for their representation in the text notation.
 	</t>
@@ -306,27 +307,30 @@
 	A BULK stream is a sequence of 8-bit bytes. Bits and bytes are in big-endian order. The
 	result of parsing a BULK stream is a list of abstract data, called the abstract yield. BULK
 	parsing is injective: a BULK stream has only one abstract yield, but different BULK streams
-	can have the same abstract yield.
+	can have the same abstract yield (if they associate namespaces to different markers, see
+	<xref target="namespaces">namespaces</xref>).
       </t>
       <t>
 	A processing application is not expected to actually produce the abstract yield, but an
-	adaptation of the abstract yield to its own implementation, called the concrete
-	yield. Also, some expressions in a BULK stream may have the semantics of a transformation
-	of the abstract yield. A processing application MAY thus not produce or retain the concrete
-	yield but the result of its transformation. This specification deals mainly with the byte
-	sequence and the abstract yield and occasionnally provide guidelines about the concrete
-	yield. Of course, a processing application MAY not produce the concrete yield at all but
-	produce various data structures and side effects from parsing the BULK stream.
+	adaptation of the abstract yield to its own implementation, called the concrete yield. Also,
+	some expressions in a BULK stream may have the semantics of a transformation of the abstract
+	yield. A processing application MAY thus not produce or retain the concrete yield but the
+	result of its transformation. This specification deals mainly with the byte sequence and the
+	abstract yield and occasionnally provide guidelines about the concrete yield. Of course, a
+	processing application MAY not produce any concrete yield at all but produce various data
+	structures and side effects from parsing the BULK stream (for example, an event sourced
+	application may read its event log from a BULK stream and build its application state by
+	applying the events, discarding each of them as soon as it has been applied).
       </t>
       <t>
 	The abstract yield is a list of expressions. Expressions can be atoms or forms. Forms
 	are lists of expressions. If a byte sequence is parsed as an expression, this byte
-	sequence is said to denote this expression.
+	sequence is said to encode this expression.
       </t>
       <t>
 	When a sequence of bytes is named in a shape, its name can be used in this specification to
 	designate either the byte sequence, or the expression or list of expressions it
-	denotes. When there could be ambiguity, this specification specifies which is designated.
+	encodes. When there could be ambiguity, this specification specifies which is designated.
       </t>
 
       <section anchor="parsing" title="Parsing algorithm">
@@ -336,10 +340,10 @@
 	  abstract yield.
 	</t>
 	<t>
-	  At the beginning of a BULK stream and after having consumed the byte sequence denoting a
+	  At the beginning of a BULK stream and after having consumed the byte sequence encoding a
 	  complete expression, the parser is at the dispatch stage. At this stage, the next byte is
 	  a marker byte, which tells the parser what kind of expression comes next (the marker byte
-	  is the first byte of the sequence that denotes an expression). The expression appended to
+	  is the first byte of the sequence that encodes an expression). The expression appended to
 	  the context after reading a byte sequence is called the specific yield of the byte
 	  sequence.
 	</t>
@@ -440,14 +444,14 @@
 
 	<section title="Difference between sequence and form">
 	  <t>
-	    There is a difference between a byte sequence denoting several expressions among the
-	    current context and a byte sequence denoting a form (i.e. a single expression that is a
+	    There is a difference between a byte sequence encoding several expressions among the
+	    current context and a byte sequence encoding a form (i.e. a single expression that is a
 	    list of expressions). As an example, let's examine several forms of the shape <spanx
 	    style="verb">( foo {bar} )</spanx>.
 	  </t>
 	  <t>
 	    <list style="symbols">
-	      <t>In the form <spanx style="verb">( foo nil nil nil )</spanx>, {bar} denotes 3
+	      <t>In the form <spanx style="verb">( foo nil nil nil )</spanx>, {bar} encodes 3
 	      expressions, and they are three atoms in the yield.</t>
 
 	      <t>In the form <spanx style="verb">( foo nil )</spanx>, {bar} is a single expression
@@ -497,7 +501,7 @@
 	    processing applications may not need make any choice, as most programming language
 	    implementations actually also confuse unsigned integers and bits sequences to some
 	    extent. Expressions that are unsigned integers (that is, natural numbers) have type
-	    <spanx style="verb">Nat</spanx>.
+	    <spanx style="verb">Nat</spanx> (whether they are encoded as an array or not).
 	  </t>
 	  <t>
 	    Big arrays typically store the content of a file or a binary message of another
@@ -506,7 +510,11 @@
 	  <t>
 	    In any case, the semantics of the content must be inferred by the processing
 	    application; where ambiguity can appear, an application SHOULD enclose the array in a
-	    type-denoting form.
+	    form that makes the semantics explicit (e.g. <xref target="string"><spanx
+	    style="verb">string</spanx></xref>, <xref target="string*"><spanx
+	    style="verb">string*</spanx></xref>, <xref target="blob"><spanx
+	    style="verb">blob</spanx></xref>, or <xref target="unsigned-int"><spanx
+	    style="verb">unsigned-int</spanx></xref>).
 	  </t>
 	  <t>
 	    Because BULK arrays have no end markers, the payload of a BULK array can constitute the
@@ -588,7 +596,7 @@
 	    </t>
 	    <t>
 	      Small unsigned integers have a special parsing rule. The 6 least significant bits of
-	      the marker byte are the value denoted by this byte (as bits or as an unsigned integer
+	      the marker byte are the value encoded by this byte (as bits or as an unsigned integer
 	      in binary notation).
 	    </t>
 	    <t>
@@ -646,7 +654,7 @@
 	      number of namespaces, if the marker byte is <spanx style="verb">0x7F</spanx>, the
 	      parser continues to read bytes until it finds a byte different than 0xFF. The sum of
 	      each of those bytes taken as unsigned integers is the namespace marker. For example,
-	      the reference denoted by the bytes <spanx style="verb">0x7F 0xFF 0x8C 0x1A</spanx> is
+	      the reference encoded by the bytes <spanx style="verb">0x7F 0xFF 0x8C 0x1A</spanx> is
 	      the name 26 in the namespace associated with 522.
 	    </t>
 	  </section>
@@ -689,7 +697,7 @@
 	  <t>
 	    If the version is expressed within a BULK stream, this form MUST be the first in the
 	    stream. In any other place, this form has no semantics attached to it. This
-	    specification defines BULK 1.0. When writing a BULK stream, an application MUST denote
+	    specification defines BULK 1.0. When writing a BULK stream, an application MUST encode
 	    <spanx style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the
 	    smallest byte sequence possible.
 	  </t>
@@ -738,71 +746,11 @@
 	  </section>
 	</section>
 
-	<section title="Strings encoding">
-	  <section anchor="stringenc" title="Current encoding">
-	    <t>
-	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x03</spanx> (mnemonic: <spanx
-		style="verb">stringenc</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( stringenc {enc}:Encoding )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This tells the processing application that, in the scope of this expression, all
-	      expressions that are understood by the application as character strings will be
-	      encoded with the encoding designated by <spanx style="verb">{enc}</spanx>.
-	    </t>
-	    <t>
-	      As the abstract yield doesn't contain strings but expressions that will be used as
-	      strings by the application, it is not a parsing error if the application doesn't
-	      recognize <spanx style="verb">{enc}</spanx>. In this situation, it is a parsing error
-	      when the application actually needs to decode a byte sequence as a string. It is not
-	      a parsing error when a processing application only transmits a byte sequence encoding
-	      a string, if it can accurately convey the encoding to the receiving application.
-	    </t>
-	  </section>
-
-	  <section title="IANA registered character set">
-	    <t>
-	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x04</spanx> (mnemonic: <spanx
-		style="verb">iana-charset</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( iana-charset {id}:Nat )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This designates the string encoding registered among the <xref
-	      target="IANA-Charsets">IANA Character Sets</xref> whose MIBenum is <spanx
-	      style="verb">{id}</spanx>.
-	    </t>
-	    <t>
-	      Type: <spanx style="verb">Encoding</spanx>.
-	    </t>
-	  </section>
-
-	  <section title="Windows code page">
-	    <t>
-	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x05</spanx> (mnemonic: <spanx
-		style="verb">code-page</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( code-page {id}:Nat )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This designates the string encoding among Windows code pages whose identifier is
-	      <spanx style="verb">{id}</spanx>.
-	    </t>
-	    <t>
-	      Type: <spanx style="verb">Encoding</spanx>.
-	    </t>
-	  </section>
-	</section>
-
-	<section title="Namespaces">
+	<section anchor="namespaces" title="Namespaces">
 	  <section title="New namespace">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x06</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x03</spanx> (mnemonic: <spanx
 		style="verb">ns</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( ns {marker}:Ref {id}:Expr )</spanx></t>
 	      </list>
@@ -816,7 +764,7 @@
 	  <section title="Package">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x07</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x04</spanx> (mnemonic: <spanx
 		style="verb">package</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( package {id}:Expr {namespaces}
 		)</spanx></t>
@@ -833,7 +781,7 @@
 	  <section title="Import">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x08</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x05</spanx> (mnemonic: <spanx
 		style="verb">import</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( import {base}:Nat {count}:Nat {id}:Expr
 		)</spanx></t>
@@ -874,7 +822,7 @@
 	  <section title="Simple definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x09</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x06</spanx> (mnemonic: <spanx
 		style="verb">define</spanx>)</t>
 		<t hangText="shape">
 		  <spanx style="verb">( define {ref}:Ref {value}:Expr )</spanx>
@@ -898,7 +846,7 @@
 	  <section title="Named definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0A</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x07</spanx> (mnemonic: <spanx
 		style="verb">mnemonic/def</spanx>)</t>
 		<t hangText="shape">
 		  <spanx style="verb">( mnemonic/def {ref}:Ref {mnemonic}:String
@@ -932,7 +880,7 @@
 	  <section title="Namespace description">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0B</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x08</spanx> (mnemonic: <spanx
 		style="verb">ns-mnemonic</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( ns-mnemonic {ns}:Expr {mnemonic}:String
 		{doc} )</spanx></t>
@@ -949,7 +897,7 @@
 	  <section anchor="verifiable" title="Verifiable namespace definition">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x0C</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x09</spanx> (mnemonic: <spanx
 		style="verb">verifiable-ns</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( verifiable-ns {marker}:Ref {id}:Expr
 		{data}:Expr {mnemonic}:Expr {doc}:Expr {definitions} )</spanx></t>
@@ -994,7 +942,7 @@
 	  <section title="Array concatenation">
 	    <t>
 	      <list style="hanging">
-		<t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx
+		<t hangText="name"><spanx style="verb">0x0A</spanx> (mnemonic: <spanx
 		style="verb">concat</spanx>)</t>
 		<t hangText="shape"><spanx style="verb">( concat {array1}:Bytes {array2}:Bytes )</spanx></t>
 	      </list>
@@ -1016,7 +964,7 @@
 	    <section title="Substitution function">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x11</spanx> (mnemonic: <spanx
+		  <t hangText="name"><spanx style="verb">0x0B</spanx> (mnemonic: <spanx
 		  style="verb">subst</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
 		</list>
@@ -1035,7 +983,7 @@
 	    <section title="Argument">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x12</spanx> (mnemonic: <spanx
+		  <t hangText="name"><spanx style="verb">0x0C</spanx> (mnemonic: <spanx
 		  style="verb">arg</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( arg {n}:Nat )</spanx></t>
 		</list>
@@ -1052,7 +1000,7 @@
 	    <section title="Rest of arguments list">
 	      <t>
 		<list style="hanging">
-		  <t hangText="name"><spanx style="verb">0x13</spanx> (mnemonic: <spanx
+		  <t hangText="name"><spanx style="verb">0x0D</spanx> (mnemonic: <spanx
 		  style="verb">rest</spanx>)</t>
 		  <t hangText="shape"><spanx style="verb">( rest {n}:Nat )</spanx></t>
 		</list>
@@ -1074,8 +1022,109 @@
 	      <t>The evaluation of <spanx style="verb">( ( subst 1 ( rest 0 ) 2 ) 3 4 )</spanx>
 	      must yield the same as <spanx style="verb">( 1 3 4 2 )</spanx></t>
 	    </section>
-
 	  </section>
+	</section>
+
+	<section title="Strings encoding">
+	  <section anchor="stringenc" title="Current encoding">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x10</spanx> (mnemonic: <spanx
+		style="verb">stringenc</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( stringenc {enc}:Encoding )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This tells the processing application that, in the scope of this expression, all
+	      expressions that are understood by the application as character strings will be
+	      encoded with the encoding designated by <spanx style="verb">{enc}</spanx>.
+	    </t>
+	    <t>
+	      As the abstract yield doesn't contain strings but expressions that will be used as
+	      strings by the application, it is not a parsing error if the application doesn't
+	      recognize <spanx style="verb">{enc}</spanx>. In this situation, it is a parsing error
+	      when the application actually needs to decode a byte sequence as a string. It is not
+	      a parsing error when a processing application only transmits a byte sequence encoding
+	      a string, if it can accurately convey the encoding to the receiving application.
+	    </t>
+	  </section>
+
+	  <section title="IANA registered character set">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x11</spanx> (mnemonic: <spanx
+		style="verb">iana-charset</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( iana-charset {id}:Nat )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This designates the string encoding registered among the <xref
+	      target="IANA-Charsets">IANA Character Sets</xref> whose MIBenum is <spanx
+	      style="verb">{id}</spanx>.
+	    </t>
+	    <t>
+	      Type: <spanx style="verb">Encoding</spanx>.
+	    </t>
+	  </section>
+
+	  <section title="Windows code page">
+	    <t>
+	      <list style="hanging">
+		<t hangText="name"><spanx style="verb">0x12</spanx> (mnemonic: <spanx
+		style="verb">code-page</spanx>)</t>
+		<t hangText="shape"><spanx style="verb">( code-page {id}:Nat )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This designates the string encoding among Windows code pages whose identifier is
+	      <spanx style="verb">{id}</spanx>.
+	    </t>
+	    <t>
+	      Type: <spanx style="verb">Encoding</spanx>.
+	    </t>
+	  </section>
+
+
+	    <section anchor="string" title="String">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0x13</spanx> (mnemonic: <spanx
+		  style="verb">string</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( string {string:}Bytes )</spanx></t>
+		</list>
+	      </t>
+	      <t>This form indicates that the bytes encoded by <spanx style="verb">{string}</spanx>
+	      should be interpreted as a string encoded with the current string encoding.
+	      </t>
+	    </section>
+
+	    <section anchor="string*" title="String with explicit encoding">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0x14</spanx> (mnemonic: <spanx
+		  style="verb">string*</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( string* {enc}:Encoding {string:}Bytes )</spanx></t>
+		</list>
+	      </t>
+	      <t>This form indicates that the bytes encoded by <spanx style="verb">{string}</spanx>
+	      should be interpreted as a string encoded with the encoding designated by the
+	      expression <spanx style="verb">{enc}</spanx>.
+	      </t>
+	    </section>
+
+	    <section anchor="blob" title="Blob">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0x15</spanx> (mnemonic: <spanx
+		  style="verb">blob</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( blob {blob:}Bytes )</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		This form indicates that the bytes encoded by <spanx style="verb">{blob}</spanx>
+		should be interpreted as just a raw sequence of bytes, not to be decoded.
+	      </t>
+	    </section>
 	</section>
 
 	<section anchor="arithmetic" title="Arithmetic">
@@ -1090,7 +1139,7 @@
 	    is a notation for the bytes <spanx style="verb">0x01 0x9F 0xC2-0100 0x02</spanx>.
 	  </t>
 
-	  <section title="Unsigned integer">
+	  <section anchor="unsigned-int" title="Unsigned integer">
 	    <t>
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x20</spanx> (mnemonic: <spanx
@@ -1246,10 +1295,14 @@
 	    On one end of the spectrum, a format might choose to use an array to encapsulate an ad
 	    hoc binary format. An extreme use of this scheme would be to use BULK just to make
 	    explicit the binary format used. With a known profile (for example with a file extension
-	    and/or media type for such explicitly typed BLOBs), a BULK stream that consists solely
-	    of the version form, a reference that describes the binary format and an array will have
-	    an overhead between 11 and 20 bytes depending on the size of the content. Without a
-	    profile, with the namespaces associations, the overhead is between 45 and 54 bytes.
+	    and/or media type for such explicitly typed BLOBs), such a BULK stream can consist
+	    solely of the version form, a reference that describes the binary format and an array,
+	    which would amount to an overhead between 11 bytes and 20 bytes depending on the size of
+	    the content (11, 13, 14, 16 and 20 bytes for contents of no more than 63B, 255B, 65kB,
+	    4GB and 18EB respectively). Without a profile, with the namespaces associations, the
+	    overhead is between 28 and 37 bytes (the difference is a single <spanx
+	    style="verb">import</spanx> form to import two namespaces: the one providing a form used
+	    to identify namespaces, and the one for the format used in the stream).
 	  </t>
 	  <t>
 	    Still, even this extreme in the design space retains the ability to insert expressions
