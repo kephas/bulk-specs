@@ -648,14 +648,18 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    https://github.com/ubf/ubf
 
 * Bootstrapping a hashing vocabulary
-  - the problem is that this vocabulary provides hashes before any way of expressing a hash is
-    possible, so its own hash is expressed with a name inside the vocabulary
-  - you read ~( ns 0x1800 ( 0x182E #[8] {hashID}:8B ) )~
-  - how do you get to the point where you know ~0x182E~ is ~hash:sha-3~?
-    - you get the list (hopefully with only one element) of vocabularies identified by a form whose
-      sole element is a 64-bits word ~{hashid}~
-    - for each of them, you check if ~0x2E~ is a name associated with a hashing algorithm
-      - if yes, you check if that hash matches the definition
+  The problem is when a vocabulary provides hashes before any way of expressing a hash is possible,
+  so its own hash is expressed with a name inside itself:
+
+  - the application reads ~( ns 18 ( 0x18-2E #[8] {hashID}:8B ) )~
+  - how to get to the point where it knows that ~0x18-2E~ is ~hash:shake128~:
+    - it looks up in its configuration if there is a vocabulary identified by a form whose first
+      element is a reference in that same vocabulary with name ~0x2E~
+      - if there is such an already known vocabulary, the name ~0x2E~ must be associated with an
+        algorithm to match an input identifier to its configuration data
+      - if the algorithm accepts ~{hashid}~, then bootstrapping is done and the vocabulary is
+        available in the rest of the stream
+    - if the vocabulary is unknown, the application SHOULD consider that it cannot *TODO*
 
 * Minimal BULK
   : ( version 1 0 ) ( import 24 2 ( hash:shake256 #[8] 8B ) ) some:type #[0–63] {content}
