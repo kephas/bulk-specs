@@ -32,9 +32,9 @@
    - 0x00 :: ( version Int Int )
    - 0x01 :: true
    - 0x02 :: false
-   - 0x03 :: ( ns {marker}:Ref {id}:UniqueID )
-   - 0x04 :: ( package {id}:UniqueID {namespaces} )
-   - 0x05 :: ( import {base}:Int {count}:Int {uuid} )
+   - 0x03 :: ( ns {marker}:Ref {id}:Expr )
+   - 0x04 :: ( package {id}:Expr {namespaces} )
+   - 0x05 :: ( import {base}:Int {count}:Int {id}:Expr )
    - 0x06 :: ( define Ref Expr )
    - 0x07 :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )
    - 0x08 :: ( ns-mnemonic {ns}:Expr {mnemonic}:String {doc} )
