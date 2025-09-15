@@ -91,18 +91,17 @@
      - {what} is a sequence of expressions, each identifying the entry
    - 0x25 :: ( entry {num} )
    - 0x26 :: ( previous {skip} )
-     - within a metadata form, designates the expression before that
-       metadata form (possibly after skipping {skip} expressions)
+     - within a metadata form, designates the expression before that metadata form (possibly after
+       skipping {skip} expressions)
    - 0x27 :: ( next {skip} )
-     - within a metadata form, designates the expression after that
-       metadata form (possibly after skipping {skip} expressions)
+     - within a metadata form, designates the expression after that metadata form (possibly after
+       skipping {skip} expressions)
    - 0x28 :: everything-before
-     - within a metadata form, designates the whole sequence of
-       expressions before that metadata form
+     - within a metadata form, designates the whole sequence of expressions before that metadata
+       form
    - 0x29 :: ( before {marker}:Ref {skip} )
-     - within a metadata form, designates the expression in the outer
-       context of the metadata form that is before the occurrence of
-       {marker} (possibly after skipping {skip} expressions)
+     - within a metadata form, designates the expression in the outer context of the metadata form
+       that is before the occurrence of {marker} (possibly after skipping {skip} expressions)
        - undefined if multiple occurrences
    - 0x2A :: ( after {marker}:Ref {skip} )
      - like before, but after…
@@ -132,12 +131,11 @@
      - metadata
        - Ox40 :: ( path {components} )
 	 - by design, there is no way to express an absolute FS path
-	   - an application is free to define insecure forms to express
-             absolute paths and links
+	   - an application is free to define insecure forms to express absolute paths and links
 	   - TODO: what if a component contain "/"?
-	     - implementation should not resolve the name but look it up
-               in the directory entries (that takes care of "/" but not
-               of a ".." entry, this still needs checking, shame on Unix)
+	     - implementation should not resolve the name but look it up in the directory entries
+               (that takes care of "/" but not of a ".." entry, this still needs checking, shame on
+               Unix)
        - 0x41 :: ( user {name} )
 	 - {name} can be anything, incl. string and Nat
 	   - multiple entries (e.g. "pierre"/1000)
@@ -211,8 +209,7 @@
      - split archives
        - advertised in container metadata
 	 - 0x90 :: ( split-archive {archive-id} {member-id} {members} )
-	   - members are *description* forms that MAY contain filename
-             or hash
+	   - members are *description* forms that MAY contain filename or hash
      - FS-specific attributes
      - incremental backup?
      - fast member extract? (how does DAR does that?)
@@ -268,26 +265,19 @@
      $ barf convert --from dar <file>
      #+END_EXAMPLE
 
-     This command convert from and to BULK. Converting to and then
-     from BULK should produce a file at least semantically identical,
-     (it may be bytewise identical, and it might be an implementation
-     goal to achieve that, but no metadata is stored to that end by
-     default).
+     This command convert from and to BULK. Converting to and then from BULK should produce a file
+     at least semantically identical, (it may be bytewise identical, and it might be an
+     implementation goal to achieve that, but no metadata is stored to that end by default).
 
      - mode of operation
-       - lossless :: refuse conversion if semantic information would
-                     be lost (i.e. if a string is not encodable in the
-                     target format, but not if random padding is
-                     present)
-       - lossy :: not lossless (i.e. a one-member tar archive
-                  converted to BULK might then be converted to gzip,
-                  at the price of losing ACLs)
-       - transform :: change data representation to fit target format
-                      (i.e. if target is gzip, LZMA data would be
-                      recompressed to deflate, a UTF-8 string encoded
-                      in ISO-8859-1)
-       - maintain :: refuse conversion if data representation in the
-                     source format doesn't fit target format
+       - lossless :: refuse conversion if semantic information would be lost (i.e. if a string is
+         not encodable in the target format, but not if random padding is present)
+       - lossy :: not lossless (i.e. a one-member tar archive converted to BULK might then be
+         converted to gzip, at the price of losing ACLs)
+       - transform :: change data representation to fit target format (i.e. if target is gzip, LZMA
+         data would be recompressed to deflate, a UTF-8 string encoded in ISO-8859-1)
+       - maintain :: refuse conversion if data representation in the source format doesn't fit
+         target format
 	 - should never need to refuse if BULK is target?
        - default is *lossless transform*
 
@@ -407,13 +397,11 @@
 
     : (:A:B:C)
 
-    For big graphs of mostly known references, this can already be a
-    valuable improvement. {triples} could be a packed sequence without
-    markers around triples, but that would mean that a single missing
-    or superfluous expression would wreck everything that's after
-    it. The fact that a triple is still a form limits the savings but
-    keeps a level of robustness (but it would be possible to define a
-    packing RDF form…).
+    For big graphs of mostly known references, this can already be a valuable improvement. {triples}
+    could be a packed sequence without markers around triples, but that would mean that a single
+    missing or superfluous expression would wreck everything that's after it. The fact that a triple
+    is still a form limits the savings but keeps a level of robustness (but it would be possible to
+    define a packing RDF form…).
 
     Adding another triple cannot cost less than adding 8 bytes:
 
@@ -428,9 +416,8 @@
     : (:A(:B:C:D))
 
 ** XML
-   XML is pretty complex, but most of it is unused (some even advised
-   not to be used, i.e. unparsed entity). The vocabulary can be split
-   into loosely coupled parts:
+   XML is pretty complex, but most of it is unused (some even advised not to be used, i.e. unparsed
+   entity). The vocabulary can be split into loosely coupled parts:
 
    - document
    - DTD
@@ -438,8 +425,7 @@
    - Relax NG
 
 *** Document
-    XML content, not notation: no support for entities or CDATA. =stringenc= can be used
-    everywhere.
+    XML content, not notation: no support for entities or CDATA. =stringenc= can be used everywhere.
 
     : ( define ?rfc ( subst ( pi "rfc" ( rest 0 ) ) ) )
 
@@ -500,9 +486,8 @@
    As a Step, {name}:QName ⇔ ( step child {name} ) ?
 
 *** QName
-    To maximize reuse between namespaces, URIRef and URIString
-    expressions also have the type QName. Any Bytes whose content
-    satisfy the NCName production also has.
+    To maximize reuse between namespaces, URIRef and URIString expressions also have the type
+    QName. Any Bytes whose content satisfy the NCName production also has.
 
 ** MeTOD: Media Type Optimal Description
    - type as ref or form
@@ -523,14 +508,13 @@
      - ( gzip tar )
      - ( base64 zip )
    - complex structures?
-     - ( mime ( alternatives ( qp ( text utf-8 ) ) ( qp html5 ) ) ( base64 zip )
-       ( signature ( base64 openpgp ) ) )
+     - ( mime ( alternatives ( qp ( text utf-8 ) ) ( qp html5 ) ) ( base64 zip ) ( signature (
+       base64 openpgp ) ) )
    - accept patterns
      - ( xml * )
      - ( xml xhtml * )
    - semantics dictated by type
-     - for xml, the first subtype MUST be the type for the document
-       element
+     - for xml, the first subtype MUST be the type for the document element
      - for MIME, order of subtypes is order of parts
 
 
@@ -544,17 +528,16 @@
      - ( text utf-8 markdown )
      - ( text utf-8 ( source-code c++ ) )
    - 0x11 :: ( source {langs} )
-     - only as subtype of =text=, means that if available, a code editor should be used to view
-       this format
+     - only as subtype of =text=, means that if available, a code editor should be used to view this
+       format
    - 0x12 :: ( image {subtype} )
    - 0x13 :: ( audio {subtype} )
    - 0x14 :: ( video {subtype} )
 
 
-   MeTOD only defines kinds where a default software could be expected
-   to process many or most types of this kind. This is not the case
-   for MIME registries application, text, message, model, multipart
-   and text. But a MIME vocabulary could define them.
+   MeTOD only defines kinds where a default software could be expected to process many or most types
+   of this kind. This is not the case for MIME registries application, text, message, model,
+   multipart and text. But a MIME vocabulary could define them.
 
 ** Dates namespace
    - Nat123 := Nat | Nat Nat | Nat Nat Nat
@@ -577,8 +560,7 @@
    - 0x0C :: ( seconds NatsF )
    - 0x0D :: ( weeks Nat )
    - 0x0E :: ( interval {exprs} )
-     - {exprs} = Time Time | Duration Time | Time Duration |
-       Duration
+     - {exprs} = Time Time | Duration Time | Time Duration | Duration
    - 0x0F :: ( repeat Nat Interval ) / ( repeat Interval )
    -  :: ( julian Number )
    -  :: ( anno-mundi Nat123 )
@@ -655,11 +637,9 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 
 * [0%] Implementation notes
 ** Semantics beyond definitions
-   When implementing a processing application that gives semantics
-   beyond the evaluation of expressions, to benefit from all possible
-   evaluations, the application should just replace relevant prior
-   definitions with its own implementation while evaluating the BULK
-   streams.
+   When implementing a processing application that gives semantics beyond the evaluation of
+   expressions, to benefit from all possible evaluations, the application should just replace
+   relevant prior definitions with its own implementation while evaluating the BULK streams.
 
 ** TODO Bad Unicode handling?
    https://www.tbray.org/ongoing/When/202x/2025/08/14/RFC9839
@@ -668,16 +648,13 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    https://github.com/ubf/ubf
 
 * Bootstrapping a hashing vocabulary
-  - the problem is that this vocabulary provides hashes before any way
-    of expressing a hash is possible, so its own hash is expressed
-    with a name inside the vocabulary
+  - the problem is that this vocabulary provides hashes before any way of expressing a hash is
+    possible, so its own hash is expressed with a name inside the vocabulary
   - you read ~( ns 0x1800 ( 0x182E #[8] {hashID}:8B ) )~
   - how do you get to the point where you know ~0x182E~ is ~hash:sha-3~?
-    - you get the list (hopefully with only one element) of
-      vocabularies identified by a form whose sole element is a
-      64-bits word ~{hashid}~
-    - for each of them, you check if ~0x2E~ is a name associated with
-      a hashing algorithm
+    - you get the list (hopefully with only one element) of vocabularies identified by a form whose
+      sole element is a 64-bits word ~{hashid}~
+    - for each of them, you check if ~0x2E~ is a name associated with a hashing algorithm
       - if yes, you check if that hash matches the definition
 
 * Minimal BULK
@@ -705,8 +682,8 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 * The power of abstraction
 ** Explicit relationship between similar data
    When a protocol makes it possible to express several different data that are related but
-   different in structure, most other formats can only express those relationships in human
-   readable documentation.
+   different in structure, most other formats can only express those relationships in human readable
+   documentation.
 
    Example: an event format that includes information about the person doing the action and the
    person logging it:
