@@ -1025,7 +1025,7 @@
 	  </section>
 	</section>
 
-	<section title="Strings encoding">
+	<section title="Strings and other typed byte arrays">
 	  <section anchor="stringenc" title="Current encoding">
 	    <t>
 	      <list style="hanging">
@@ -1094,7 +1094,7 @@
 		</list>
 	      </t>
 	      <t>This form indicates that the bytes encoded by <spanx style="verb">{string}</spanx>
-	      should be interpreted as a string encoded with the current string encoding.
+	      are meant to be interpreted as a string encoded with the current string encoding.
 	      </t>
 	    </section>
 
@@ -1107,7 +1107,7 @@
 		</list>
 	      </t>
 	      <t>This form indicates that the bytes encoded by <spanx style="verb">{string}</spanx>
-	      should be interpreted as a string encoded with the encoding designated by the
+	      are meant to be interpreted as a string encoded with the encoding designated by the
 	      expression <spanx style="verb">{enc}</spanx>.
 	      </t>
 	    </section>
@@ -1122,7 +1122,50 @@
 	      </t>
 	      <t>
 		This form indicates that the bytes encoded by <spanx style="verb">{blob}</spanx>
-		should be interpreted as just a raw sequence of bytes, not to be decoded.
+		are meant be interpreted as just a raw sequence of bytes, not to be decoded.
+	      </t>
+	    </section>
+
+	    <section title="Nested BULK stream">
+	      <t>
+		<list style="hanging">
+		  <t hangText="name"><spanx style="verb">0x16</spanx> (mnemonic: <spanx
+		  style="verb">nested-bulk</spanx>)</t>
+		  <t hangText="shape"><spanx style="verb">( nested-bulk {embedded}:Boolean {bulk}:Bytes )</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		This form indicates that the bytes encoded by <spanx style="verb">{bulk}</spanx>
+		are meant to be interpreted as a BULK stream. If the stream doesn't start with a
+		<spanx style="verb">version</spanx> form, the stream MUST be assumed to have the
+		same version as the parent stream.
+	      </t>
+	      <t>
+		This form can be useful to let the application reading a BULK stream skip parsing a
+		large section.
+	      </t>
+	      <t>
+		If <spanx style="verb">{embedded}</spanx> is <spanx style="verb">true</spanx>, the
+		default semantics of this form is the same as the semantics of the BULK stream in
+		<spanx style="verb">{bulk}</spanx>, with the following exception. For example,
+		these two forms have the same semantics:
+		<list style="symbols">
+		  <t><spanx style="verb">( 4 5 )</spanx></t>
+		  <t><spanx style="verb">( nested-bulk true #[2] 4 5 )</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		It could be a security risk if a single BULK stream could be parsed into two
+		different abstract yields by two conformant applications, so the semantics of the
+		whole stream cannot change whether <spanx style="verb">{bulk}</spanx> is decoded or
+		not. For that reason, any effects in the nested stream that affect how BULK
+		expressions are parsed or evaluated (like namespace associations or definitions)
+		MUST be isolated within that form.
+	      </t>
+	      <t>
+		For the same security reason, there isn't a <spanx style="verb">( bulk-with-size
+		Nat Expr )</spanx> form because it would open up the same risk when the size given
+		is not the size of the enclosed expression, accidently or maliciously.
 	      </t>
 	    </section>
 	</section>

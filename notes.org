@@ -52,6 +52,7 @@
    - 0x13 :: ( string Bytes )
    - 0x14 :: ( string* Encoding Bytes )
    - 0x15 :: ( blob Bytes )
+   - 0x16 :: ( nested-bulk Boolean Bytes )
    - 
    - 0x20 :: ( unsigned-int Bytes )
    - 0x21 :: ( signed-int Bytes )
