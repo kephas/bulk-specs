@@ -540,14 +540,14 @@
 	    </t>
 	    <t>
 	      Arrays have a special parsing rule. After consuming the marker byte, the parser
-	      returns to the dispatch stage. It is a parser error if the parsed expression is not of
-	      type <spanx style="verb">Nat</spanx> or if its value cannot be recognized. This
+	      returns to the dispatch stage. It is a parser error if the parsed expression is not
+	      of type <spanx style="verb">Nat</spanx> or if its value cannot be recognized. This
 	      integer is not added to any context, but the parser consumes as many bytes as this
 	      integer and they constitute the content of this array.
 	    </t>
 	    <t>
-	      In the text notation, a quoted string is the notation for an array containing the
-	      encoding of that string in the <xref target="stringenc">current encoding</xref>,
+	      In the text notation, a quoted string is the notation for a generic array containing
+	      the encoding of that string in the <xref target="stringenc">current encoding</xref>,
 	      except if the size of the encoding is below 64 bytes, cf. <xref
 	      target="smallarray">small arrays</xref>.
 	    </t>
@@ -574,9 +574,9 @@
 	      this array.
 	    </t>
 	    <t>
-	      In the text notation, the marker byte of a small array of size X is written as <spanx
-	      style="verb">#[X]</spanx>. For example, <spanx style="verb">#[2] 0x1234</spanx> is a
-	      notation for the bytes <spanx style="verb">0xC2-1234</spanx>.
+	      In the text notation, the notation of the marker byte of a small array of size X is
+	      <spanx style="verb">#[X]</spanx>. For example, <spanx style="verb">#[2]
+	      0x1234</spanx> is a notation for the bytes <spanx style="verb">0xC2-1234</spanx>.
 	    </t>
 	    <t>
 	      In the text notation, a quoted string is the notation for a small array containing the
@@ -600,8 +600,8 @@
 	      in binary notation).
 	    </t>
 	    <t>
-	      In the text notation, the marker byte of a small unsigned integer of value X is
-	      written as <spanx style="verb">w6[X]</spanx>. For example, <spanx
+	      In the text notation, the notation of the marker byte of a small unsigned integer of
+	      value X is <spanx style="verb">w6[X]</spanx>. For example, <spanx
 	      style="verb">w6[11]</spanx> is a notation for the byte <spanx
 	      style="verb">0x8B</spanx> (as is <spanx style="verb">11</spanx>, cf. <xref
 	      target="arithmetic"/>).
@@ -613,11 +613,10 @@
 	    <t>
 	      When the syntax of a BULK form mandates that an expression can only be a <spanx
 	      style="verb">Nat</spanx>, an application SHOULD encode it as the smallest possible
-	      array using one of the following sizes: 8, 16, 32, or any multiple of 64 bits.
+	      array using one of the following sizes: 6, 8, 16, 32, or any multiple of 64 bits.
 	    </t>
 	  </section>
 	</section>
-
 
 	<section anchor="reserved" title="Reserved marker bytes">
 	  <t>
@@ -760,12 +759,15 @@
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x03</spanx> (mnemonic: <spanx
 		style="verb">ns</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( ns {marker}:Ref {id}:Expr )</spanx></t>
+		<t hangText="shape">
+		  <spanx style="verb">( ns {marker}:Nat {id}:Expr )</spanx>
+		</t>
 	      </list>
 	    </t>
 	    <t>
-	      This associates the namespace identified by {id} to the namespace marker of {marker},
-	      within the scope of this expression.
+	      This associates the namespace identified by <spanx style="verb">{id}</spanx> to the
+	      namespace marker <spanx style="verb">{marker}</spanx>, within the scope of this
+	      expression.
 	    </t>
 	  </section>
 
@@ -780,9 +782,10 @@
 	    </t>
 	    <t>
 	      This creates a package identified by <spanx style="verb">{id}</spanx>. Packages are
-	      immutable, {id} MUST be verifiable against the byte sequence <spanx
-	      style="verb">{namespaces}</spanx>. <spanx style="verb">{namespaces}</spanx>must be a
-	      series of expressions each identifying a BULK namespace.
+	      immutable, <spanx style="verb">{id}</spanx> MUST be verifiable against the byte
+	      sequence <spanx style="verb">{namespaces}</spanx>. <spanx
+	      style="verb">{namespaces}</spanx> must be a series of expressions each identifying a
+	      BULK namespace.
 	    </t>
 	  </section>
 
@@ -804,7 +807,7 @@
 	    <t>
 	      Example: <spanx style="verb">( import 28 3 0x0123456789ABCDEF )</spanx> associates
 	      the first 3 namespaces of the package identified by <spanx
-	      style="verb">0x0123456789ABCDEF</spanx> to the marker bytes 28, 29 and 30.
+	      style="verb">0x0123456789ABCDEF</spanx> to the markers 28, 29 and 30.
 	    </t>
 	  </section>
 	</section>
@@ -907,17 +910,17 @@
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x09</spanx> (mnemonic: <spanx
 		style="verb">verifiable-ns</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( verifiable-ns {marker}:Ref {id}:Expr
+		<t hangText="shape"><spanx style="verb">( verifiable-ns {id}:Expr {marker}:Nat
 		{data}:Expr {mnemonic}:Expr {doc}:Expr {definitions} )</spanx></t>
 		<t hangText="inner scope"><spanx style="verb">{id} {data} {mnemonic} {doc} {definitions}</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This associates the namespace identified by <spanx style="verb">{id}</spanx> to the
-	      namespace marker of <spanx style="verb">{marker}</spanx>, within the scope of this
+	      namespace marker <spanx style="verb">{marker}</spanx>, within the scope of this
 	      form. Verifiable namespaces are immutable, <spanx style="verb">{id}</spanx> MUST be
-	      verifiable against the byte sequence <spanx style="verb">{data} {mnemonic} {doc}
-	      {definitions}</spanx>. The semantics of this form is to define in its scope any
+	      verifiable against the byte sequence <spanx style="verb">{marker} {data} {mnemonic}
+	      {doc} {definitions}</spanx>. The semantics of this form is to define in its scope any
 	      definition made in the designated namespace within <spanx
 	      style="verb">{definitions}</spanx>.
 	    </t>
@@ -1185,9 +1188,10 @@
 	    having an unknown value if it has no adequate data type to store it.
 	  </t>
 	  <t>
-	    In the text notation of a BULK stream, a decimal integer represents the smallest byte
-	    sequence that yields this integer. For example, <spanx style="verb">( 31 256 )</spanx>
-	    is a notation for the bytes <spanx style="verb">0x01 0x9F 0xC2-0100 0x02</spanx>.
+	    In the text notation of a BULK stream, a decimal integer is the notation for the
+	    smallest byte sequence that yields this integer as described in <xref
+	    target="nat-repr"></xref>. For example, <spanx style="verb">( 31 256 )</spanx> is a
+	    notation for the bytes <spanx style="verb">0x01 0x9F 0xC2-0100 0x02</spanx>.
 	  </t>
 
 	  <section anchor="unsigned-int" title="Unsigned integer">

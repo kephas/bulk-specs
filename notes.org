@@ -18,10 +18,9 @@
    | 00     | nil               |                        |
    | 01     | (                 |                        |
    | 02     | )                 |                        |
-   | 03     | # Int {content}   |                        |
+   | 03     | # Nat {content}   |                        |
    | 04–0F  | reserved          |                        |
-   | 10–17  | BULK              |                        |
-   | 18–7F  | refs              |                        |
+   | 10–7F  | refs              |                        |
    | 80–BF  | w6[value]         | value = (marker && 3F) |
    | C0–FF  | #[size] {content} | size = (marker && 3F)  |
    |        |                   |                        |
@@ -29,23 +28,22 @@
 ** BULK core namespace
    NSID: 0x10
 
-   - 0x00 :: ( version Int Int )
+   - 0x00 :: ( version Nat Nat )
    - 0x01 :: true
    - 0x02 :: false
-   - 0x03 :: ( ns {marker}:Ref {id}:Expr )
+   - 0x03 :: ( ns {marker}:Nat {id}:Expr )
    - 0x04 :: ( package {id}:Expr {namespaces} )
-   - 0x05 :: ( import {base}:Int {count}:Int {id}:Expr )
+   - 0x05 :: ( import {base}:Nat {count}:Nat {id}:Expr )
    - 0x06 :: ( define Ref Expr )
    - 0x07 :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )
    - 0x08 :: ( ns-mnemonic {ns}:Expr {mnemonic}:String {doc} )
-   - 0x09 :: ( verifiable-ns {marker}:Int {id}:UniqueID
-             {mnemonic}:Expr {doc}:Expr {definitions} )
-     - ( mnemonic/def nil {…} ) defines the next unattributed ref
-       (starting at 0)
+   - 0x09 :: ( verifiable-ns {id}:UniqueID {marker}:Nat {data}:Expr {mnemonic}:Expr {doc}:Expr
+     {definitions} )
+     - ( mnemonic/def nil {…} ) defines the next unattributed ref (starting at 0)
    - 0x0A :: ( concat {a1} {a2} )
    - 0x0B :: ( subst {code} )
-   - 0x0C :: ( arg Int )
-   - 0x0D :: ( rest Int )
+   - 0x0C :: ( arg Nat )
+   - 0x0D :: ( rest Nat )
    - 0x10 :: ( stringenc {enc}:Encoding )
    - 0x11 :: ( iana-charset Nat ):Encoding
    - 0x12 :: ( codepage Nat ):Encoding
@@ -65,10 +63,10 @@
    - 
    - 0x30 :: ( prefix {bytecode} )
    - 0x31 :: ( prefix* ( {arities} ) {bytecode} )
-     - {arities} is a sequence of: ( Int {refs} )
+     - {arities} is a sequence of: ( Nat {refs} )
    - 0x32 :: ( postfix {bytecode} )
    - 0x33 :: ( postfix* ( {arities} ) {bytecode} )
-   - 0x34 :: ( arity Int {refs} )
+   - 0x34 :: ( arity Nat {refs} )
 
 ** BULK API Model
    - needed at least for hashing: access the bytes of an expression (API to get positions to read
@@ -164,8 +162,8 @@
          to be a regular file
        - 0x50 :: ( hard-link Path )
        - 0x51 :: ( sym-link Path )
-       - 0x52 :: ( char-dev {major}:Int {minor}:Int )
-       - 0x53 :: ( block-dev {major}:Int {minor}:Int )
+       - 0x52 :: ( char-dev {major}:Nat {minor}:Nat )
+       - 0x53 :: ( block-dev {major}:Nat {minor}:Nat )
        - 0x54 :: directory
        - 0x55 :: fifo
        - 0x56 :: ( sparse-file {segments} )
@@ -566,7 +564,7 @@
    -  :: ( julian Number )
    -  :: ( anno-mundi Nat123 )
    -  :: ( anno-hegirae Nat123 )
-   -  :: ( unix SInt )
+   -  :: ( unix Int )
    -  :: ( ntp Word )
    -  :: ( tai64 Word64 )
    -  :: ( tng-stardate Nat Nat )
