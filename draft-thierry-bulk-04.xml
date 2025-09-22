@@ -608,6 +608,14 @@
 	    </t>
 	    <t>Types: <spanx style="verb">Bytes</spanx>, <spanx style="verb">Nat</spanx></t>
 	  </section>
+
+	  <section anchor="nat-repr" title="Reprensenting natural numbers">
+	    <t>
+	      When the syntax of a BULK form mandates that an expression can only be a <spanx
+	      style="verb">Nat</spanx>, an application SHOULD encode it as the smallest possible
+	      array using one of the following sizes: 8, 16, 32, or any multiple of 64 bits.
+	    </t>
+	  </section>
 	</section>
 
 
@@ -699,7 +707,7 @@
 	    stream. In any other place, this form has no semantics attached to it. This
 	    specification defines BULK 1.0. When writing a BULK stream, an application MUST encode
 	    <spanx style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the
-	    smallest byte sequence possible.
+	    smallest byte sequence as described in <xref target="nat-repr"></xref>.
 	  </t>
 	  <t>
 	    An application writing a BULK stream to long-term storage (e.g. in a file or a database
