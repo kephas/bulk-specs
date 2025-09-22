@@ -635,7 +635,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    - test https://github.com/eishay/jvm-serializers?
 
 * [0%] Implementation notes
-** Semantics beyond definitions
+** TODO Semantics beyond definitions
    When implementing a processing application that gives semantics beyond the evaluation of
    expressions, to benefit from all possible evaluations, the application should just replace
    relevant prior definitions with its own implementation while evaluating the BULK streams.
@@ -646,20 +646,42 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 ** TODO UBF
    https://github.com/ubf/ubf
 
-* Bootstrapping a hashing vocabulary
-  The problem is when a vocabulary provides hashes before any way of expressing a hash is possible,
-  so its own hash is expressed with a name inside itself:
+** TODO Bootstrapping a hashing vocabulary
+   The problem is when a vocabulary provides hashes before any way of expressing a hash is possible,
+   so its own hash is expressed with a name inside itself:
 
-  - the application reads ~( ns 18 ( 0x18-2E #[8] {hashID}:8B ) )~
-  - how to get to the point where it knows that ~0x18-2E~ is ~hash:shake128~:
-    - it looks up in its configuration if there is a vocabulary identified by a form whose first
-      element is a reference in that same vocabulary with name ~0x2E~
-      - if there is such an already known vocabulary, the name ~0x2E~ must be associated with an
-        algorithm to match an input identifier to its configuration data
-      - if the algorithm accepts ~{hashid}~, then bootstrapping is done and the vocabulary is
-        available in the rest of the stream
-    - if the vocabulary is unknown, the application SHOULD consider that it cannot *TODO*
+   - the application reads ~( ns 18 ( 0x18-2E #[8] {hashID}:8B ) )~
+     - it needs to get to the point where it knows that ~0x18-2E~ is ~hash:shake128~:
+       - it looks up in its configuration if there is a namespace identified by a form whose first
+	 element is a reference in that same namespace with name ~0x2E~
+	 - if there is such an already known namespace, the name ~0x2E~ must be associated with an
+           algorithm to match an input identifier to its configuration data
+	 - if the algorithm accepts ~{hashid}~, then bootstrapping is done and the namespace is
+           available in the rest of the stream
+   - the application reads ~( import 18 4 ( 0x19-2E #[8] {hashID}:8B ) )~
+     - it needs to get to the point where it knows that ~0x19-2E~ is ~hash:shake128~:
+       - it looks up in its configuration if there is a package matching the following conditions:
+	 - the package has at least 4 namespaces
+	 - the package is identified by a form whose first element is a reference in its second
+           namespace, whose name ~0x2E~ must be associated with an algorithm to match an input
+           identifier to its configuration data
+	 - if the algorithm accepts ~{hashid}~, then bootstrapping is done and the namespace is
+           available in the rest of the stream
+       - vocabulary identified by a form whose first
+	 element is a reference in that same vocabulary with name ~0x2E~
+	 - if there is such an already known vocabulary, the name ~0x2E~ must be associated with an
+           algorithm to match an input identifier to its configuration data
+	 - if the algorithm accepts ~{hashid}~, then bootstrapping is done and the vocabulary is
+           available in the rest of the stream
+	 - *TODO*
+   - if bootstrapping fails, the application SHOULD consider that it cannot resolve namespaces
+     identified by forms using any of the boostrapped namespaces
+     - BULK makes it possible to discover new namespaces on-demand but it would be too much of a
+       risk to use discovery for primitives that are the foundation of the security model
 
+** TODO [0%] Discovery
+*** TODO Principle
+*** TODO Security implications
 * Minimal BULK
   : ( version 1 0 ) ( import 24 2 ( hash:shake256 #[8] 8B ) ) some:type #[0–63] {content}
   : |<---- 6 ---->| |<----------------- 19 ---------------->| |<----- 3 ----->|
