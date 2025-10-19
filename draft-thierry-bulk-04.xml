@@ -638,7 +638,7 @@
 	  </t>
 	  <t>
 	    The <spanx style="verb">{ns}</spanx> byte is a value associated with a namespace, called
-	    the namespace marker. Values <spanx style="verb">0x10−0x17</spanx> are reserved for
+	    the namespace marker. Values <spanx style="verb">0x10−0x13</spanx> are reserved for
 	    namespaces defined by BULK specifications. Greater values can be associated with
 	    namespaces identified by a unique identifier.
 	  </t>
