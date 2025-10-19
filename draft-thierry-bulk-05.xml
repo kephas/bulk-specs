@@ -16,18 +16,18 @@
 <rfc ipr="trust200902"
      category="exp"
      submissionType="IETF"
-     docName="draft-thierry-bulk-04">
+     docName="draft-thierry-bulk-05">
   <front>
     <title abbrev="BULK1">Binary Uniform Language Kit 1.0</title>
 
     <author initials="P." surname="Thierry" fullname="Pierre Thierry">
-      <organization>Thierry Technologies</organization>
+      <organization>Comonad Dev</organization>
       <address>
-        <email>pierre@nothos.net</email>
+        <email>pierre@comonad.dev</email>
       </address>
     </author>
 
-    <date day="16" month="04" year="2024" />
+    <date day="20" month="10" year="2025" />
     <keyword>binary</keyword>
 
     <abstract>
