@@ -1945,9 +1945,9 @@
 	evaluating the postfix bytecode transformation and the resulting form of the last
 	expression of
       </t>
-      <t><figure><artwork>( bulk:ns-mnemonic 0x1800 "go2" )
-( bulk:mnemonic/def 0x1801 "alt/2" nil ( bulk:subst ( alternative ( rest 0 ) ) ) )
-( bulk:mnemonic/def 0x1801 "alt/3" nil ( bulk:subst ( alternative ( rest 0 ) ) ) )
+      <t><figure><artwork>( bulk:ns-mnemonic 0x1400 "go2" )
+( bulk:mnemonic/def 0x1401 "alt/2" nil ( bulk:subst ( alternative ( rest 0 ) ) ) )
+( bulk:mnemonic/def 0x1401 "alt/3" nil ( bulk:subst ( alternative ( rest 0 ) ) ) )
 
 ( bulk:postfix*
   ( ( 2 go:black go:white go:comment go2:alt/2 ) ( 3 go2:alt/3 ) )
