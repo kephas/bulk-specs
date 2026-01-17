@@ -16,7 +16,7 @@
 <rfc ipr="trust200902"
      category="exp"
      submissionType="IETF"
-     docName="draft-thierry-bulk-05">
+     docName="draft-thierry-bulk-06">
   <front>
     <title abbrev="BULK1">Binary Uniform Language Kit 1.0</title>
 
@@ -27,7 +27,7 @@
       </address>
     </author>
 
-    <date day="20" month="10" year="2025" />
+    <date day="16" month="01" year="2026" />
     <keyword>binary</keyword>
 
     <abstract>
