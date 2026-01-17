@@ -784,7 +784,7 @@
 	      This creates a package identified by <spanx style="verb">{id}</spanx>. Packages are
 	      immutable, <spanx style="verb">{id}</spanx> MUST be verifiable against the byte
 	      sequence <spanx style="verb">{namespaces}</spanx>. <spanx
-	      style="verb">{namespaces}</spanx> must be a series of expressions each identifying a
+	      style="verb">{namespaces}</spanx> MUST be a series of expressions each identifying a
 	      BULK namespace.
 	    </t>
 	  </section>
