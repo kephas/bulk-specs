@@ -1179,7 +1179,85 @@
 		is not the size of the enclosed expression, accidently or maliciously.
 	      </t>
 	    </section>
-	</section>
+
+	    <section title="Indexed data">
+	      <t>
+		When writing a stream containing a big number of expressions where an application
+		may want to access one of those expression without parsing all expressions before,
+		one could imagine as a solution to use pointer-like references that each use the
+		offset of some expression in the stream. This solution creates a security risk,
+		because if reading according to the pointers doesn't produce the same result as
+		parsing the stream without using them, an attacker might use this inconsistency to
+		their advantage, when they can expect one application to use pointers and another
+		application to use normal parsing, especially when the stream is big enough that
+		verifying the consistency of the pointers might be costly enough that it might not
+		be done or not in time to prevent the attack.
+	      </t>
+
+	      <t>
+		Because of that risk, whenever a stream includes indexed BULK expressions, that is,
+		expressions that are meant to be accessed by their position, indexed reading SHOULD
+		be the only way used to access them. To that end, indexed data SHOULD be stored in
+		arrays.
+	      </t>
+
+	      <section title="Indexable content">
+		<t>
+		  <list style="hanging">
+		    <t hangText="name"><spanx style="verb">0x17</spanx> (mnemonic: <spanx
+		    style="verb">indexable</spanx>)</t>
+		    <t hangText="shape"><spanx style="verb">( indexable {container}:Nat {content}:Bytes )</spanx></t>
+		  </list>
+		</t>
+		<t>
+		  This form contains in <spanx style="verb">{content}</spanx> the data that can be
+		  indexed somewhere else in the stream, with <xref target="indexed-bulk"><spanx
+		  style="verb">indexed-bulk</spanx></xref> or <xref target="indexed-array"><spanx
+		  style="verb">indexed-array</spanx></xref>. <spanx
+		  style="verb">{container}</spanx> is the identifier of this container and MUST be
+		  unique across the stream.
+		</t>
+	      </section>
+	      <section anchor="indexed-bulk" title="Indexed BULK expression">
+		<t>
+		  <list style="hanging">
+		    <t hangText="name"><spanx style="verb">0x18</spanx> (mnemonic: <spanx
+		    style="verb">indexed-bulk</spanx>)</t>
+		    <t hangText="shape"><spanx style="verb">( indexed-bulk {container}:Nat {start}:Nat )</spanx></t>
+		  </list>
+		</t>
+		<t>
+		  The semantics of this form is the same as if it was replaced by the BULK
+		  expression in the container whose identifier is <spanx
+		  style="verb">{container}</spanx> (by comparing the value of the unsigned
+		  integers, not how they are encoded, but an application SHOULD encode them
+		  identically), starting at offset <spanx style="verb">{start}</spanx>.
+		</t>
+	      </section>
+	      <section anchor="indexed-array" title="Indexed array">
+		<t>
+		  <list style="hanging">
+		    <t hangText="name"><spanx style="verb">0x19</spanx> (mnemonic: <spanx
+		    style="verb">indexed-array</spanx>)</t>
+		    <t hangText="shape"><spanx style="verb">( indexed-array {container}:Nat {start}:Nat {size}:Nat )</spanx></t>
+		  </list>
+		</t>
+		<t>
+		  The semantics of this form is an array whose content are <spanx
+		  style="verb">{size}</spanx> bytes, starting at offset <spanx
+		  style="verb">{start}</spanx> in the container whose identifier is <spanx
+		  style="verb">{container}</spanx> (by comparing the value of the unsigned
+		  integers, not how they are encoded, but an application SHOULD encode them
+		  identically).
+		</t>
+		<t>
+		  Compared to <spanx style="verb">indexed-bulk</spanx>, which can reference an
+		  array, <spanx style="verb">indexed-array</spanx> is useful when several different
+		  but overlapping sections of the same byte sequence are needed as arrays.
+		</t>
+	      </section>
+	    </section>
+	  </section>
 
 	<section anchor="arithmetic" title="Arithmetic">
 	  <t>

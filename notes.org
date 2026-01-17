@@ -51,6 +51,9 @@
    - 0x14 :: ( string* Encoding Bytes )
    - 0x15 :: ( blob Bytes )
    - 0x16 :: ( nested-bulk Boolean Bytes )
+   - 0x17 :: ( indexable Nat Bytes )
+   - 0x18 :: ( indexed-bulk Nat Nat )
+   - 0x19 :: ( indexed-array Nat Nat Nat )
    - 
    - 0x20 :: ( unsigned-int Bytes )
    - 0x21 :: ( signed-int Bytes )
