@@ -1158,20 +1158,20 @@
 	      <t>
 		If <spanx style="verb">{embedded}</spanx> is <spanx style="verb">true</spanx>, the
 		default semantics of this form is the same as the semantics of the BULK stream in
-		<spanx style="verb">{bulk}</spanx>, with the following exception. For example,
-		these two forms have the same semantics:
+		<spanx style="verb">{bulk}</spanx>. For example, these two forms have the same
+		semantics:
 		<list style="symbols">
 		  <t><spanx style="verb">( 4 5 )</spanx></t>
 		  <t><spanx style="verb">( nested-bulk true #[2] 4 5 )</spanx></t>
 		</list>
 	      </t>
 	      <t>
-		It could be a security risk if a single BULK stream could be parsed into two
-		different abstract yields by two conformant applications, so the semantics of the
-		whole stream cannot change whether <spanx style="verb">{bulk}</spanx> is decoded or
-		not. For that reason, any effects in the nested stream that affect how BULK
-		expressions are parsed or evaluated (like namespace associations or definitions)
-		MUST be isolated within that form.
+		This semantics obeys the following exception. It could be a security risk if a
+		single BULK stream could be parsed into two different abstract yields by two
+		conformant applications, so the semantics of the whole stream cannot change whether
+		<spanx style="verb">{bulk}</spanx> is decoded or not. For that reason, any effects
+		in the nested stream that affect how BULK expressions are parsed or evaluated (like
+		namespace associations or definitions) MUST be isolated within this form.
 	      </t>
 	      <t>
 		For the same security reason, there isn't a <spanx style="verb">( bulk-with-size
@@ -1193,7 +1193,6 @@
 		verifying the consistency of the pointers might be costly enough that it might not
 		be done or not in time to prevent the attack.
 	      </t>
-
 	      <t>
 		Because of that risk, whenever a stream includes indexed BULK expressions, that is,
 		expressions that are meant to be accessed by their position, indexed reading SHOULD
@@ -1214,8 +1213,8 @@
 		  indexed somewhere else in the stream, with <xref target="indexed-bulk"><spanx
 		  style="verb">indexed-bulk</spanx></xref> or <xref target="indexed-array"><spanx
 		  style="verb">indexed-array</spanx></xref>. <spanx
-		  style="verb">{container}</spanx> is the identifier of this container and MUST be
-		  unique across the stream.
+		  style="verb">{container}</spanx> is the identifier of this container and the
+		  value of the unsigned integer MUST be unique across the stream.
 		</t>
 	      </section>
 	      <section anchor="indexed-bulk" title="Indexed BULK expression">
@@ -2051,7 +2050,7 @@
     ( go:comment "white played a bad move" ( go:white 4 5 ) )
     ( go:comment "white could have played a decent move" ( go:white 5 6 ) )
     ( go:comment "white could have played a great move" ( go:white 5 7 ) ) )
-  ( go:white 4 5 ) )decent</artwork></figure>
+  ( go:white 4 5 ) )</artwork></figure>
       </t>
       <t>
 	Without the mnemonics, such an arity-carrying form basically costs 24 or 27 bytes to be
