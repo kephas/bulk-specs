@@ -1232,6 +1232,23 @@
 		  integers, not how they are encoded, but an application SHOULD encode them
 		  identically), starting at offset <spanx style="verb">{start}</spanx>.
 		</t>
+		<t>
+		  The goal of indexed data is to selectively parse only part of the BULK stream, so
+		  the same security risks as with <spanx style="verb">nested-bulk</spanx> are
+		  present. It could be a security risk if a single BULK stream could be parsed into
+		  two different abstract yields by two conformant applications, so the semantics of
+		  the whole stream cannot change whether the indexed expression is decoded or
+		  not. For that reason, any effects in the indexed expression that affect how BULK
+		  expressions are parsed or evaluated (like namespace associations or definitions)
+		  MUST be isolated within this form.
+		</t>
+		<t>
+		  Beware that, although all other default semantics of BULK definitions follow
+		  lexical scoping, any definition used inside an indexed expression that isn't
+		  defined inside that same indexed expression follows dynamic scoping with respect
+		  to any places where it's used. Any definition made inside an indexed expression
+		  still follows lexical scoping.
+		</t>
 	      </section>
 	      <section anchor="indexed-array" title="Indexed array">
 		<t>
