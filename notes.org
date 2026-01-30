@@ -32,7 +32,7 @@
    - 0x01 :: true
    - 0x02 :: false
    - 0x03 :: ( ns {marker}:Nat {id}:Expr )
-   - 0x04 :: ( package {id}:Expr {namespaces} )
+   - 0x04 :: ( package {id}:Expr {data}:Expr {namespaces} )
    - 0x05 :: ( import {base}:Nat {count}:Nat {id}:Expr )
    - 0x06 :: ( define Ref Expr )
    - 0x07 :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )

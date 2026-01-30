@@ -776,16 +776,23 @@
 	      <list style="hanging">
 		<t hangText="name"><spanx style="verb">0x04</spanx> (mnemonic: <spanx
 		style="verb">package</spanx>)</t>
-		<t hangText="shape"><spanx style="verb">( package {id}:Expr {namespaces}
-		)</spanx></t>
+		<t hangText="shape"><spanx style="verb">( package {id}:Expr {data}:Expr
+		{namespaces} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      This creates a package identified by <spanx style="verb">{id}</spanx>. Packages are
 	      immutable, <spanx style="verb">{id}</spanx> MUST be verifiable against the byte
-	      sequence <spanx style="verb">{namespaces}</spanx>. <spanx
+	      sequence <spanx style="verb">{data} {namespaces}</spanx>. <spanx
 	      style="verb">{namespaces}</spanx> MUST be a series of expressions each identifying a
 	      BULK namespace.
+	    </t>
+	    <t>
+	      If more data than <spanx style="verb">{id}</spanx> is needed to verify <spanx
+	      style="verb">{id}</spanx> against <spanx style="verb">{data} {namespaces}</spanx>
+	      (like the salt of a hash function, or the namespace of a UUID), this data should be
+	      provided by <spanx style="verb">{data}</spanx>. Else <spanx
+	      style="verb">{data}</spanx> MUST be <spanx style="verb">nil</spanx>.
 	    </t>
 	  </section>
 
@@ -931,10 +938,10 @@
 	    </t>
 	    <t>
 	      If more data than <spanx style="verb">{id}</spanx> is needed to verify <spanx
-	      style="verb">{id}</spanx> against <spanx style="verb">{definitions}</spanx> (like the
-	      salt of a hash function, or the namespace of a UUID), this data should be provided by
-	      <spanx style="verb">{data}</spanx>. Else <spanx style="verb">{data}</spanx> MUST be
-	      <spanx style="verb">nil</spanx>.
+	      style="verb">{id}</spanx> against <spanx style="verb">{marker} {data} {mnemonic}
+	      {doc} {definitions}</spanx> (like the salt of a hash function, or the namespace of a
+	      UUID), this data should be provided by <spanx style="verb">{data}</spanx>. Else
+	      <spanx style="verb">{data}</spanx> MUST be <spanx style="verb">nil</spanx>.
 	    </t>
 	    <t>
 	      A verifiable namespace wouldn't really be immutable if it used definitions from other
