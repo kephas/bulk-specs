@@ -942,11 +942,11 @@
 	      processing this form with an error when <spanx style="verb">{definitions}</spanx>
 	      contain references from namespaces that cannot be determined to be immutable
 	      themselves. The goal is to prevent a user or system to be unwittingly vulnerable, so
-	      an application MAY provide an option to accept a specific verifiable namespace, but an
-	      application MUST NOT provide an option to accept any vulnerable verifiable
-	      namespace. That is, an option like <spanx style="verb">--accept-ns
-	      8f82849556d74466</spanx> is acceptable but <spanx
-	      style="verb">--disable-immutability-check</spanx> is not.
+	      an application MAY provide an option to accept a specific verifiable namespace, but
+	      an application MUST NOT provide an option to accept any vulnerable verifiable
+	      namespace. That is, an application MAY have an option like <spanx
+	      style="verb">--accept-ns 8f82849556d74466</spanx> but MUST NOT have an option like
+	      <spanx style="verb">--disable-immutability-check</spanx>.
 	    </t>
 	  </section>
 

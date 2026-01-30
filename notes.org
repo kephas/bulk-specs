@@ -679,10 +679,10 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 *** TODO Principle
 *** TODO Security implications
 * Minimal BULK
-  : ( version 1 0 ) ( import 24 2 ( hash:shake256 #[8] 8B ) ) some:type #[0–63] {content}
+  : ( version 1 0 ) ( import 24 2 ( hash:shake128 #[8] 8B ) ) some:type #[0–63] {content}
   : |<---- 6 ---->| |<----------------- 19 ---------------->| |<----- 3 ----->|
 
-  : ( version 1 0 ) ( import 24 2 ( hash:shake256 #[8] 8B ) ) some:type # {size} {content}
+  : ( version 1 0 ) ( import 24 2 ( hash:shake128 #[8] 8B ) ) some:type # {size} {content}
   : |<---- 6 ---->| |<----------------- 19 ---------------->| |<-- 3 -->| 2/3/5/9
 
 
@@ -746,7 +746,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    But in BULK, =loggedBy= can be explicitly defined in terms of =logged=:
 
    #+BEGIN_SRC bulk
-   ( verifiable-ns 0x1800 {id} nil "wall"
+   ( verifiable-ns 0x1400 {id} nil "wall"
    "This vocabulary can be used to represent wall painting events."
 
    ( mnemonic/def nil "event" "( event {properties} )"
@@ -794,7 +794,7 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
    Example: let's define an extremely limited BARK with just manifests and SHA-3:
 
    #+BEGIN_SRC bulk
-   ( verifiable-ns 0x1800 ( bark-alpha:sha-3 {bark-alpha-hash} ) nil "bark-alpha"
+   ( verifiable-ns 0x1400 ( bark-alpha:sha-3 {bark-alpha-hash} ) nil "bark-alpha"
    "This vocabulary can be used to represent manifests."
 
    ( mnemonic/def nil "description" )
