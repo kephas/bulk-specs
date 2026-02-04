@@ -138,10 +138,11 @@
 	     - implementation should not resolve the name but look it up in the directory entries
                (that takes care of "/" but not of a ".." entry, this still needs checking, shame on
                Unix)
-       - 0x41 :: ( user {name} )
-	 - {name} can be anything, incl. string and Nat
-	   - multiple entries (e.g. "pierre"/1000)
-       - 0x42 :: ( group {name} )
+       - 0x41 :: ( user {id}:Expr )
+	 - {id} can be anything, incl. string and Nat
+	   - multiple entries (e.g. "pierre"/1000: =( user ( string "pierre" ) ) ( user (
+             unsigned-integer 1000 )=)
+       - 0x42 :: ( group {id}:Expr )
        - 0x43 :: contiguous
        - 0x44 :: ( access {time} )
        - 0x45 :: ( modification {time} )
@@ -198,7 +199,7 @@
        - 0x81 :: Tandem/NSK
        - 0x82 :: THEOS
      - 0x63 :: maximum-compression
-     - 0x64 :: fastest-comœpression
+     - 0x64 :: fastest-compression
      - 0x83 :: ( acorn-bbc-mos-file-type-info Bytes )
      - 0x84 :: ( apollo-file-type-info Bytes )
      - 0x85 :: ( cpio-compressed Bytes )
@@ -320,45 +321,6 @@
 
     This could represent a security risk, with some parsers not seeing an issue and others
     triggering it.
-
-** Lambda expressions
-   #+BEGIN_SRC bulk
-   ( verifiable-ns 24 {id} nil "λ"
-   "This vocabulary can be used to represent functions that can be evaluated."
-
-   ( mnemonic/def nil "lambda" "( lambda {var}:Ref {body} )" )
-
-   ( define 0x18FF "This reference is intended to be used as lambda function variable." )
-   ( mnemonic/def nil "a" 0x18FF )
-   ( mnemonic/def nil "b" 0x18FF )
-   ( mnemonic/def nil "c" 0x18FF )
-   ( mnemonic/def nil "d" 0x18FF )
-   ( mnemonic/def nil "e" 0x18FF )
-   ( mnemonic/def nil "f" 0x18FF )
-   ( mnemonic/def nil "g" 0x18FF )
-   ( mnemonic/def nil "h" 0x18FF )
-   ( mnemonic/def nil "i" 0x18FF )
-   ( mnemonic/def nil "j" 0x18FF )
-   ( mnemonic/def nil "k" 0x18FF )
-   ( mnemonic/def nil "l" 0x18FF )
-   ( mnemonic/def nil "m" 0x18FF )
-   ( mnemonic/def nil "n" 0x18FF )
-   ( mnemonic/def nil "o" 0x18FF )
-   ( mnemonic/def nil "p" 0x18FF )
-   ( mnemonic/def nil "q" 0x18FF )
-   ( mnemonic/def nil "r" 0x18FF )
-   ( mnemonic/def nil "s" 0x18FF )
-   ( mnemonic/def nil "t" 0x18FF )
-   ( mnemonic/def nil "u" 0x18FF )
-   ( mnemonic/def nil "v" 0x18FF )
-   ( mnemonic/def nil "w" 0x18FF )
-   ( mnemonic/def nil "x" 0x18FF )
-   ( mnemonic/def nil "y" 0x18FF )
-   ( mnemonic/def nil "z" 0x18FF )
-
-   ( mnemonic/def nil "id" "Somestimes a form is needed just to add a semantic aspect to an expression without actually changing its value for most purposes. For these cases, a reference can be given the value of id. Some processing applications will substitute their own evaluation to this one to implement that semantic." ( lambda x x ) )
-   )
-   #+END_SRC
 
 * Useful vocabularies
 ** RDF 1.0
@@ -679,10 +641,10 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 *** TODO Principle
 *** TODO Security implications
 * Minimal BULK
-  : ( version 1 0 ) ( import 24 2 ( hash:shake128 #[8] 8B ) ) some:type #[0–63] {content}
+  : ( version 1 0 ) ( import 20 2 ( hash:shake128 #[8] 8B ) ) some:type #[0–63] {content}
   : |<---- 6 ---->| |<----------------- 19 ---------------->| |<----- 3 ----->|
 
-  : ( version 1 0 ) ( import 24 2 ( hash:shake128 #[8] 8B ) ) some:type # {size} {content}
+  : ( version 1 0 ) ( import 20 2 ( hash:shake128 #[8] 8B ) ) some:type # {size} {content}
   : |<---- 6 ---->| |<----------------- 19 ---------------->| |<-- 3 -->| 2/3/5/9
 
 
