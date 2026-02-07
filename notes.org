@@ -28,52 +28,76 @@
 ** BULK core namespace
    NSID: 0x10
 
-   - 0x00 :: ( version Nat Nat )
-   - 0x01 :: true
-   - 0x02 :: false
-   - 0x03 :: ( ns {marker}:Nat {id}:Expr )
-   - 0x04 :: ( package {id}:Expr {data}:Expr {namespaces} )
-   - 0x05 :: ( import {base}:Nat {count}:Nat {id}:Expr )
-   - 0x06 :: ( define Ref Expr )
-   - 0x07 :: ( mnemonic/def {name}:Expr {mnemonic}:String {doc}:Expr {value} )
-   - 0x08 :: ( ns-mnemonic {ns}:Expr {mnemonic}:String {doc} )
-   - 0x09 :: ( verifiable-ns {id}:UniqueID {marker}:Nat {data}:Expr {mnemonic}:Expr {doc}:Expr
-     {definitions} )
-     - ( mnemonic/def nil {…} ) defines the next unattributed ref (starting at 0)
+   - 0x00 :: =( version Nat Nat )=
+   - 0x01 :: =import=
+     - =( import {marker}:Nat ( namespace {id}:Expr ) )=
+     - =( import {base}:Nat ( package {id}:Expr {count}:Nat ) )=
+   - 0x02 :: =namespace=
+   - 0x03 :: =package=
+   - 0x04 :: =( define {thing}:Expr Expr )=
+     - =( define ( namespace {id}:Expr {marker}:Nat ) {defs}:Bytes )=
+     - temporary =( define ( namespace {id} ) false ([ {data}:Expr {mnemonic}:Expr {doc}:Expr
+       {definitions} ]) )=
+     - =( define ( package {id} ) {namespaces}:Bytes )=
+     - =( define Ref {value}:Expr )=
+   - 0x05 :: =( mnemonic {thing}:Expr {mnemonic}:String )=
+     - =( mnemonic ( namespace {marker}:Nat ) {mnemonic}:String )=
+     - =( mnemonic Ref {mnemonic}:String )=
+   - 0x06 :: =( explain {thing}:Expr {doc}:Expr )=
+   - 
+   - 0x07 :: =string=
+     - =( string Bytes )=
+     - =( string Encoding Bytes )=
+     - =( define string Encoding )=
+   - 0x08 :: =bulk=
+     - =( bulk Bytes )=
+     - =( bulk {exprs} )=
+       - the semantics is that this has the value of the last expression
+   - 0x09 :: ( blob Bytes )
    - 0x0A :: ( concat {a1} {a2} )
-   - 0x0B :: ( subst {code} )
-   - 0x0C :: ( arg Nat )
-   - 0x0D :: ( rest Nat )
-   - 0x10 :: ( stringenc {enc}:Encoding )
-   - 0x11 :: ( iana-charset Nat ):Encoding
-   - 0x12 :: ( codepage Nat ):Encoding
-   - 0x13 :: ( string Bytes )
-   - 0x14 :: ( string* Encoding Bytes )
-   - 0x15 :: ( blob Bytes )
-   - 0x16 :: ( nested-bulk Boolean Bytes )
-   - 0x17 :: ( indexable Nat Bytes )
-   - 0x18 :: ( indexed-bulk Nat Nat )
-   - 0x19 :: ( indexed-array Nat Nat Nat )
    - 
-   - 0x20 :: ( unsigned-int Bytes )
-   - 0x21 :: ( signed-int Bytes )
-   - 0x22 :: ( fraction Int Int )
-   - 0x23 :: ( binary-float Bytes )
-   - 0x24 :: ( decimal-float Bytes )
-   - 0x25 :: ( binary-fixed Nat Bytes )
-   - 0x26 :: ( decimal-fixed Nat Bytes )
-   - 0x27 :: decimal2
+   - 0x0B :: ( indexable Nat Bytes )
+   - 0x0C :: ( indexed-bulk Nat Nat )
+   - 0x0D :: ( indexed-array Nat Nat Nat )
    - 
-   - 0x30 :: ( prefix {bytecode} )
-   - 0x31 :: ( prefix* ( {arities} ) {bytecode} )
-     - {arities} is a sequence of: ( Nat {refs} )
-   - 0x32 :: ( postfix {bytecode} )
-   - 0x33 :: ( postfix* ( {arities} ) {bytecode} )
-   - 0x34 :: ( arity Nat {refs} )
+   - 0x0E :: =true=
+   - 0x0F :: =false=
+   - 
+   - 0x10 :: ( subst {code} )
+   - 0x11 :: ( arg Nat )
+   - 0x12 :: ( rest Nat )
+   - 
+   - 0x13 :: =( unsigned-int Bytes ):Nat=
+   - 0x14 :: =( signed-int Bytes ):Int=
+   - 0x15 :: =( fraction Int Int )=
+   - 0x16 :: =( binary-float Bytes )=
+   - 0x17 :: =( decimal-float Bytes )=
+   - 0x18 :: =( binary-fixed Nat Bytes )=
+   - 0x19 :: =( decimal-fixed Nat Bytes )=
+   - 
+   - 0x1A :: =prefix=
+     - =( prefix {bytecode} )=
+   - 0x1B :: =postfix=
+     - =( postfix {bytecode} )=
+   - 0x1C :: =arity=
+     - =( define ( arity {contexts} ) {arities} )=
+       - ={contexts}= can contain =prefix=, =postfix=, or any other reference
+       - ={arities}= is a sequence of expressions that can be shaped:
+	 - =nil= meaning all known arities should be forgotten
+	 - =( {kind}:Expr {target} )=
+	   - if ={kind}= is =nil=, it sets all references designated by ={target}= as operands
+	   - if ={kind}= is typed =Nat=, it sets all references designated by ={target}= as
+             operators of arity ={kind}=
+	   - if ={target}= is =nil=, it designates all references with unknown arity
+	   - if ={target}= is a sequence of references, it designates each of those
+   - 
+   - 0x1D :: =( iana-charset Nat ):Encoding=
 
-** BULK API Model
-   - needed at least for hashing: access the bytes of an expression (API to get positions to read
-     the bytes independently or API to get the bytes directly)
+** BULK utils
+   - decimal2 :: =( subst ( decimal-fixed 2 ) )=
+   - prefix-with :: =( subst ( bulk ( define prefix ( arg 0 ) ) ( prefix ( rest 1 ) ) ) )=
+   - property-list :: =( subst ( bulk ( define prefix nil ) ( define prefix ( nil true ) ) ( prefix
+     ( rest 0 ) ) ) )=
 
 ** BARK: BULK Archive
    When needed, metadata can be any expression (=nil= SHOULD be used to indicate no metadata).
@@ -115,8 +139,6 @@
      - preservable GBC form
    - 0x13 :: gbc*~>
      - preservable GBC form whose payload was modified
-   - 0x03 :: ( bulk-stream {stream} )
-   - 0x04 :: ( bulk-bytes {bulk}:Bytes )
    -
    - 0x30 :: ( compressed gbc| {method}:MeTOD Bytes )
    - 0x31 :: deflate
@@ -313,14 +335,6 @@
       - has a limited choice of compression/hash
     - gzip
     - cpio, pax
-
-*** BULK stream with size
-    BULK cannot contain a form like =( bulk/size {size}:Nat {bulk} )= because size could be
-    erroneous and then parsing the whole stream or skipping ={bulk}= would give two different
-    results (or more if ={bulk}= contains other such erroneous forms.
-
-    This could represent a security risk, with some parsers not seeing an issue and others
-    triggering it.
 
 * Useful vocabularies
 ** RDF 1.0
@@ -641,11 +655,11 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 *** TODO Principle
 *** TODO Security implications
 * Minimal BULK
-  : ( version 1 0 ) ( import 20 2 ( hash:shake128 #[8] 8B ) ) some:type #[0–63] {content}
-  : |<---- 6 ---->| |<----------------- 19 ---------------->| |<----- 3 ----->|
+  : ( version 1 0 ) ( import ( package 20 ( hash:shake128 #[8] 8B 2 ) ) ) some:type #[0–63] {content}
+  : |<---- 6 ---->| |<----------------------- 23 ---------------------->| |<----- 3 ----->|
 
-  : ( version 1 0 ) ( import 20 2 ( hash:shake128 #[8] 8B ) ) some:type # {size} {content}
-  : |<---- 6 ---->| |<----------------- 19 ---------------->| |<-- 3 -->| 2/3/5/9
+  : ( version 1 0 ) ( import ( package 20 ( hash:shake128 #[8] 8B 2 ) ) ) some:type # {size} {content}
+  : |<---- 6 ---->| |<----------------------- 23 ---------------------->| |<-- 3 -->| 2/3/5/9
 
 
   When a profile is known (like a specific file extension for typed blobs):
@@ -655,11 +669,11 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 
   | content | BULK overhead | with profile |
   |---------+---------------+--------------|
-  | 63B     | 28B           | 11B          |
-  | 255B    | 30B           | 13B          |
-  | 65kB    | 31B           | 14B          |
-  | 4GB     | 33B           | 16B          |
-  | 18EB    | 37B           | 20B          |
+  | 63B     | 32B           | 11B          |
+  | 255B    | 34B           | 13B          |
+  | 65kB    | 35B           | 14B          |
+  | 4GB     | 37B           | 16B          |
+  | 18EB    | 41B           | 20B          |
   |         |               |              |
 
 * The power of abstraction
@@ -749,34 +763,42 @@ As a rule, each of these forms can contain `nil` as a first expression to denote
 
 ** Forward compatibility
    BULK makes it possible to create new versions of vocabularies that encompass previous versions,
-   in a way that minimizes implementation complexity. Whenever a new version of a vocabulary is
-   used, an application can use an alternative definition for the previous version that maps it to
-   the new version.
+   in a way that minimizes implementation complexity.
 
-   Example: let's define an extremely limited BARK with just manifests and SHA-3:
+   The first tool is aliasing: reuse names and values from existing namespaces, even in
+   bootstrapping namespaces:
 
-   #+BEGIN_SRC bulk
-   ( verifiable-ns 0x1400 ( bark-alpha:sha-3 {bark-alpha-hash} ) nil "bark-alpha"
-   "This vocabulary can be used to represent manifests."
-
-   ( mnemonic/def nil "description" )
-   ( mnemonic/def nil "metadata" )
-   ( mnemonic/def nil "about" )
-   ( mnemonic/def nil "path" )
-   ( mnemonic/def nil "hash" )
-   ( mnemonic/def nil "sha-3" )
+   #+BEGIN_SRC bulktext
+     ( import ( namespace 20 ( oldhash:shake128 {oldhashid} ) ) )
+     ( define ( namespace ( newhash:shake128 {newhashid} ) 21 )
+       ([ nil
+	  ( explain ( namespace 21 ) "The new, shiny hash namespace!" )
+	  ( define newhash:shake128 oldhash:shake128 ) ]) )
    #+END_SRC
 
-   A manifest file could look like:
+   With this, new namespaces can be created and applications don't need to change the existing
+   code.
 
-   #+BEGIN_SRC bulk
-     ( bulk:ns 0x1800 ( sha-3 {bark-alpha-hash} ) )
-     ( description
-       ( metadata
-	 ( about ( path "movie.mp4" ) )
-	 ( hash ( sha-3 {hash} ) ) ) )
-     ( description
-       ( metadata
-	 ( about ( path "en.srt" ) )
-	 ( hash ( sha-3 {hash} ) ) ) )
+   One possible downside with aliasing is that if the number of aliasing namespaces grow, you might
+   end up with the implementation of an important namespace scattered across a bunch of aliased
+   legacy namespaces. In that case, a second tool is to reverse to direction of aliasing: all the
+   implementation lives in the current namespace, cohesively, and old namespaces are aliases to the
+   new:
+
+   #+BEGIN_SRC bulktext
+     ( import ( namespace 20 ( newhash:shake128 {newhashid} ) ) )
+     ( define ( namespace ( oldhash:shake128 {oldhashid} ) 21 )
+       ([ nil
+	  ( explain ( namespace 20 ) "Ye olde hashing namespace." )
+	  ( define oldhash:shake128 newhash:shake128 ) ]) )
    #+END_SRC
+
+   Such a new namespace definition would obviously have a different digest than the original, and
+   namespace verification, as is, would fail, so reverse aliasing would need the application to
+   provide a dedicated espace hatch it. Following the Principle of Least Authority, it should not
+   be possible for the escape hatch to be something that can be requested from a BULK stream, so
+   there is no provision for it in BULK syntax.
+
+   One obvious design would be for the application to have a privileged storage for reverse
+   aliasing namespace definitions. Where this could still be deemed not safe enough, reverse
+   aliasing namespaces could be defined in the application's code.
