@@ -43,15 +43,16 @@
     <section anchor="intro" title="Introduction">
       <section title="Rationale">
         <t>
-          This specification aims at finding an original trade-off between uniformity, generality,
-          extensibility, decentralization, compactness and processing speed for a data format. It
-          is our opinion that every widely used existing format occupy a different position than
-          this one in the solution space for formats, that none is better on all axes, and that
-          this one is the current best on several axes, hence this new design. It is also our
-          opinion that some of those existing formats constitute an optimal solution for their
-          specific use case, either in a absolute sense, or at least at the time of their
-          design. But the ever-changing field of IT now faces new challenges that call for a new
-          approach.
+          This specification aims at finding an original trade-off between transparency, syntax
+          complexity, generality, extensibility, decentralization, discoverability, compactness,
+          processing speed and processing footprint for a data format (cf. <xref target="concepts"
+          format="none">definitions</xref>). It is our opinion that every widely used existing
+          format occupy a different position than this one in the solution space for formats, that
+          none is better on all axes, and that this one is the current best on several axes, hence
+          this new design. It is also our opinion that some of those existing formats constitute an
+          optimal solution for their specific use case, either in a absolute sense, or at least at
+          the time of their design. But the ever-changing field of IT now faces new challenges that
+          call for a new approach.
         </t>
 	<t>
 	  In particular, whereas the previous trend for Internet and Web standards and programming
@@ -64,21 +65,27 @@
 	  learnt in the previous switch from binary to plain text can now be applied to efficient
 	  binary syntaxes.
 	</t>
-	<section title="Definitions">
+	<section anchor="concepts" title="Definitions">
 	  <t>
-	    By uniformity, we mean the property of a syntax that can be parsed even by an
-	    application that doesn't understand the semantics of every part of the processed
-	    data. Of course, almost all syntaxes that feature uniformity contain a limited number
-	    of non uniform elements. Also, uniformity really only has value in the face of
-	    extension, as a fixed syntax doesn't need uniformity (it only makes the implementation
-	    simpler).
+	    By transparency, we mean the property of a format that can be parsed even by an
+	    application that doesn't understand the semantics of every part of the processed data.
 	  </t>
 	  <t>
-	    Almost all extensible syntaxes have their extensible part uniform to a great degree. In
-	    this specification, uniformity is hence evaluated on two criteria: first, the number of
-	    non uniform elements (and, incidentally, their diversity), second, the fact that the
-	    uniformity of the extensible part is not a limitation to the users (i.e. that the
-	    temptation to extend the format in a non-uniform way is as absent as possible).
+	    By syntax complexity, we mean the number of different syntactic structures of the
+	    format.
+	  </t>
+	  <t>
+	    High transparency and low syntax complexity mostly have value in the face of extension,
+	    as a fixed format doesn't need either, but even in that case, they might make the
+	    overall format and its implementation simpler, which can have a lot of value by reducing
+	    the risk of incompatible implementations and the likelihood that complex or opaque
+	    elements open up security vulnerabilities.
+	  </t>
+	  <t>
+	    Almost all extensible formats have a high transparency and low syntax complexity for
+	    their extensible part to a great degree. The goal was thus to achieve a low syntax
+	    complexity for the whole format, while still having high generality (i.e. that extending
+	    the format without a new syntactic structure is as easy and practical as possible).
 	  </t>
 	  <t>
 	    A good counter-example is found in most programming languages. Adding a new branching
@@ -86,51 +93,77 @@
 	    implementation. Such a construct either cannot be defined by user code (because of
 	    evaluation rules) or can in a terribly verbose and inconvenient way (with lots of
 	    boilerplate code). Notable exceptions to this limitation of programming languages are
-	    Lisp, Haskell and stack programming languages.
+	    Lisp languages (e.g. Common Lisp, Scheme or Clojure), languages with lazy evaluation
+	    (e.g. Haskell, Purescript or Agda) and stack (or concatenative) languages (e.g. Forth,
+	    Postscript, Factor).
 	  </t>
 	  <t>
-	    On the other hand, a stack programming language is the canonical example of a
-	    non-uniform language. Each operator takes a number of operands from the stack. Not
-	    knowing the arity of an operator makes it impossible to continue parsing, even when its
-	    evaluation was optional to the final processing. In the design space, stack programming
-	    languages completely sacrifice uniformity to achieve one of the highest combination of
-	    extensibility, compactness and speed of processing.
+	    On the other hand, stack languages are the canonical examples of non-transparent
+	    formats. Each operator takes a number of operands from the stack. Not knowing the arity
+	    of an operator makes it impossible to continue parsing, even when its evaluation was
+	    optional to the final processing. In the design space, stack languages completely
+	    sacrifice transparency to achieve one of the highest combination of extensibility,
+	    compactness and speed of processing.
 	  </t>
 	  <t>
-	    By generality, we mean the ability of a syntax to lend itself to describe any kind of
-	    data with a reasonable (or better yet, high) level of compactness and simplicity. For
-	    example, although both arrays and linked lists could be considered very general as they
-	    are both able to store any kind of data, they actually are at the respective cost of
-	    complexity (arrays need the embedding of data structure in the data or in the
-	    processing logic) and size (in-memory linked lists can waste as much as half or two
-	    third of the space for the overhead of the data structure).
+	    By generality, we mean the ability of a format to describe any type of data with a
+	    reasonable (or better yet, high) level of compactness and simplicity. For example,
+	    although both arrays and linked lists could be considered very general as they are both
+	    able to store any kind of data, they actually are at the cost of complexity and
+	    transparency for arrays (they need the embedding of data structure in the data or in the
+	    processing logic) and size for linked lists (in-memory linked lists can waste as much as
+	    half or two third of the space for the overhead of the data structure).
 	  </t>
 	  <t>
-	    By decentralization, we mean the ability to extend the syntax in a way that avoid
-	    naming collisions without the use of a central registry. Note that the DNS, as we use
-	    it, is NOT decentralized in this sense, but distributed, as it cannot work without its
-	    root servers and prior knowledge of their location.
+	    By extensibility, we mean the ability of a format to encode types and values that were
+	    not anticipated when the syntax was designed.
+	  </t>
+	  <t>
+	    By decentralization, we mean the ability to encode new types and values while avoiding
+	    name collisions, but without the need of coordination. Note that the DNS, as we use it
+	    (e.g. in domain names in module names in some programming languages, or in URIs in XML
+	    Namespaces), is <em>not</em> decentralized in this sense, but distributed, as it cannot
+	    work without its root servers and prior knowledge of their location.
+	  </t>
+	  <t>
+	    By discoverability, we mean the ability for a processing application to automatically
+	    discover new extensions when it encounters their use in data, with no prior knowledge of
+	    them beforehand.
+	  </t>
+	  <t>
+	    By compactness, we mean the ability of a format to encode as many diverse types of data
+	    as possible with an overall size as small as possible.
+	  </t>
+	  <t>
+	    By processing speed, we mean the property of a format that lends itself to benefit from
+	    current computing architectures to be processed at high speed overall (e.g. processing
+	    can be fast in itself, some shortcuts can be taken, or parallelization is possible).
+	  </t>
+	  <t>
+	    By processing footprint, we mean the ability of a format to be processed while using a
+	    low, possibly constrained quantity of memory.
 	  </t>
 	</section>
 	<section title="State of the art">
 	  <t>
-	    Uniformity, generality and extensibility are usually highly-valued traits in formats
-	    design. Programming languages obviously feature them foremost, although their
-	    generality usually stops at what they are supposed to express: procedures. Most of them
-	    are ill-suited to represent arbitrary data, but notable exceptions include Lisp (where
-	    "code is data") and Javascript, from which a subset has been extracted to exchange
-	    data, JSON, which has seen a tremendous success for this purpose. JSON may lack in
-	    generality and compactness, but its design makes its parsing really straightforward and
-	    fast. All of them, though, lack decentralization. Some of them make it possible to
-	    extend them in a distributed way if some discipline is followed (for example, by naming
-	    modules after domain names), but the discipline is not mandatory (and even with domain
-	    names, a change of ownership makes it possible for name collisions).
+	    Transparency, generality and extensibility are usually highly-valued traits in formats
+	    design. Programming languages obviously feature them foremost, although their generality
+	    usually stops at what they are supposed to express: procedures. Most of them are
+	    ill-suited to represent arbitrary data, but notable exceptions include Lisp (where "code
+	    is data") and Javascript, from which a subset has been extracted to exchange data, JSON,
+	    which has seen a tremendous success for this purpose. JSON may have some caveats with
+	    regards to generality and a relatively low compactness, but its design makes its parsing
+	    really straightforward and fast. All of them, though, lack decentralization and
+	    discoverability. Some of them make it possible to extend them in a distributed way if
+	    some discipline is followed (for example, by naming modules after domain names), but the
+	    discipline is not mandatory (and even with domain names, a change of ownership makes it
+	    possible for name collisions).
 	  </t>
 	  <t>
-	    The SGML/XML family of formats also feature uniformity, generality and extensibility
-	    and actually fare much better than programming languages on the three fronts. XML
-	    namespaces also make XML naming distributed and there have been attempts at making it
-	    compact (e.g. EXI from W3C, Fast Infoset from ISO/ITU or EBML).
+	    The SGML/XML family of formats also feature good transparency, syntax complexity,
+	    generality and extensibility and actually fare much better than programming languages on
+	    those axes. XML namespaces also make XML naming distributed and there have been attempts
+	    at making it compact (e.g. EXI from W3C, Fast Infoset from ISO/ITU or EBML).
 	  </t>
 	  <t>
 	    All the previously cited formats clearly lack compactness, although just applying
@@ -139,32 +172,39 @@
 	    address their ineffectiveness at storing arbitrary bytes.
 	  </t>
 	  <t>
-	    So-called binary formats pretty much exhibit the opposite trade-offs. Most of them are
-	    not uniform to achieve better compactness. Some are specifically designed for a great
-	    generality, but many lack extensibility. When they are extensible, it's never in a
-	    decentralized way, again for reasons that have to do with compactness. They are usually
-	    extremely fast to parse.
+	    Neither JSON nor XML are suitable for streaming and the whole document must usually be
+	    parsed entirely before its content can be processed, which impacts processsing speed and
+	    footprint.
+	  </t>
+	  <t>
+	    So-called binary formats pretty much exhibit the opposite trade-offs. Most of them have
+	    high syntax complexity, low generality and low extensibility to achieve better
+	    compactness. Some are specifically designed for a great generality, but many lack
+	    extensibility. When they are extensible, it's never in a decentralized way nor are they
+	    discoverable, again for reasons that have to do with compactness. They are usually
+	    extremely fast to parse, and some are designed to be streamed or at least processed
+	    incrementally.
 	  </t>
 	  <t>
 	    Actually, many binary formats are not so much formats as they are formats frameworks,
 	    and exclude extensibility by design. For each use case, an IDL compiler creates a brand
 	    new format that is essentially incompatible with all other formats created by the same
-	    compiler (EBML specifically cites this property among its own disadvantages). If the
-	    IDL compiler and framework are correctly designed, such a format usually represent an
-	    optimum in compactness and speed of processing, as the compiler can also automatically
-	    generate an ad-hoc optimized parser.
+	    compiler (EBML specifically cites this property among its own disadvantages). If the IDL
+	    compiler and framework are well designed, such a format can represent an optimum in
+	    compactness and speed of processing, as the compiler can also automatically generate an
+	    ad-hoc optimized parser.
 	  </t>
 	  <t>
-	    Where extensibility has been planned in existing formats, it often doesn't get used
-	    that much or at all because of the complications around it. Many binary formats include
-	    reserved values meant to extend them to future uses, like the <spanx
+	    Where extensibility has been planned in existing binary formats, it often doesn't get
+	    used that much or at all because of the complications around it. Many binary formats
+	    include reserved values meant to extend them to future uses, like the <spanx
 	    style="verb">CM</spanx> field in the ZIP format. A case like this one faces an
 	    chicken-and-egg problem: if you don't write and get a specification officially adopted,
 	    implementations might not want to include your extension, but if your extension is
-	    purely theoretical and hasn't been tested in the wild, you may face resistance to get
-	    it officially adopted. This is probably why even though most compression or compressed
+	    purely theoretical and hasn't been tested in the wild, you may face resistance to get it
+	    officially adopted. This is probably why even though most compression or compressed
 	    archive formats include the ability to later encode other compression methods, each new
-	    compression method usually comes with its own format.
+	    compression method usually comes with its own new format.
 	  </t>
 	  <t>
 	    When extensions are managed with any form of registry, another issue is that you
