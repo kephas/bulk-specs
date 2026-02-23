@@ -82,8 +82,8 @@
 	    elements open up security vulnerabilities.
 	  </t>
 	  <t>
-	    Almost all extensible formats have a high transparency and low syntax complexity for
-	    their extensible part to a great degree. The goal was thus to achieve a low syntax
+	    Almost all extensible formats have a relatively high transparency and low syntax
+	    complexity for their extensible part. The goal was thus to achieve a low syntax
 	    complexity for the whole format, while still having high generality (i.e. that extending
 	    the format without a new syntactic structure is as easy and practical as possible).
 	  </t>
@@ -107,12 +107,12 @@
 	  </t>
 	  <t>
 	    By generality, we mean the ability of a format to describe any type of data with a
-	    reasonable (or better yet, high) level of compactness and simplicity. For example,
-	    although both arrays and linked lists could be considered very general as they are both
-	    able to store any kind of data, they actually are at the cost of complexity and
-	    transparency for arrays (they need the embedding of data structure in the data or in the
-	    processing logic) and size for linked lists (in-memory linked lists can waste as much as
-	    half or two third of the space for the overhead of the data structure).
+	    reasonable (or better yet, high) level of compactness and simplicity. By analogy with
+	    data structures, while both arrays and linked lists are both able to store any kind of
+	    data, they actually do at the cost of complexity and transparency for arrays (they need
+	    the embedding of data structure in the data or in the processing logic) and size for
+	    linked lists (in-memory linked lists can waste as much as half or two third of the space
+	    for the overhead of the data structure).
 	  </t>
 	  <t>
 	    By extensibility, we mean the ability of a format to encode types and values that were
@@ -223,18 +223,18 @@
 	  of expressions.
 	</t>
 	<t>
-	  The syntax of forms is entirely uniform, without a single exception: a
-	  starting byte marker, a sequence of expressions and an ending byte marker.
+	  Forms have a simple syntax: a starting byte marker, a sequence of expressions and an
+	  ending byte marker.
 	</t>
 	<t>
-	  Atoms have have a special syntax, for efficiency purposes: they start with a marker byte,
-	  followed by a static or dynamic number of bytes, depending on the type. But there are
-	  only 5 kinds: the nil atom, generic arrays, small arrays, small unsigned integers and
+	  Atoms each have a special syntax, for compactness purposes: they start with a marker byte,
+	  followed by a static or dynamic number of bytes, depending on the type. But there are only
+	  5 kinds: the nil atom, generic arrays, small arrays, small unsigned integers and
 	  references.
 	</t>
 	<t>
-	  Even booleans and floating-point numbers follow the uniform syntax that every other
-	  expression follows.
+	  Even booleans and floating-point numbers use this existing syntax without the need for
+	  special cases.
 	</t>
 	<t>
 	  References consist of a namespace marker (in almost all cases, a single byte) followed by
@@ -248,7 +248,7 @@
 	  identifier guaranteed to be unique without coordination (like a UUID or cryptographical
 	  hash), thus ensuring decentralized extensibility. The stream can be processed even if the
 	  application doesn't recognize the namespace. Parsing remains possible thanks to the
-	  uniform syntax.
+	  transparent syntax.
 	</t>
 	<t>
 	  Combination of BULK namespaces, BULK streams and even other formats doesn't need any
@@ -256,9 +256,8 @@
 	  <list style="symbols">
 	    <t>
 	      The content of a BULK stream, enclosed in form starting and ending byte markers,
-	      constitute a valid BULK expression. Thus BULK streams can be packed or annotated
-	      within a BULK stream without modification. Annotation use cases include adding
-	      metadata or cryptographic signature.
+	      constitute a valid BULK expression. Thus BULK streams can be aggregated or annotated
+	      within a BULK stream without modification.
 	    </t>
 	    <t>
 	      A BULK format could specify in its syntax the place for an expression holding
@@ -449,7 +448,7 @@
 	    style="verb">EagerFunction</spanx> also has type <spanx style="verb">Function</spanx>.
 	  </t>
 	  <t>
-	    A form whose first expression doesn't have type <spanx style="verb">Function</spanx>
+	    A form whose first expression doesn't have the type <spanx style="verb">Function</spanx>
 	    evaluates to itself.
 	  </t>
 	  <t>
@@ -494,10 +493,7 @@
 	  <t>
 	    In a shape, when a byte sequence must yield a single expression, it has the type <spanx
 	    style="verb">Expr</spanx>. So the last two examples fit the shape <spanx style="verb">(
-	    foo {seq}:Expr )</spanx> but not the first. When a byte sequence must yield a form, it
-	    has type <spanx style="verb">Form</spanx>. Thus the shape <spanx style="verb">( foo
-	    {bar}:Form )</spanx> is equivalent to <spanx style="verb">( foo ( {bar} )
-	    )</spanx>. Either one MAY be used.
+	    foo {seq}:Expr )</spanx> but not the first.
 	  </t>
 	</section>
       </section>
@@ -1518,7 +1514,7 @@
 	    </t>
 	    <t>Example: the evaluation of</t>
 	    <t><figure><artwork>( bulk
- ( define ( arity prefix ) ( 2 go:black ) )
+ ( define ( arity prefix ) ( nil go:game ) ( 2 go:black ) )
  ( prefix go:game go:black 1 2 go:black 3 4 go:black 5 6 )
 	    </artwork></figure></t>
 	    <t>is</t>
@@ -1553,7 +1549,7 @@
 	    </t>
 	    <t> Example: the evaluation of </t>
 	    <t><figure><artwork>( bulk
- ( define ( arity postfix ) ( 2 go:black go:white go:comment go:alternative ) )
+ ( define ( arity postfix ) ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
  ( postfix
   go:game
   1 2 go:black
