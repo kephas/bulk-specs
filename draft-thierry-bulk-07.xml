@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0"?> <!-- -*- fill-column:100; -*- -->
 <?xml-stylesheet type="text/xsl" href="lib/rfc2629.xslt"?>
 <?rfc toc="yes" ?>
 <?rfc symrefs="yes" ?>
@@ -834,16 +834,8 @@
 		Verifiable namespaces are meant to be immutable, but that would be circumvented if
 		they were built upon namespaces that aren't. A verifiable namespace that doesn't
 		use names from any other namespaces is an immutable namespace. A verifiable
-		namespace that only uses names from immutable namespaces is an immutable
-		namespace. To that effect, an application SHOULD stop processing this form with an
-		error when <spanx style="verb">{def}</spanx> contains references from namespaces
-		that cannot be determined to be immutable themselves. The goal is to prevent a user
-		or system to be unwittingly vulnerable, so an application MAY provide an option to
-		accept a specific verifiable namespace, but an application MUST NOT provide an
-		option to accept any vulnerable verifiable namespace. That is, an application MAY
-		have an option like <spanx style="verb">--accept-ns 8f82849556d74466</spanx> but
-		MUST NOT have an option like <spanx
-		style="verb">--disable-immutability-check</spanx>.
+		namespace that only uses names from immutable namespaces as imported within the
+		verified definition is an immutable namespace..
 	      </t>
 	      <section anchor="bootstrap" title="Bootstrapping verification">
 		<t>
@@ -1960,14 +1952,29 @@
       </t>
       <t>
 	Any namespace that is not a copy for its context but the object retained by the application
-	afterwards, gives authority to make long-lasting definitions. Such a namespace is called
-	lasting here.
+	afterwards, gives authority to make long-lasting definitions. A namespace that is stored by
+	the processing application after evaluating a BULK stream is called a lasting namespace.
       </t>
+      <t>
+	Note that there are two ways to define a namespace in a BULK stream: using only the
+	definition in the <spanx style="verb">( define ( namespace {…} )</spanx> form, or using this
+	(possibly empty) definition as modified by other definitions (in the same BULK stream or
+	not). The former is called the initial definition, the latter the amended definition.
+      </t>
+      <section title="Complete authority">
+	<t>
+	  When the amended definitions of all namespaces constitue lasting namespaces, it means that
+	  the evaluation of the BULK stream can modify any existing namespace. This level of
+	  authority might be useful for a handful of privileged BULK streams acting as configuration
+	  of the application (e.g. to achieve reverse aliasing, see <xref target="fwdCompat"/>).
+	</t>
+      </section>
       <section title="Selective authority">
 	<t>
 	  A number of lasting namespaces are included for the abstract yield. Their unique
 	  identifiers are agreed out-of-band. The disadvantage of this solution is that it needs
-	  prior agreement on the definable namespaces.
+	  prior agreement on the definable namespaces. This may be a safer way than complete
+	  authority to achieve reverse aliasing (see <xref target="fwdCompat"/>).
 	</t>
       </section>
       <section title="Open authority">
@@ -1988,10 +1995,35 @@
 	  namespaces (in which case several agents can present the same definition to a processing
 	  application without conflict).
 	</t>
+	<t>
+	  A processing application could have a configuration setting to select what will generate
+	  a lasting namespace:
+	  <list style="hanging">
+	    <t hangText="unrestricted open authority">any time a namespace is defined with an
+	    identifier that was previously unknown, either its initial or amended definition
+	    constitutes a lasting namespace; this is the most lax open authority, most flexible but
+	    also most open to misuse and issues</t>
+	    <t hangText="collision-free open authority">any time a namespace is defined with an
+	    identifier that was previously unknown and the identifier relies explicitly on an
+	    algorithm that the processing application deems giving a high enough guarantee that
+	    identifiers are unique, either the initial or amended definition of that namespace
+	    constitutes a lasting namespace</t>
+	    <t hangText="immutable open authority">any time an immutable namespace is defined, its
+	    initial definition constitutes a lasting namespace</t>
+	  </list>
+	</t>
+	<t>
+	  This specification encourages the use of immutable open authority (in which case several
+	  agents can safely present the same definition to a processing application without
+	  conflict). Note that a verified namespace definition using only references from immutable
+	  namespaces, but where those namespaces have been imported outside the namespace
+	  definition, is vulnerable to an attacker presenting the same definition with different
+	  imports before.
+	</t>
       </section>
     </section>
 
-    <section title="Forward compatibility">
+    <section anchor="fwdCompat" title="Forward compatibility">
       <t>
 	BULK makes it possible to create new versions of vocabularies that encompass previous
 	versions, in a way that minimizes implementation complexity.
@@ -2002,11 +2034,13 @@
 	target="bootstrap" format="none">bootstrapping namespaces</xref>:
       </t>
 
-      <t><figure><artwork>( import ( namespace 20 ( oldhash:shake128 {oldhashid} ) ) )
-( define ( namespace ( newhash:shake128 {newhashid} ) 21 )
-([ nil
-( explain ( namespace 21 ) "The new, shiny hash namespace!" )
-( define newhash:shake128 oldhash:shake128 ) ]) )</artwork></figure></t>
+      <t><figure><artwork>( define ( namespace ( newhash:shake128 {newhashid} ) 20 )
+  ([ nil
+  ( mnemonic ( namespace 20 ) "newhash" )    
+  ( explain ( namespace 20 ) "The new, shiny hash namespace!" )
+  ( mnemonic newhash:shake128 "shake128" )
+  ( import 21 ( namespace ( oldhash:shake128 {oldhashid} ) ) )
+  ( define newhash:shake128 oldhash:shake128 ) ]) )</artwork></figure></t>
 	  
       <t>
 	With this, new namespaces can be created and applications don't need to change the existing
@@ -2016,29 +2050,26 @@
       <t>
 	One possible downside with aliasing is that if the number of aliasing namespaces grow, you
 	might end up with the implementation of an important namespace scattered across a bunch of
-	aliased legacy namespaces. In that case, a second tool is to reverse to direction of
+	aliased legacy namespaces. In that case, a second tool is to reverse the direction of
 	aliasing: all the implementation lives in the current namespace, cohesively, and old
 	namespaces are aliases to the new:
       </t>
 
-      <t><figure><artwork>( import ( namespace 20 ( newhash:shake128 {newhashid} ) ) )
-( define ( namespace ( oldhash:shake128 {oldhashid} ) 21 )
-([ nil
-( explain ( namespace 20 ) "Ye olde hashing namespace." )
-( define oldhash:shake128 newhash:shake128 ) ]) )</artwork></figure></t>
+      <t><figure><artwork>( import 20 ( namespace ( oldhash:shake128 {oldhashid} ) ) )
+( import 21 ( namespace ( newhash:shake128 {newhashid} ) ) )
+( define oldhash:shake128 newhash:shake128 )</artwork></figure></t>
 
       <t>
-	Such a new namespace definition would obviously have a different digest than the original,
-	and namespace verification, as is, would fail, so reverse aliasing would need the
-	application to provide a dedicated espace hatch for it. Following the Principle of Least
-	Authority, it should not be possible for the escape hatch to be something that can be
-	requested from a BULK stream, so there is no provision for it in BULK syntax.
+	Following the Principle of Least Authority, it should not be possible by default for the
+	evaluation of any BULK stream to make lasting modifications to existing namespaces.
       </t>
 
       <t>
 	One obvious design would be for the application to have a privileged storage for reverse
-	aliasing namespace definitions. Where this could still not be deemed safe enough, reverse
-	aliasing namespaces could be defined in the application's code.
+	aliasing namespace definitions, with those namespaces given complete authority or, better
+	yet, each being given selective authority for a specific existing namespace (see <xref
+	target="robustNS"/>). Where this could still not be deemed safe enough, reverse aliasing
+	namespaces could be defined in the application's code.
       </t>
     </section>
 
