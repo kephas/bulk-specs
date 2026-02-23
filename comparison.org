@@ -89,7 +89,7 @@
   
   | format     |   1 |  2 | 3      |
   |------------+-----+----+--------|
-  | BULK       |  58 | 26 | 16n+8  |
+  | BULK       |  58 | 26 | 16n+6  |
   | CBOR       | 100 | 49 | 27n+18 |
   | MsgPack    | 106 | 49 | 33n+19 |
   | Naive BULK | 123 | 52 | 36n+21 |
@@ -108,45 +108,56 @@
 ** BULK
    - 1 :: =( example:ok ( ( example:foobaz/f "bar" "quux" #[4] 0x41480000 ) ( example:foobaz/i "bar" "quuux" 0 ) ( example:foobaz/i "fubar" "quuuux" #[1] 0xD8 ) ) )=
    - 2 :: =( example:error 735 "delegation expired" )=
-   - 3 :: =( example:ok ( bulk:prefix example:foobaz/f "bar" "quux" #[4] 0x41480000 example:foobaz/f "bar" "quux" #[4] 0x41480000 … ) )=
+   - 3 :: =( prefix example:ok example:foobaz/f "bar" "quux" #[4] 0x41480000 example:foobaz/f "bar" "quux" #[4] 0x41480000 … )=
 
 *** Profile
-    These examples are intended to be used with the following profile
-    (*this is not a schema*, in the sense that it is *not needed to parse* the data):
+    These examples are intended to be used with the following profile:
     
-    #+BEGIN_src lisp
-      ( bulk:ns 0x1800 #[16] 0x4C89D12F-1D71-4132-92E9-6335797659EE )
-      ( bulk:ns-mnemonic 0x1800 "example" )
-      ( bulk:mnemonic/def 0x1800 "ok" "successful message containing data list" )
-      ( bulk:mnemonic/def 0x1801 "error" "error message with code and message" )
-      ( bulk:mnemonic/dev 0x1802 "foobaz" "foobaz data item" )
-      ( bulk:mnemonic/dev 0x1803 "foobaz/i" "foobaz data item with int" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:signed-int ( bulk:arg 2 ) ) ) ) )
-      ( bulk:mnemonic/dev 0x1804 "foobaz/f" "foobaz data item with float" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:binfloat ( bulk:arg 2 ) ) ) ) )
-      ( bulk:arity 3 example:foobaz example:foobaz/i example:foobaz/f )
+    #+BEGIN_src bulktext
+      ( define ( namespace ( uuid:v4 #[16] 0x4C89D12F-1D71-4132-92E9-6335797659EE ) 21 )
+       ([ nil
+       ( mnemonic ( namespace 21 ) "example" )
+       ( explain (namespace 21 ) "Message format example" )
+       ( define+ example:ok "ok" "successful message containing data list" )
+       ( define+ example:error "error" "error message with code and message" )
+       ( define+ example:foobaz "foobaz" "foobaz data item" )
+       ( define+ example:foobaz/i "foobaz/i" "foobaz data item with int"
+	( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( signed-int ( arg 2 ) ) ) ) )
+       ( define+ example:foobaz/f "foobaz/f" "foobaz data item with float"
+	( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( binary-float ( arg 2 ) ) ) ) )
+       ( define ( arity ) ( 0 example:ok ) ( 3 example:foobaz example:foobaz/i example:foobaz/f ) )
+       ]) )
     #+END_src
 
     If the message format must be flexible to removing and adding
     fields, this example could be used with the following profile
     where the forms are evaluated into JSON-like maps:
 
-    #+BEGIN_src lisp
-      ( bulk:ns 0x1800 #[16] 0x4C89D12F-1D71-4132-92E9-6335797659EE )
-      ( bulk:ns-mnemonic 0x1800 "example" )
-      ( bulk:mnemonic/def 0x1800 "ok" "successful message containing data list" ( bulk:subst ( example:map "status" "ok" "data" ( bulk:arg 0 ) ) ) )
-      ( bulk:mnemonic/def 0x1801 "error" "error message with code and message" ( bulk:subst ( example:map "status" "error" "code" ( bulk:arg 0 ) "message" ( bulk:arg 1 ) ) ) )
-      ( bulk:mnemonic/dev 0x1802 "foobaz" "foobaz data item" ( bulk:subst ( example:map "foo" ( bulk:arg 0 ) "baz" ( bulk:arg 1 ) "value" ( bulk:arg 2 ) ) ) )
-      ( bulk:mnemonic/dev 0x1803 "foobaz/i" "foobaz data item with int" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:signed-int ( bulk:arg 2 ) ) ) ) )
-      ( bulk:mnemonic/dev 0x1804 "foobaz/f" "foobaz data item with float" ( bulk:subst ( example:foobaz ( bulk:arg 0 ) ( bulk:arg 1 ) ( bulk:binary-float ( bulk:arg 2 ) ) ) ) )
-      ( bulk:mnemonic/dev 0x1805 "map" "like JSON objects" )
-      ( bulk:arity 3 example:foobaz example:foobaz/i example:foobaz/f )
+    #+BEGIN_src bulktext
+      ( define ( namespace ( uuid:v4 #[16] 0x91CCF77B-F678-483B-A75D-573A11281C34 ) 21 )
+       ([ nil
+       ( mnemonic ( namespace 21 ) "example" )
+       ( explain (namespace 21 ) "Message format example" )
+       ( define+ example:ok "ok" "successful message containing data list"
+	( subst ( boon:map "status" "ok" "data" ( arg 0 ) ) ) )
+       ( define+ example:error "error" "error message with code and message"
+	( subst ( boon:map "status" "error" "code" ( arg 0 ) "message" ( arg 1 ) ) ) )
+       ( define+ example:foobaz "foobaz" "foobaz data item"
+	( subst ( boon:map "foo" ( arg 0 ) "baz" ( arg 1 ) "value" ( arg 2 ) ) ) )
+       ( define+ example:foobaz/i "foobaz/i" "foobaz data item with int"
+	( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( signed-int ( arg 2 ) ) ) ) )
+       ( define+ example:foobaz/f "foobaz/f" "foobaz data item with float"
+	( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( binary-float ( arg 2 ) ) ) ) )
+       ( define ( arity ) ( 3 example:foobaz example:foobaz/i example:foobaz/f ) )
+       ]) )
     #+END_src
 
 ** Naive BULK
    This makes no use of BULK's ability to abstract common patterns, just encodes JSON maps and arrays as-is.
 
-   - 1 :: =( example:map "status" "ok" "data" ( ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) ( example:map "foo" "bar" "baz" "quuux" "value" 0 ) ( example:map "foo" "fubar" "baz" "quuuux" "value" -40 ) ) )=
-   - 2 :: =( example:map "status" "error" "code" 735 "message" "delegation expired" )=
-   - 3 :: =( example:map "status" "ok" "data" ( ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) ( example:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) … ) )=
+   - 1 :: =( boon:map "status" "ok" "data" ( ( boon:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) ( boon:map "foo" "bar" "baz" "quuux" "value" 0 ) ( boon:map "foo" "fubar" "baz" "quuuux" "value" -40 ) ) )=
+   - 2 :: =( boon:map "status" "error" "code" 735 "message" "delegation expired" )=
+   - 3 :: =( boon:map "status" "ok" "data" ( ( boon:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) ( boon:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) … ) )=
 
 ** BSON
    https://euandreh.github.io/cl-BSON/api.html
