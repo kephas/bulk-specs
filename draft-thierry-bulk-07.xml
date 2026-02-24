@@ -45,7 +45,7 @@
         <t>
           This specification aims at finding an original trade-off between transparency, syntax
           complexity, generality, extensibility, decentralization, discoverability, compactness,
-          processing speed and processing footprint for a data format (cf. <xref target="concepts"
+          processing speed and processing footprint for a data format (see <xref target="concepts"
           format="none">definitions</xref>). It is our opinion that every widely used existing
           format occupy a different position than this one in the solution space for formats, that
           none is better on all axes, and that this one is the current best on several axes, hence
@@ -313,7 +313,7 @@
 	    style="verb">4B</spanx>)</t>
 	    <t>a typed sequence of bytes, represented by the name of its type, a capitalized word
 	    (e.g.  <spanx style="verb">Foo</spanx>); this means a sequence of bytes whose specific
-	    yield (cf. <xref target="parsing" format="title"/>) has this type</t>
+	    yield (see <xref target="parsing" format="title"/>) has this type</t>
 	    <t>a named sequence of bytes (of zero or more bytes), represented by a sequence of any
 	    character excluding '{}' between '{' and '}' (e.g. <spanx style="verb">{quux}</spanx>);
 	    a named sequence can be typed or sized, in which case it is immediately followed by ':'
@@ -456,6 +456,11 @@
 	    terminate in a finite number of evaluation steps. An application MAY verify finite
 	    termination statically or dynamically. For example, an application MAY stop evaluation
 	    in error after a predetermined number of steps.
+	  </t>
+	  <t>
+	    Whenever this specification describes the semantics of an expression, it describes the
+	    result of evaluating that expression, either in terms of the value returned or the
+	    side-effects executed by evaluation of the expression.
 	  </t>
 	</section>
       </section>
@@ -807,10 +812,10 @@
 	  </t>
 	  <t>
 	    If the version is expressed within a BULK stream, this form MUST be the first in the
-	    stream. In any other place, this form has no semantics attached to it. This
-	    specification defines BULK 1.0. When writing a BULK stream, an application MUST encode
-	    <spanx style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the
-	    smallest byte sequence as described in <xref target="nat-enc"></xref>.
+	    stream. In any other place, this form is self-evaluating. This specification defines
+	    BULK 1.0. When writing a BULK stream, an application MUST encode <spanx
+	    style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the smallest
+	    byte sequence as described in <xref target="nat-enc"></xref>.
 	  </t>
 	  <t>
 	    An application writing a BULK stream to long-term storage (e.g. in a file or a database
@@ -875,12 +880,15 @@
 		</t>
 	      </list>
 	    </t>
-	    <t><spanx style="verb">{def}</spanx> MUST contain a BULK stream. The state of the
-	    namespace associated to <spanx style="verb">{marker}</spanx> after evaluating all
-	    expressions in <spanx style="verb">{def}</spanx> is made the definition of the
-	    namespace identified by <spanx style="verb">{id}</spanx>, within the scope of this
-	    expression. This also associates that namespace to the namespace marker <spanx
-	    style="verb">{marker}</spanx>, within the scope of this expression.
+	    <t>The semantics of this form is the side-effect of defining a new namespace and
+	    associating it to a namespace marker. <spanx style="verb">{def}</spanx> MUST contain a
+	    BULK stream. The state of the namespace associated to <spanx
+	    style="verb">{marker}</spanx> after evaluating all expressions in <spanx
+	    style="verb">{def}</spanx> (starting with a namespace with no definitions, no mnemonics,
+	    and no documentations) is made the definition of the namespace identified by <spanx
+	    style="verb">{id}</spanx>, within the scope of this expression. This also associates
+	    that namespace to the namespace marker <spanx style="verb">{marker}</spanx>, within the
+	    scope of this expression.
 	    </t>
 
 	    <section anchor="verifiable" title="Verifiable namespace definition">
@@ -937,13 +945,13 @@
 	      </list>
 	    </t>
 	    <t>
-	      This creates a package identified by <spanx style="verb">{id}</spanx>. Packages MUST
-	      be immutable, <spanx style="verb">{id}</spanx> MUST be a digest verifiable against
-	      the bytes contained in <spanx style="verb">{def}</spanx>. <spanx
-	      style="verb">{def}</spanx> MUST contain a BULK stream with the shape <spanx
-	      style="verb">{data}:Expr {namespaces}</spanx>. <spanx
-	      style="verb">{namespaces}</spanx>. MUST be a sequence of expressions each identifying
-	      a BULK namespace.
+	      The semantics of this form is the side-effect of creating a package identified by
+	      <spanx style="verb">{id}</spanx>. Packages MUST be immutable, <spanx
+	      style="verb">{id}</spanx> MUST be a digest verifiable against the bytes contained in
+	      <spanx style="verb">{def}</spanx>. <spanx style="verb">{def}</spanx> MUST contain a
+	      BULK stream with the shape <spanx style="verb">{data}:Expr
+	      {namespaces}</spanx>. <spanx style="verb">{namespaces}</spanx>. MUST be a sequence of
+	      expressions each identifying a BULK namespace.
 	    </t>
 	    <t>
 	      If more data than <spanx style="verb">{id}</spanx> is needed to verify <spanx
@@ -956,20 +964,25 @@
 
 	  <section anchor="def-name" title="Name definitions">
 	    <t>
-	      To define a reference is to change the the value of its name in its namespace (as
-	      identified by its unique identifier, not the marker value) within a certain scope.
+	      To define a reference is to make a value the semantics of any reference with the same
+	      associated namespace and the same name in its scope.
 	    </t>
 	    <t>
-	      If a BULK stream is not evaluated, the semantics of a definition are entirely
-	      application-dependent.
+	      This change of semantics operates on the namespace as identified by its unique
+	      identifier, not the marker value. This means that if a namespace Foo is associated to
+	      markers 21 and 22 and a reference with namespace marker 21 and name 0 is defined to
+	      <spanx style="verb">true</spanx>, then in the scope of that definition, a reference
+	      with namespace marker 22 ans name 0 will be evaluated as <spanx
+	      style="verb">true</spanx>.
 	    </t>
 	    <t>
 	      When a BULK stream containing definitions for a namespace comes from a trusted source
-	      (i.e. in configuration files of the application, or in the communication with an
-	      agent that has been granted the relevant authority), an application MAY give those
+	      (i.e. in configuration files of the application, or in the communication with an agent
+	      that has been granted the relevant authority), an application MAY give those
 	      definitions long-lasting semantics (i.e. keep the values of the names at the end of
-	      parsing). This is the preferred mechanism for bulk namespace definition when the
-	      semantics of the defined expressions can be expressed completely by BULK forms.
+	      parsing). This is the RECOMMENDED mechanism for bulk namespace definition when the
+	      semantics of the defined expressions can be expressed completely by BULK expressions
+	      (see <xref target="robustNS"/>).
 	    </t>
 
 	    <t>
@@ -979,8 +992,9 @@
 	      </list>
 	    </t>
 	    <t>
-	      This defines the reference <spanx style="verb">{ref}</spanx> to the yield of <spanx
-	      style="verb">{value}</spanx> in the outer scope of this form.
+	      The semantics of this form is the side-effect of defining the reference <spanx
+	      style="verb">{ref}</spanx> to the value of evaluating <spanx
+	      style="verb">{value}</spanx>.
 	    </t>
 	  </section>
 
@@ -1195,10 +1209,11 @@
 		</list>
 	      </t>
 	      <t>
-		The semantics of this form is the same as if it was replaced by the BULK expression
-		starting at offset <spanx style="verb">{start}</spanx> in the array <spanx
-		style="verb">{container}</spanx> (in most cases as the evaluation result of a
-		reference defined to an array earlier in the stream).
+		The semantics of this form is the value of evaluating the BULK expression starting
+		at offset <spanx style="verb">{start}</spanx> in the array <spanx
+		style="verb">{container}</spanx>. (in most cases, <spanx
+		style="verb">{container}</spanx> will be a reference defined to an array earlier in
+		the stream)
 	      </t>
 	      <t>
 		The goal of indexed data is to selectively parse only part of the BULK stream, so the
@@ -1227,11 +1242,12 @@
 		</list>
 	      </t>
 	      <t>
-		The semantics of this form is an array whose content are <spanx
+		The semantics of this form is the value of an array whose content are <spanx
 		style="verb">{size}</spanx> bytes, starting at offset <spanx
-		style="verb">{start}</spanx> in the array <spanx style="verb">{container}</spanx> (in
-		most cases as the evaluation result of a reference defined to an array earlier in the
-		stream).
+		style="verb">{start}</spanx> in the array <spanx
+		style="verb">{container}</spanx>. (in most cases, <spanx
+		style="verb">{container}</spanx> will be a reference defined to an array earlier in
+		the stream)
 	      </t>
 	      <t>
 		Compared to <spanx style="verb">indexed-bulk</spanx>, which can reference an array
@@ -1319,9 +1335,9 @@
 	      </list>
 	    </t>
 	    <t>
-	      This form's semantics is the same as the last expression in the sequence of
-	      expressions in <spanx style="verb">{exprs}</spanx>, after evaluating all of them. It
-	      makes it possible to isolate evaluation side-effects.
+	      This form's semantics is the value of evaluating the last expression in the sequence
+	      of expressions in <spanx style="verb">{exprs}</spanx>, after evaluating all of
+	      them. It makes it possible to isolate evaluation side-effects.
 	    </t>
 	  </section>
 
@@ -1348,8 +1364,9 @@
 	      </list>
 	    </t>
 	    <t>
-	      The bits contained in <spanx style="verb">{bits}</spanx> is the value of this integer
-	      in binary notation. This form exists in case disambiguation of the semantics is
+	      The semantics of this form is the value of the unsigned integer represented in binary
+	      notation in the bits contained in <spanx style="verb">{bits}</spanx>. This form exists
+	      in case disambiguation of the semantics of an array (or another bit sequence) is
 	      necessary.
 	    </t>
 	    <t>
@@ -1365,8 +1382,8 @@
 	      </list>
 	    </t>
 	    <t>
-	      The bits contained in <spanx style="verb">{bits}</spanx> is the value of this integer
-	      in two's-complement notation.
+	      The semantics of this form is the value of the signed integer represented in
+	      two's-complement notation in the bits contained in <spanx style="verb">{bits}</spanx>.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx>.
@@ -1380,8 +1397,8 @@
 	      </list>
 	    </t>
 	    <t>
-	      This is the number <spanx style="verb">{num}</spanx>/<spanx
-	      style="verb">{div}</spanx>.
+	      The semantics of this form is the fraction with denominator <spanx
+	      style="verb">{num}</spanx> and divisor <spanx style="verb">{div}</spanx>.
 	    </t>
 	    <t>
 	      Type: <spanx style="verb">Number</spanx>.
@@ -1395,9 +1412,10 @@
 	      </list>
 	    </t>
 	    <t>
-	      This is a floating-point number expressed in IEEE 754-2008 binary interchange
-	      format. <spanx style="verb">{bits}</spanx> can be of size 16, 32, 64, 128 or any
-	      bigger multiple of 32 bits, as per IEEE 754-2008 rules.
+	      The semantics of this form is the floating-point number expressed in IEEE 754-2008
+	      binary interchange format by the bits contained in <spanx
+	      style="verb">{bits}</spanx>. <spanx style="verb">{bits}</spanx> can be of size 16, 32,
+	      64, 128 or any bigger multiple of 32 bits, as per IEEE 754-2008 rules.
 	    </t>
 	    <t>
 	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>, <spanx
@@ -1412,9 +1430,10 @@
 	      </list>
 	    </t>
 	    <t>
-	      This is a floating-point number expressed in IEEE 754-2008 decimal interchange
-	      format. <spanx style="verb">{bits}</spanx> can be of size 32, 64, 128 or any bigger
-	      multiple of 32 bits, as per IEEE 754-2008 rules.
+	      The semantics of this form is the floating-point number expressed in IEEE 754-2008
+	      decimal interchange format by the bits contained in <spanx
+	      style="verb">{bits}</spanx>. <spanx style="verb">{bits}</spanx> can be of size 32, 64,
+	      128 or any bigger multiple of 32 bits, as per IEEE 754-2008 rules.
 	    </t>
 	    <t>
 	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>, <spanx
@@ -1430,9 +1449,10 @@
 	      </list>
 	    </t>
 	    <t>
-	      This is a fixed point binary number. <spanx style="verb">{bits}</spanx> contains an
-	      integer in two's complement. That integer divided by 2^point is the value of this
-	      form. For example, <spanx style="verb">( binary-fixed 2 15 )</spanx> has value <spanx
+	      The semantics of this form is a fixed point binary number. <spanx
+	      style="verb">{bits}</spanx> contains an integer in two's complement. That integer
+	      divided by 2^<spanx style="verb">{point}</spanx> is the value of this form. For
+	      example, <spanx style="verb">( binary-fixed 2 15 )</spanx> has value <spanx
 	      style="verb">3.75<sub>10</sub></spanx> (<spanx
 	      style="verb">11.11<sub>2</sub></spanx>).
 	    </t>
@@ -1449,10 +1469,11 @@
 	      </list>
 	    </t>
 	    <t>
-	      This is a fixed point decimal number. <spanx style="verb">{bits}</spanx> contains an
-	      integer in two's complement. That integer divided by 10^point is the value of this
-	      form. For example, <spanx style="verb">( decimal-fixed 2 123 )</spanx> has value
-	      <spanx style="verb">1.23</spanx>.
+	      The semantics of this form is a fixed point decimal number. <spanx
+	      style="verb">{bits}</spanx> contains an integer in two's complement. That integer
+	      divided by 10^<spanx style="verb">{point}</spanx> is the value of this form. For
+	      example, <spanx style="verb">( decimal-fixed 2 123 )</spanx> has value <spanx
+	      style="verb">1.23</spanx>.
 	    </t>
 	    <t>
 	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>.
