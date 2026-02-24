@@ -47,16 +47,20 @@
      - =( string Bytes )=
      - =( string Encoding Bytes )=
      - =( define string Encoding )=
-   - 0x08 :: =bulk=
+   - 0x08 :: =( iana-charset Nat ):Encoding=
+   - 0x09 :: =bulk=
      - =( bulk Bytes )=
      - =( bulk {exprs} )=
        - the semantics is that this has the value of the last expression
-   - 0x09 :: ( blob Bytes )
-   - 0x0A :: ( concat {a1} {a2} )
+   - 0x0A :: ( blob Bytes )
    - 
-   - 0x0B :: ( indexable Nat Bytes )
-   - 0x0C :: ( indexed-bulk Nat Nat )
-   - 0x0D :: ( indexed-array Nat Nat Nat )
+   - 0x0B :: =( concat {a1} {a2} )=
+   - 0x0C :: =indexed-bulk=
+     - =( indexed-bulk Nat Nat )=
+     - =( indexed-bulk Ref Nat )=
+   - 0x0D :: =indexed-array=
+     - =( indexed-array Nat Nat Nat )=
+     - =( indexed-array Ref Nat Nat )=
    - 
    - 0x0E :: =true=
    - 0x0F :: =false=
@@ -64,20 +68,21 @@
    - 0x10 :: ( subst {code} )
    - 0x11 :: ( arg Nat )
    - 0x12 :: ( rest Nat )
+   - 0x13 :: =( last )=
    - 
-   - 0x13 :: =( unsigned-int Bytes ):Nat=
-   - 0x14 :: =( signed-int Bytes ):Int=
-   - 0x15 :: =( fraction Int Int )=
-   - 0x16 :: =( binary-float Bytes )=
-   - 0x17 :: =( decimal-float Bytes )=
-   - 0x18 :: =( binary-fixed Nat Bytes )=
-   - 0x19 :: =( decimal-fixed Nat Bytes )=
+   - 0x14 :: =( unsigned-int Bytes ):Nat=
+   - 0x15 :: =( signed-int Bytes ):Int=
+   - 0x16 :: =( fraction Int Int )=
+   - 0x17 :: =( binary-float Bytes )=
+   - 0x18 :: =( decimal-float Bytes )=
+   - 0x19 :: =( binary-fixed Nat Bytes )=
+   - 0x1A :: =( decimal-fixed Nat Bytes )=
    - 
-   - 0x1A :: =prefix=
+   - 0x1B :: =prefix=
      - =( prefix {bytecode} )=
-   - 0x1B :: =postfix=
+   - 0x1C :: =postfix=
      - =( postfix {bytecode} )=
-   - 0x1C :: =arity=
+   - 0x1D :: =arity=
      - =( define ( arity {contexts} ) {arities} )=
        - ={contexts}= can contain =prefix=, =postfix=, or any other reference
        - ={arities}= is a sequence of expressions that can be shaped:
@@ -88,8 +93,6 @@
              operators of arity ={kind}=
 	   - if ={target}= is =nil=, it designates all references with unknown arity
 	   - if ={target}= is a sequence of references, it designates each of those
-   - 
-   - 0x1D :: =( iana-charset Nat ):Encoding=
 
 ** BULK utils
    - decimal2 :: =( subst ( decimal-fixed 2 ) )=

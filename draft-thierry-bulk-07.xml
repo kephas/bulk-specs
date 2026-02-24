@@ -727,36 +727,67 @@
 	<table>
 	  <thead><tr><th>name</th><th>mnemonic</th></tr></thead>
 	  <tbody>
-	    <tr><td><spanx style="verb">00</spanx></td><td><spanx style="verb">version</spanx></td></tr>
-	    <tr><td><spanx style="verb">01</spanx></td><td><spanx style="verb">import</spanx></td></tr>
+	    <tr><td><spanx style="verb">00</spanx></td><td><spanx style="verb"><xref
+	    target="version" format="none">version</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">01</spanx></td><td><spanx style="verb">import</spanx> (<xref
+	    target="import-ns" format="none">namespace</xref>, <xref target="import-pkg"
+	    format="none">package</xref>)</td></tr>
 	    <tr><td><spanx style="verb">02</spanx></td><td><spanx style="verb">namespace</spanx></td></tr>
 	    <tr><td><spanx style="verb">03</spanx></td><td><spanx style="verb">package</spanx></td></tr>
-	    <tr><td><spanx style="verb">04</spanx></td><td><spanx style="verb">define</spanx></td></tr>
-	    <tr><td><spanx style="verb">05</spanx></td><td><spanx style="verb">mnemonic</spanx></td></tr>
-	    <tr><td><spanx style="verb">06</spanx></td><td><spanx style="verb">explain</spanx></td></tr>
-	    <tr><td><spanx style="verb">07</spanx></td><td><spanx style="verb">string</spanx></td></tr>
-	    <tr><td><spanx style="verb">08</spanx></td><td><spanx style="verb">bulk</spanx></td></tr>
-	    <tr><td><spanx style="verb">09</spanx></td><td><spanx style="verb">blob</spanx></td></tr>
-	    <tr><td><spanx style="verb">0A</spanx></td><td><spanx style="verb">concat</spanx></td></tr>
-	    <tr><td><spanx style="verb">0B</spanx></td><td><spanx style="verb">indexable</spanx></td></tr>
-	    <tr><td><spanx style="verb">0C</spanx></td><td><spanx style="verb">indexed-bulk</spanx></td></tr>
-	    <tr><td><spanx style="verb">0D</spanx></td><td><spanx style="verb">indexed-array</spanx></td></tr>
-	    <tr><td><spanx style="verb">0E</spanx></td><td><spanx style="verb">true</spanx></td></tr>
-	    <tr><td><spanx style="verb">0F</spanx></td><td><spanx style="verb">false</spanx></td></tr>
-	    <tr><td><spanx style="verb">10</spanx></td><td><spanx style="verb">subst</spanx></td></tr>
-	    <tr><td><spanx style="verb">11</spanx></td><td><spanx style="verb">arg</spanx></td></tr>
-	    <tr><td><spanx style="verb">12</spanx></td><td><spanx style="verb">rest</spanx></td></tr>
-	    <tr><td><spanx style="verb">13</spanx></td><td><spanx style="verb">unsigned-int</spanx></td></tr>
-	    <tr><td><spanx style="verb">14</spanx></td><td><spanx style="verb">signed-int</spanx></td></tr>
-	    <tr><td><spanx style="verb">15</spanx></td><td><spanx style="verb">fraction</spanx></td></tr>
-	    <tr><td><spanx style="verb">16</spanx></td><td><spanx style="verb">binary-float</spanx></td></tr>
-	    <tr><td><spanx style="verb">17</spanx></td><td><spanx style="verb">decimal-float</spanx></td></tr>
-	    <tr><td><spanx style="verb">18</spanx></td><td><spanx style="verb">binary-fixed</spanx></td></tr>
-	    <tr><td><spanx style="verb">19</spanx></td><td><spanx style="verb">decimal-fixed</spanx></td></tr>
-	    <tr><td><spanx style="verb">1A</spanx></td><td><spanx style="verb">prefix</spanx></td></tr>
-	    <tr><td><spanx style="verb">1B</spanx></td><td><spanx style="verb">postfix</spanx></td></tr>
-	    <tr><td><spanx style="verb">1C</spanx></td><td><spanx style="verb">arity</spanx></td></tr>
-	    <tr><td><spanx style="verb">1D</spanx></td><td><spanx style="verb">iana-charset</spanx></td></tr>
+	    <tr><td><spanx style="verb">04</spanx></td><td><spanx style="verb">define (<xref
+	    target="def-ns" format="none">namespace</xref>, <xref target="def-pkg"
+	    format="none">package</xref>, <xref target="def-name"
+	    format="none">name</xref>)</spanx></td></tr>
+	    <tr><td><spanx style="verb">05</spanx></td><td><spanx style="verb"><xref
+	    target="mnemonic" format="none">mnemonic</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">06</spanx></td><td><spanx style="verb"><xref
+	    target="explain" format="none">explain</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">07</spanx></td><td><spanx style="verb"><xref target="string"
+	    format="none">string</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">08</spanx></td><td><spanx style="verb"><xref
+	    target="iana-charset" format="none">iana-charset</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">09</spanx></td><td><spanx style="verb"><xref
+	    target="nested-bulk" format="none">bulk</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">0A</spanx></td><td><spanx style="verb"><xref target="blob"
+	    format="none">blob</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">0B</spanx></td><td><spanx style="verb"><xref target="concat"
+	    format="none">concat</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">0C</spanx></td><td><spanx style="verb"><xref
+	    target="indexed-bulk" format="none">indexed-bulk</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">0D</spanx></td><td><spanx style="verb"><xref
+	    target="indexed-array" format="none">indexed-array</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">0E</spanx></td><td><spanx style="verb"><xref target="booleans"
+	    format="none">true</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">0F</spanx></td><td><spanx style="verb"><xref target="booleans"
+	    format="none">false</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">10</spanx></td><td><spanx style="verb"><xref target="subst"
+	    format="none">subst</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">11</spanx></td><td><spanx style="verb"><xref target="arg"
+	    format="none">arg</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">12</spanx></td><td><spanx style="verb"><xref target="rest"
+	    format="none">rest</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">13</spanx></td><td><spanx style="verb"><xref target="last"
+	    format="none">last</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">14</spanx></td><td><spanx style="verb"><xref
+	    target="unsigned-int" format="none">unsigned-int</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">15</spanx></td><td><spanx style="verb"><xref
+	    target="signed-int" format="none">signed-int</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">16</spanx></td><td><spanx style="verb"><xref
+	    target="fraction" format="none">fraction</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">17</spanx></td><td><spanx style="verb"><xref
+	    target="binary-float" format="none">binary-float</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">18</spanx></td><td><spanx style="verb"><xref
+	    target="decimal-float" format="none">decimal-float</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">19</spanx></td><td><spanx style="verb"><xref
+	    target="binary-fixed" format="none">binary-fixed</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">1A</spanx></td><td><spanx style="verb"><xref
+	    target="decimal-fixed" format="none">decimal-fixed</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">1B</spanx></td><td><spanx style="verb"><xref target="prefix"
+	    format="none">prefix</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">1C</spanx></td><td><spanx style="verb"><xref
+	    target="postfix" format="none">postfix</xref></spanx></td></tr>
+	    <tr><td><spanx style="verb">1D</spanx></td><td><spanx style="verb"><xref target="arity"
+	    format="none">arity</xref></spanx></td></tr>
 	  </tbody>
 	</table>
 
@@ -953,7 +984,7 @@
 	    </t>
 	  </section>
 
-	  <section title="Mnemonic">
+	  <section anchor="mnemonic" title="Mnemonic">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( mnemonic ( namespace {marker}:Nat )
@@ -972,7 +1003,7 @@
 	    </t>
 	  </section>
 
-	  <section title="Explain">
+	  <section anchor="explain" title="Explain">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( explain ( namespace {marker}:Nat )
@@ -1045,7 +1076,7 @@
 	    </t>
 	  </section>
 
-	  <section title="IANA registered character set">
+	  <section anchor="iana-charset" title="IANA registered character set">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( iana-charset {id}:Nat )</spanx></t>
@@ -1060,6 +1091,7 @@
 	      Type: <spanx style="verb">Encoding</spanx>.
 	    </t>
 	  </section>
+
 	  <section anchor="nested-bulk" title="Nested BULK stream">
 	    <t>
 	      <list style="hanging">
@@ -1098,17 +1130,6 @@
 	      Nat Expr )</spanx> form because it would open up the same risk when the size given
 	      is not the size of the enclosed expression, accidently or maliciously.
 	    </t>
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( bulk {exprs} )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This forms makes it possible to include a BULK stream as BULK expressions instead of
-	      an array. This form's semantics is the same as the last expression in the sequence of
-	      expressions in <spanx style="verb">{exprs}</spanx>, after evaluating all of them. It
-	      makes it possible to isolate evaluation side-effects.
-	    </t>
 	  </section>
 
 	  <section anchor="blob" title="Blob">
@@ -1122,8 +1143,10 @@
 	      are meant be interpreted as just a raw sequence of bytes, not to be decoded.
 	    </t>
 	  </section>
+	</section>
 
-	  <section title="Array concatenation">
+	<section title="Array operations">
+	  <section anchor="concat" title="Array concatenation">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( concat {array1}:Bytes {array2}:Bytes
@@ -1141,98 +1164,85 @@
 	      The value of this form is an array that contains the bytes in array1 followed by the
 	      bytes in array2.
 	    </t>
-	  </section>	  
-	</section>
-
-	<section title="Indexed data">
-	  <t>
-	    When writing a stream containing a big number of expressions where an application
-	    may want to access one of those expression without parsing all expressions before,
-	    one could imagine as a solution to use pointer-like references that each use the
-	    offset of some expression in the stream. This solution creates a security risk,
-	    because if reading according to the pointers doesn't produce the same result as
-	    parsing the stream without using them, an attacker might use this inconsistency to
-	    their advantage, when they can expect one application to use pointers and another
-	    application to use normal parsing, especially when the stream is big enough that
-	    verifying the consistency of the pointers might be costly enough that it might not
-	    be done or not in time to prevent the attack.
-	  </t>
-	  <t>
-	    Because of that risk, whenever a stream includes indexed BULK expressions, that is,
-	    expressions that are meant to be accessed by their byte position, indexed reading
-	    SHOULD be the only way used to access them. To that end, indexed data SHOULD be stored
-	    in arrays.
-	  </t>
-
-	  <section title="Indexable content">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( indexable {container}:Nat {content}:Bytes
-		)</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This form contains in <spanx style="verb">{content}</spanx> the data that can be
-	      indexed somewhere else in the stream, with <xref target="indexed-bulk"><spanx
-	      style="verb">indexed-bulk</spanx></xref> or <xref target="indexed-array"><spanx
-	      style="verb">indexed-array</spanx></xref>. <spanx style="verb">{container}</spanx> is
-	      the identifier of this container and the value of the unsigned integer MUST be unique
-	      across the stream. Indexable containers are identified by the value of their unsigned
-	      integer, not by their binary encoding.
-	    </t>
 	  </section>
-	  <section anchor="indexed-bulk" title="Indexed BULK expression">
+
+	  <section title="Indexed data">
 	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( indexed-bulk {container}:Nat {start}:Nat
-		)</spanx></t>
-	      </list>
+	      When writing a stream containing a big number of expressions where an application
+	      may want to access one of those expression without parsing all expressions before,
+	      one could imagine as a solution to use pointer-like references that each use the
+	      offset of some expression in the stream. This solution creates a security risk,
+	      because if reading according to the pointers doesn't produce the same result as
+	      parsing the stream without using them, an attacker might use this inconsistency to
+	      their advantage, when they can expect one application to use pointers and another
+	      application to use normal parsing, especially when the stream is big enough that
+	      verifying the consistency of the pointers might be costly enough that it might not
+	      be done or not in time to prevent the attack.
 	    </t>
 	    <t>
-	      The semantics of this form is the same as if it was replaced by the BULK expression
-	      starting at offset <spanx style="verb">{start}</spanx> in the indexable container
-	      numbered <spanx style="verb">{container}</spanx>.
+	      Because of that risk, whenever a stream includes indexed BULK expressions, that is,
+	      expressions that are meant to be accessed by their byte position, indexed reading
+	      SHOULD be the only way used to access them. To that end, indexed data SHOULD be stored
+	      in arrays.
 	    </t>
-	    <t>
-	      The goal of indexed data is to selectively parse only part of the BULK stream, so the
-	      same security risks as with <xref target="nested-bulk"><spanx
-	      style="verb">bulk</spanx></xref> are present. It could be a security risk if a single
-	      BULK stream could be parsed into two different abstract yields by two conformant
-	      applications, so the semantics of the whole stream cannot change whether the indexed
-	      expression is decoded or not. For that reason, any effects in the indexed expression
-	      that affect how BULK expressions are parsed or evaluated (like namespace associations
-	      or definitions) MUST be isolated within this form.
-	    </t>
-	    <t>
-	      Beware that, although evaluations of all other BULK definitions follow lexical
-	      scoping, any definition used inside an indexed expression that isn't defined inside
-	      that same indexed expression follows dynamic scoping with respect to any places where
-	      it's used. Any definition made inside an indexed expression still follows lexical
-	      scoping.
-	    </t>
-	  </section>
-	  <section anchor="indexed-array" title="Indexed array">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( indexed-array {container}:Nat {start}:Nat
-		{size}:Nat )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      The semantics of this form is an array whose content are <spanx
-	      style="verb">{size}</spanx> bytes, starting at offset <spanx
-	      style="verb">{start}</spanx> in the indexable container numbered <spanx
-	      style="verb">{container}</spanx>.
-	    </t>
-	    <t>
-	      Compared to <spanx style="verb">indexed-bulk</spanx>, which can reference an array
-	      expression, <spanx style="verb">indexed-array</spanx> is useful when several
-	      different but overlapping sections of the same byte sequence are needed as arrays.
-	    </t>
+
+	    <section anchor="indexed-bulk" title="Indexed BULK expression">
+	      <t>
+		<list style="hanging">
+		  <t hangText="shape"><spanx style="verb">( indexed-bulk {container}:Expr {start}:Nat
+		  )</spanx></t>
+		  <t hangText="Name's type">EagerFunction</t>
+		</list>
+	      </t>
+	      <t>
+		The semantics of this form is the same as if it was replaced by the BULK expression
+		starting at offset <spanx style="verb">{start}</spanx> in the array <spanx
+		style="verb">{container}</spanx> (in most cases as the evaluation result of a
+		reference defined to an array earlier in the stream).
+	      </t>
+	      <t>
+		The goal of indexed data is to selectively parse only part of the BULK stream, so the
+		same security risks as with <xref target="nested-bulk"><spanx
+		style="verb">bulk</spanx></xref> are present. It could be a security risk if a single
+		BULK stream could be parsed into two different abstract yields by two conformant
+		applications, so the semantics of the whole stream cannot change whether the indexed
+		expression is decoded or not. For that reason, any effects in the indexed expression
+		that affect how BULK expressions are parsed or evaluated (like namespace associations
+		or definitions) MUST be isolated within this form.
+	      </t>
+	      <t>
+		Beware that, although evaluations of all other BULK definitions follow lexical
+		scoping, any definition used inside an indexed expression that isn't defined inside
+		that same indexed expression follows dynamic scoping with respect to any places where
+		it's used. Any definition made inside an indexed expression still follows lexical
+		scoping.
+	      </t>
+	    </section>
+	    <section anchor="indexed-array" title="Indexed array">
+	      <t>
+		<list style="hanging">
+		  <t hangText="shape"><spanx style="verb">( indexed-array {container}:Expr {start}:Nat
+		  {size}:Nat )</spanx></t>
+		  <t hangText="Name's type">EagerFunction</t>
+		</list>
+	      </t>
+	      <t>
+		The semantics of this form is an array whose content are <spanx
+		style="verb">{size}</spanx> bytes, starting at offset <spanx
+		style="verb">{start}</spanx> in the array <spanx style="verb">{container}</spanx> (in
+		most cases as the evaluation result of a reference defined to an array earlier in the
+		stream).
+	      </t>
+	      <t>
+		Compared to <spanx style="verb">indexed-bulk</spanx>, which can reference an array
+		expression, <spanx style="verb">indexed-array</spanx> is useful when several
+		different but overlapping sections of the same byte sequence are needed as arrays.
+	      </t>
+	    </section>
 	  </section>
 	</section>
 
-	<section title="Booleans">
+	<section anchor="booleans" title="Booleans">
 	  <t>
 	    <list style="hanging">
 	      <t hangText="shape"><spanx style="verb">true</spanx></t>
@@ -1246,7 +1256,7 @@
 
 
 	<section title="Substituton">
-	  <section title="Substitution function">
+	  <section anchor="subst" title="Substitution function">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( subst {code} )</spanx></t>
@@ -1263,7 +1273,7 @@
 	      </list>
 	    </t>
 	  </section>
-	  <section title="Argument">
+	  <section anchor="arg" title="Argument">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( arg {n}:Nat )</spanx></t>
@@ -1278,7 +1288,7 @@
 	      </list>
 	    </t>
 	  </section>
-	  <section title="Rest of arguments list">
+	  <section anchor="rest" title="Rest of arguments list">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( rest {n}:Nat )</spanx></t>
@@ -1295,12 +1305,26 @@
 	  </section>
 	  <section title="Examples">
 	    <t>Here is a definition of the inverse followed by the numbers 1/2, 1/3 and 1/4:</t>
-	    <t><spanx style="verb">( define inverse ( subst ( frac 1 ( arg 0 ) ) ) ) ( inverse 2
+	    <t><spanx style="verb">( define inverse ( subst ( fraction 1 ( arg 0 ) ) ) ) ( inverse 2
 	    ) ( inverse 3 ) ( inverse 4 )</spanx></t>
 	    <t>Substitution will splice multiple expressions in place:</t>
 	    <t>The evaluation of <spanx style="verb">( ( subst 1 ( rest 0 ) 4 ) 2 3 )</spanx>
 	    must yield the same as <spanx style="verb">( 1 2 3 4 )</spanx></t>
 	  </section>
+
+	  <section anchor="last" title="Isolated scope">
+	    <t>
+	      <list style="hanging">
+		<t hangText="shape"><spanx style="verb">( last {exprs} )</spanx></t>
+	      </list>
+	    </t>
+	    <t>
+	      This form's semantics is the same as the last expression in the sequence of
+	      expressions in <spanx style="verb">{exprs}</spanx>, after evaluating all of them. It
+	      makes it possible to isolate evaluation side-effects.
+	    </t>
+	  </section>
+
 	</section>
 
 	<section anchor="arithmetic" title="Arithmetic">
@@ -1334,7 +1358,7 @@
 	    </t>
 	  </section>
 
-	  <section title="Signed integer">
+	  <section anchor="signed-int" title="Signed integer">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( signed-int {bits}:Bytes )</spanx></t>
@@ -1349,10 +1373,10 @@
 	    </t>
 	  </section>
 
-	  <section title="Fraction">
+	  <section anchor="fraction" title="Fraction">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( frac {num}:Int {div}:Int )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( fraction {num}:Int {div}:Int )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1364,7 +1388,7 @@
 	    </t>
 	  </section>
 
-	  <section title="Binary floating-point number">
+	  <section anchor="binary-float" title="Binary floating-point number">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( binary-float {bits}:Bytes )</spanx></t>
@@ -1381,7 +1405,7 @@
 	    </t>
 	  </section>
 
-	  <section title="Decimal floating-point number">
+	  <section anchor="decimal-float" title="Decimal floating-point number">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( decimal-float {bits}:Bytes )</spanx></t>
@@ -1398,7 +1422,7 @@
 	    </t>
 	  </section>
 
-	  <section title="Binary fixed point number">
+	  <section anchor="binary-fixed" title="Binary fixed point number">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( binary-fixed {point}:Nat {bits}:Bytes
@@ -1417,7 +1441,7 @@
 	    </t>
 	  </section>
 
-	  <section title="Decimal fixed point number">
+	  <section anchor="decimal-fixed" title="Decimal fixed point number">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( decimal-fixed {point}:Nat {bits}:Bytes
@@ -1490,7 +1514,7 @@
 	    is always an operand.
 	  </t>
 
-	  <section title="Prefix bytecode">
+	  <section anchor="prefix" title="Prefix bytecode">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( prefix {bytecode} )</spanx></t>
@@ -1524,7 +1548,7 @@
  ( go:black 5 6 ) )
 	    </artwork></figure></t>
 	  </section>
-	  <section title="Postfix bytecode">
+	  <section anchor="postfix" title="Postfix bytecode">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( postfix {bytecode} )</spanx></t>
@@ -1575,7 +1599,7 @@
 	      for this are explained in <xref target="arityForm"/>
 	    </t>
 	  </section>
-	  <section title="Arity definition">
+	  <section anchor="arity" title="Arity definition">
 	    <t>
 	      <list style="hanging">
 		<t hangText="shape"><spanx style="verb">( define ( arity {contexts} ) {arities}
