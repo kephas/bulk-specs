@@ -1761,8 +1761,8 @@
 	respect to the BULK stream, the profile is an out-of-band information, usually implicit.
       </t>
       <t>
-	A processing application doesn't need to include the profile in the concrete yield, as long
-	as the semantics of the abstract yield are maintained.
+	A processing application doesn't need to actually parse the profile or include the profile's
+	yield in the concrete yield, as long as the semantics of the abstract yield are maintained.
       </t>
       <t>
 	The same BULK stream might be processed with different profiles.
@@ -1798,6 +1798,22 @@
 	</t>
 	<t>
 	  This means that the default string encoding in a BULK stream is UTF-8.
+	</t>
+      </section>
+
+      <section title="Fixed BULK: all profile, no evaluation">
+	<t>
+	  Fixed BULK is a mode of processing for a format or protocol where evaluation has been
+	  deemed too expensive computationnally. In Fixed BULK mode, a processing application uses a
+	  profile that contains one or several namespace associations and possibly
+	  definitions. Because evaluation is disabled, no namespace association or definition will
+	  be executed during processing and namespaces are "fixed" to their markers as per the
+	  profile.
+	</t>
+	<t>
+	  Fixed BULK mode lets a format or protocol use BULK's syntax while operating more like
+	  binary format frameworks, like ASN.1 or Protocol Buffers. An interesting difference is
+	  that the concatenation of the profile and the Fixed BULK stream is a normal BULK stream.
 	</t>
       </section>
     </section>
