@@ -327,8 +327,7 @@
 
    BOON adds names to be able to encode some common types of values found in JSON and formats with
    a semantics derived from it, like MessagePack or CBOR. An expression that is one of BOON's cases
-   has type =Boon=. The form =( boon:boon {value}:Boon )= can be used to disambiguate how ={value}=
-   should be interpreted, as BOON reuse existing core BULK types when they are appropriate.
+   has type =Boon=.
 
    BOON values can be:
 
@@ -343,47 +342,46 @@
    then an expression of type =Boon= also has type =Json=.
 ** RDF 1.0
 
-   TODO: update to RDF 1.1 or 1.2
-
-   - 0x01 :: uriref ⇔ λ:id
-   - 0x02 :: ( base Bytes )
-   - 0x03 :: prefix ⇔ ( uri( lambda u ( lambda s ( concat u s ) ) )
-   - 0x04 :: rdf# ⇔ ( uriref "[[http://www.w3.org/1999/02/22-rdf-syntax-ns#]]" )
-   - 0x05 :: blank
-   - 0x06 :: ( plain {lang} {literal} )
-   - 0x07 :: ( datatype {id}:URIRef {literal} )
-   - 0x08 :: xmlliteral ⇔ ( rdf# "XMLLiteral" )
-   - 0x09 :: ( triples {triples} )
-   - 0x0A :: ( turtle {statements} )
-   - 0x0B :: type ⇔ ( rdf# "type" )
-   - 0x0C :: property ⇔ ( rdf# "Property" )
-   - 0x0D :: statement ⇔ ( rdf# "Statement" )
-   - 0x0E :: subject ⇔ ( rdf# "subject" )
-   - 0x0F :: predicate ⇔ ( rdf# "predicate" )
-   - 0x10 :: object ⇔ ( rdf# "object" )
-   - 0x11 :: bag ⇔ ( rdf# "Bag" )
-   - 0x12 :: seq ⇔ ( rdf# "Seq" )
-   - 0x13 :: alt ⇔ ( rdf# "Alt" )
-   - 0x14 :: value ⇔ ( rdf# "value" )
-   - 0x15 :: list ⇔ ( rdf# "List" )
-   - 0x16 :: nil ⇔ ( rdf# "nil" )
-   - 0x17 :: first ⇔ ( rdf# "first" )
-   - 0x18 :: rest ⇔ ( rdf# "rest" )
-   - 0x19 :: plainliteral ⇔ ( rdf# "PlainLiteral" )
-   -
-   - 0x20 :: this-resource
-   - 0x21 :: uri
-
+   - =( iri-reference String )=
+   - =( base IRI )=
+   - =rdf#= ⇔ =( iri-reference "[[http://www.w3.org/1999/02/22-rdf-syntax-ns#]]" )=
+   - =blank=
+     - =( blank {label}:String )=
+   - =( literal {type}:IRIRef {dir}:Dir {lang}:LangTag {literal}:String )=
+   - =( plain {lang}:LangTag {literal}:String )=
+   - =( dir {dir}:Dir {lang}:LangTag {literal}:String )=
+   - =( typed {type}:IRIRef {literal}:String )=
+   - =ltr=, =rtl= (type: =Dir=)
+   - =json= ⇔ =( rdf# "JSON" )=
+   - =html= ⇔ =( rdf# "HTML" )=
+   - =xml= ⇔ =( rdf# "XMLLiteral" )=
+   - =( triples {triples} )=
+   - =( turtle {statements} )=
+   - =type= ⇔ =( rdf# "type" )=
+   - =property= ⇔ =( rdf# "Property" )=
+   - =statement= ⇔ =( rdf# "Statement" )=
+   - =subject= ⇔ =( rdf# "subject" )=
+   - =predicate= ⇔ =( rdf# "predicate" )=
+   - =object= ⇔ =( rdf# "object" )=
+   - =bag= ⇔ =( rdf# "Bag" )=
+   - =seq= ⇔ =( rdf# "Seq" )=
+   - =alt= ⇔ =( rdf# "Alt" )=
+   - =value= ⇔ =( rdf# "value" )=
+   - =list= ⇔ =( rdf# "List" )=
+   - =nil= ⇔ =( rdf# "nil" )=
+   - =first= ⇔ =( rdf# "first" )=
+   - =rest= ⇔ =( rdf# "rest" )=
+     
 *** Differences between complete triples (3s) and turtle-like (Tl)
     In 3s, a single triple cannot cost less than 8 bytes:
 
     : (:A:B:C)
 
-    For big graphs of mostly known references, this can already be a valuable improvement. {triples}
-    could be a packed sequence without markers around triples, but that would mean that a single
-    missing or superfluous expression would wreck everything that's after it. The fact that a triple
-    is still a form limits the savings but keeps a level of robustness (but it would be possible to
-    define a packing RDF form…).
+    For big graphs of mostly known references, this can already be a valuable
+    improvement. {triples} could be a packed sequence without markers around triples, but that
+    would mean that a single missing or superfluous expression would wreck everything that's after
+    it. The fact that a triple is still a form limits the savings but keeps a level of robustness
+    (but it would be possible to define a packing RDF form…).
 
     Adding another triple cannot cost less than adding 8 bytes:
 
@@ -407,23 +405,26 @@
    - Relax NG
 
 *** Document
-    XML content, not notation: no support for entities or CDATA. =stringenc= can be used everywhere.
+    XML content, not notation: no support for entities or CDATA. =string= can be used everywhere.
 
     : ( define ?rfc ( subst ( pi "rfc" ( rest 0 ) ) ) )
 
    #+BEGIN_SRC bulktext
-   ( verifiable-ns 0x1800 {id} nil "xml"
-   "This vocabulary can be used to represent XML data."
+     ( define ( namespace {id} 21 )
+       ([ nil
+	  ( mnemonic ( namespace 21 ) "xml" )
+	  ( explain ( namespace 21 ) "This vocabulary can be used to represent XML data." )
 
-   ( mnemonic/def nil "xml1.0" "( xml1.0 {content} )"
-   ( mnemonic/def nil "xml1.1" "( xml1.1 {content} )"
-   ( mnemonic/def nil "pi" "( pi {target} {content} )"
-   ( mnemonic/def nil "comment" "( comment {content} )"
-   ( mnemonic/def nil "element" "( element {name} {content} )"
-   ( mnemonic/def nil "attribute" "( attribute {name} {value} )"
-   ( mnemonic/def nil "xml:" ( rdf:prefix "http://www.w3.org/XML/1998/namespace" )
-   ( mnemonic/def nil "xmlns:" "xmlns:" ( rdf:prefix "http://www.w3.org/2000/xmlns/" )
-   ( mnemonic/def nil "preserve" "preserve" ( attribute ( xml: "space" ) "preserve" ) )
+	  ( define+ xml:xml10 "xml1.0" "( xml1.0 {content} )" )
+	  ( define+ xml:xml11 "xml1.1" "( xml1.1 {content} )" )
+	  ( define+ xml:pi "pi" "( pi {target} {content} )" )
+	  ( define+ xml:comment "comment" "( comment {content} )" ) 
+	  ( define+ xml:element "element" "( element {name} {content} )" )
+	  ( define+ xml:attribute "attribute" "( attribute {name} {value} )" )
+	  ( define+ xml:xml: "xml:" ( rdf:prefix "http://www.w3.org/XML/1998/namespace" ) )
+	  ( define+ xml:xmlns: "xmlns:" "xmlns:" ( rdf:prefix "http://www.w3.org/2000/xmlns/" ) )
+	  ( define+ xml:preserve "preserve" "preserve" ( attribute ( xml: "space" ) "preserve" ) ) ]) )
+  
    #+END_SRC
 
 *** Default  package?
@@ -470,56 +471,6 @@
 *** QName
     To maximize reuse between namespaces, URIRef and URIString expressions also have the type
     QName. Any Bytes whose content satisfy the NCName production also has.
-
-** MeTOD: Media Type Optimal Description
-   - type as ref or form
-   - atomic type
-     - html5
-     - jpeg
-   - composite type
-     - syntax: ( main-type {params} )
-     - example: xml
-       - ( xml xhtml rdf )
-	 - meaning xml with xhtml document root and rdf elements
-       - xhtml* = ( subst ( xml xhtml ( rest 0 ) ) )
-	 - ( xhtml* mathml svg )
-   - some MeTOD types may only make sense as sub-types
-     - e.g. xml NS that doesn't have a document element
-       - like dublin-core: ( xml xhtml svg dublin-core )
-   - encoding as first-class type
-     - ( gzip tar )
-     - ( base64 zip )
-   - complex structures?
-     - ( mime ( alternatives ( qp ( text utf-8 ) ) ( qp html5 ) ) ( base64 zip ) ( signature (
-       base64 openpgp ) ) )
-   - accept patterns
-     - ( xml * )
-     - ( xml xhtml * )
-   - semantics dictated by type
-     - for xml, the first subtype MUST be the type for the document element
-     - for MIME, order of subtypes is order of parts
-
-
-   - 0x00 :: ( type {type}:Expr )
-     - metadata form
-   - 0x02 :: *
-   - 0x03 :: bulk / ( bulk {namespaces} )
-   - 0x10 :: ( text {encoding} {subtype} )
-     - means that it can be shown as-is to a user
-     - ( text {encoding} ) means plain text
-     - ( text utf-8 markdown )
-     - ( text utf-8 ( source-code c++ ) )
-   - 0x11 :: ( source {langs} )
-     - only as subtype of =text=, means that if available, a code editor should be used to view this
-       format
-   - 0x12 :: ( image {subtype} )
-   - 0x13 :: ( audio {subtype} )
-   - 0x14 :: ( video {subtype} )
-
-
-   MeTOD only defines kinds where a default software could be expected to process many or most types
-   of this kind. This is not the case for MIME registries application, text, message, model,
-   multipart and text. But a MIME vocabulary could define them.
 
 ** Dates namespace
    - Nat123 := Nat | Nat Nat | Nat Nat Nat

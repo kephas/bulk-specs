@@ -1,0 +1,7 @@
+( define ( namespace ( hash:shake128 #[0] ) 21 )
+([ nil
+( mnemonic ( namespace 21 ) "boon" )
+( explain ( namespace 21 ) "BULK's Own Object Notation" )
+( mnemonic boon:map "map" )
+( mnemonic boon:list "list" )
+]) )
