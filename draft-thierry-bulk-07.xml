@@ -1854,6 +1854,13 @@
 	  recognized, as it could be used by an attacker to benefit from the authority the
 	  forwarding application has on the recipient of the data.
 	</t>
+	<t>
+	  If a protocol deems it necessary for applications to be able to forward data they don't
+	  fully understand, a known protection from that threat is the use of capability security,
+	  where the agent that provides the data to be forwarded must also provide the explicit
+	  authority that will be used after forwarding. If the authority of the forwarding
+	  application is not used, it cannot be abused.
+	</t>
       </section>
       <section title="Definitions">
 	<t>
