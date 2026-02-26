@@ -1388,8 +1388,8 @@
 	      necessary.
 	    </t>
 	    <t>
-	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx>, <spanx
-	      style="verb">Nat</spanx>.
+	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>, <spanx
+	      style="verb">Int</spanx>, <spanx style="verb">Nat</spanx>.
 	    </t>
 	  </section>
 
@@ -1404,7 +1404,8 @@
 	      two's-complement notation in the bits contained in <spanx style="verb">{bits}</spanx>.
 	    </t>
 	    <t>
-	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Int</spanx>.
+	      Type: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>, <spanx
+	      style="verb">Int</spanx>.
 	    </t>
 	  </section>
 
