@@ -1,0 +1,1 @@
+{"status":"ok","data":[{"foo":"bar","baz":"quux","value":12.5},{"foo":"bar","baz":"quuux","value":0},{"foo":"fubar","baz":"quuuux","value":-40}]}

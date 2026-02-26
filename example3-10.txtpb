@@ -1,0 +1,13 @@
+# proto-file: example.proto
+# proto-message: ExampleResponse
+
+ok { data: [ { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 }
+     	   , { foo: "bar", baz: "quux", numfloat: 12.5 } ] }

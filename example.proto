@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+message ExampleResponse {
+  oneof response {
+    ExampleOK ok = 1;
+    ExampleError err = 2;
+  }
+}
+
+message ExampleOK {
+  repeated Foobaz data = 1;
+}
+
+message Foobaz {
+  string foo = 1;
+  string baz = 2;
+  oneof number {
+    sint64 numint = 3;
+    float numfloat = 4;
+  }
+}
+
+message ExampleError {
+  uint32 code = 1;
+  string message = 2;
+}

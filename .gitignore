@@ -1,6 +1,8 @@
 # xml2rfc
 *.html
 *.txt
+*.pb
+*.cbor
 
 # org-mode
 *.tex

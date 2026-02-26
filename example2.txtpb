@@ -1,0 +1,4 @@
+# proto-file: example.proto
+# proto-message: ExampleResponse
+
+err { code: 735, message: "delegation expired" }
