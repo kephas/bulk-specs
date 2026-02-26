@@ -1236,8 +1236,8 @@
 	    <section anchor="indexed-array" title="Indexed array">
 	      <t>
 		<list style="hanging">
-		  <t hangText="shape"><spanx style="verb">( indexed-array {container}:Expr {start}:Nat
-		  {size}:Nat )</spanx></t>
+		  <t hangText="shape"><spanx style="verb">( indexed-array {container}:Expr
+		  {start}:Nat {size}:Nat )</spanx></t>
 		  <t hangText="Name's type">EagerFunction</t>
 		</list>
 	      </t>
@@ -1250,9 +1250,24 @@
 		the stream)
 	      </t>
 	      <t>
+		<list style="hanging">
+		  <t hangText="shape"><spanx style="verb">( indexed-array {container}:Expr
+		  {start}:Nat )</spanx></t>
+		  <t hangText="Name's type">EagerFunction</t>
+		</list>
+	      </t>
+	      <t>
+		The semantics of this form is the value of an array whose content are the bytes
+		starting at offset <spanx style="verb">{start}</spanx> in the array <spanx
+		style="verb">{container}</spanx> until its end. (in most cases, <spanx
+		style="verb">{container}</spanx> will be a reference defined to an array earlier in
+		the stream)
+	      </t>
+	      <t>
 		Compared to <spanx style="verb">indexed-bulk</spanx>, which can reference an array
 		expression, <spanx style="verb">indexed-array</spanx> is useful when several
-		different but overlapping sections of the same byte sequence are needed as arrays.
+		different but overlapping sections of the same byte sequence are needed as arrays,
+		or when reversing <xref target="packing">packing</xref> through evaluation.
 	      </t>
 	    </section>
 	  </section>
@@ -1593,9 +1608,9 @@
 	      resulting form can then be evaluated in turn.
 	    </t>
 	    <t> Example: the evaluation of </t>
-	    <t><figure><artwork>( bulk
- ( define ( arity postfix ) ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
- ( postfix
+	    <t><figure><artwork>( define ( arity postfix )
+ ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
+( postfix
   go:game
   1 2 go:black
   "white tried an unorthodox opening" 3 4 go:white go:comment
@@ -1673,68 +1688,109 @@
 	  </section>
 
 	  <section title="Going further in compactness">
-            <t>
-	      If the overhead of several marker bytes in the operands of some operators is too
-	      much, even more compactness can be achieved by packing together small operands. For
-	      example, instead of an operator with two integers as its operands, one could specify
-	      an operator to take a single word as operand and extract the integers from it (while
-	      still retaining the ability to operate on many sizes of integers, because it can
-	      still deduce the size of the integers by dividing the size of the array by two).
-	    </t>
-	    <t>
-	      For example, a BULK format representing player moves with a pair of coordinates on a
-	      large board might represent a single move with the following shapes:
-	    </t>
-	    <t>
-	      <list style="hanging">
-		<t hangText="basic (8 bytes)"><spanx style="verb">( game:black/2 #[1] 0x41 #[1]
-		0x5A )</spanx></t>
-		<t hangText="packed basic (7 bytes)"><spanx style="verb">( game:black/1 #[2] 0x41
-		0x5A )</spanx></t>
-		<t hangText="bytecode (6 bytes)"><spanx style="verb">game:black/2 #[1] 0x41 #[1]
-		0x5A</spanx></t>
-		<t hangText="packed bytecode (5 bytes)"><spanx style="verb">game:black/1 #[2] 0x41
-		0x5A</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      The transformation defined for the bytecode forms makes it possible to mix literal
-	      expressions and operations represented by a sequence of operators and operands. In
-	      the previous go example, for instance, one might represent each alternating move by
-	      the two players as two integers, lowering the weight of each move to 2 bytes as
-	      coordinates are below 64:
-	    </t>
-	    <t><figure><artwork>( postfix
-  ( ( 2 go:white go:comment go:alternative ) )
+	    <section anchor="packing" title="Packing">
+              <t>
+		If the overhead of several marker bytes in the operands of some operators is too
+		much, even more compactness can be achieved by packing together small operands. For
+		example, instead of an operator with two integers as its operands, one could specify
+		an operator to take a single word as operand and extract the integers from it (while
+		still retaining the ability to operate on many sizes of integers, because it can
+		still deduce the size of the integers by dividing the size of the array by two).
+	      </t>
+	      <t>
+		For example, a BULK format representing player moves with a pair of coordinates on a
+		large board might represent a single move with the following shapes:
+	      </t>
+	      <t>
+		<list style="hanging">
+		  <t hangText="basic (8 bytes)"><spanx style="verb">( game:black/2 #[1] 0x41 #[1]
+		  0x5A )</spanx></t>
+		  <t hangText="packed basic (7 bytes)"><spanx style="verb">( game:black/1 #[2] 0x41
+		  0x5A )</spanx></t>
+		  <t hangText="bytecode (6 bytes)"><spanx style="verb">game:black/2 #[1] 0x41 #[1]
+		  0x5A</spanx></t>
+		  <t hangText="packed bytecode (5 bytes)"><spanx style="verb">game:black/1 #[2] 0x41
+		  0x5A</spanx></t>
+		</list>
+	      </t>
+	      <t>
+		Packing can also be done without adding its burden on the logic of the processing
+		application, by using evaluation to transform packed forms into simpler forms (but
+		they need to be created for each size of operands). For example, the following:
+	      </t>
+	      <t><figure><artwork>( define game:black/1-16
+  ( subst ( game:black/2 ( indexed-array ( arg 0 ) 0 1 )
+                         ( indexed-array ( arg 0 ) 1 1 ) ) ) )
+( game:black/1-16 #[2] 0x415A )
+</artwork></figure></t> 
+	      <t>Would be evaluated into:</t>
+	      <t><figure><artwork>( game:black/2 #[1] 0x41 #[1] 0x5A )</artwork></figure></t>
+	      <t>
+		More complex packing can be encoded as well. For example, this would be a form that
+		packs two 16-bits unsigned integers, one 32-bits signed integer, one reference, and
+		one variable-length string:
+	      </t>
+	      <t><figure><artwork>( define foo:pack-224-ref-str
+  ( subst ( foo:bar ( indexed-array ( arg 0 ) 0 2 )
+                    ( indexed-array ( arg 0 ) 2 2 )
+                    ( signed-int ( indexed-array ( arg 0 ) 4 4 ) )
+                    ( indexed-bulk ( arg 0 ) 8 )
+                    ( indexed-array ( arg 0 ) 10 ) ) )</artwork></figure></t>
+	    </section>
+	    <section title="Mixing literals">
+	      <t>
+		The transformation defined for the bytecode forms makes it possible to mix literal
+		expressions and operations represented by a sequence of operators and operands. A
+		typical example would be that instead of explicitly encoding which player is playing
+		in turn, to only encode the move and let the player information be implicit, when
+		the order of players is dictated by the game logic. In the previous go example, for
+		instance, one might represent each alternating move by the two players as two
+		integers, lowering the weight of each normal move to 2 bytes as coordinates are
+		below 64:
+	      </t>
+	      <t><figure><artwork>( define ( arity postfix )
+ ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
+( postfix
+  ( ( nil go:game ) ( 2 go:white go:comment go:alternative ) )
   go:game
   1 2
   "white tried an unorthodox opening" 3 4 go:white go:comment
   "a more classical opening would be" 8 9 go:white go:comment
   go:alternative
   2 3
-  4 5 )</artwork></figure></t>
-            <t>
-              The difference between all these schemes and an array containing fixed-size elements
-              is that you keep the ability to insert other forms, like here to represent comments
-              on the game or variants.
-	    </t>
-	    <t>
-	      The cost of the bytecode format is that if it contains operators whose arity is
-	      unknown to a processing application, the whole list after the first occurrence of
-	      them is unreadable to that processing application, whereas in the basic format, the
-	      processing application can still process all the forms it understands, and that
-	      requires no anticipation by the application creating the BULK stream.
-	    </t>
-	    <t>
-	      The only case where operators could have an unknown arity is when the application
-	      writing the stream didn't include the arities of every operator used in the stream to
-	      avoid the redundancy with their previous definition (typically in the definition of
-	      their respective namespaces). That redundancy would be offset by the space reduction
-	      of postfix bytecode for streams containing a few dozens forms. At that point, with
-	      all arities explicit, with packing and with literals for the most used forms, postfix
-	      bytecode gets on the Pareto front for size and generality, retaining the full
-	      generality of BULK while saving a lot of space.
-	    </t>
+  4 5 )</artwork></figure></t> 
+              <t>
+		The difference between all these schemes and an array containing fixed-size elements
+		is that you keep the ability to insert other forms, like here to represent comments
+		on the game or variants.
+	      </t>
+	    </section>
+	    <section>
+	      <t>
+		The cost of the bytecode format is that if it contains operators whose arity is
+		unknown to a processing application, the whole list after the first occurrence of
+		them is unreadable to that processing application, whereas in the basic format, the
+		processing application can still process all the forms it understands, and that
+		requires no anticipation by the application creating the BULK stream.
+	      </t>
+	      <t>
+		The only case where operators could have an unknown arity is when the application
+		writing the stream didn't include the arities of every operator used in the stream
+		to avoid the redundancy with their previous definition (typically in the definition
+		of their respective namespaces). That redundancy would be offset by the space
+		reduction of postfix bytecode for streams containing a few dozens forms. At that
+		point, with all arities explicit, with packing and with literals for the most used
+		forms, postfix bytecode gets on the Pareto front for size and generality, retaining
+		the full generality of BULK while saving a lot of space.
+	      </t>
+	      <t>
+		It is RECOMMENDED that whenever explicit arities would be a small fraction of the
+		total stream size, they all ge given. An processing application MAY choose to never
+		include explicit arities for the names of the main namespace of the format, if that
+		namespace's definition includes arities, when processing the stream without
+		knowledge of that definition wouldn't make sense.
+	      </t>
+	    </section>
 	  </section>
 	</section>
       </section>
