@@ -87,17 +87,18 @@
   Let's compare a few simple examples. The data in the table is the
   size of the example in bytes.
   
-  | format      |   1 |  2 | 3                     |
-  |-------------+-----+----+-----------------------|
-  | BULK        |  48 | 24 | 16n+2                 |
-  | CBOR Tagged |  50 | 25 | 15n+3 (15n+4 if n>23) |
-  | Protobuf    |  56 | 25 | 18n+3                 |
-  | CBOR maps   | 100 | 49 | 27n+18                |
-  | MsgPack     | 106 | 49 | 33n+19                |
-  | BULK maps   | 123 | 52 | 36n+21                |
-  | JSON        | 145 | 60 | 39n+24                |
-  | BSON        | 178 | 65 | 47n+27                |
-  |-------------+-----+----+-----------------------|
+  | format        |   1 |  2 | 3                     |
+  |---------------+-----+----+-----------------------|
+  | BULK bytecode |  48 | 24 | 16n+2                 |
+  | CBOR Tagged   |  50 | 25 | 15n+3 (15n+4 if n>23) |
+  | BULK basic    |  54 | 24 | 18n+2                 |
+  | Protobuf      |  56 | 25 | 18n+3                 |
+  | CBOR maps     | 100 | 49 | 27n+18                |
+  | MsgPack       | 106 | 49 | 33n+19                |
+  | BULK maps     | 123 | 52 | 36n+21                |
+  | JSON          | 145 | 60 | 39n+24                |
+  | BSON          | 178 | 65 | 47n+27                |
+  |---------------+-----+----+-----------------------|
 
 
 ** JSON
@@ -107,56 +108,67 @@
 
    - 3 :: ={"status":"ok","data":[{"foo":"bar","baz":"quux","value":12.5} repeated n times]}=
 
-** BULK
+** BULK namespaces used
+   The examples are intended to be used with the following namespace:
+    
+   #+BEGIN_src bulktext
+     ( define ( namespace ( uuid:v4 #[16] 0x4C89D12F-1D71-4132-92E9-6335797659EE ) 21 )
+      ([ nil
+      ( mnemonic ( namespace 21 ) "example" )
+      ( explain (namespace 21 ) "Message format example" )
+      ( define+ example:ok "ok" "successful message containing data list" )
+      ( define+ example:error "error" "error message with code and message" )
+      ( define+ example:foobaz "foobaz" "foobaz data item" )
+      ( define+ example:foobaz/i "foobaz/i" "foobaz data item with int"
+       ( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( signed-int ( arg 2 ) ) ) ) )
+      ( define+ example:foobaz/f "foobaz/f" "foobaz data item with float"
+       ( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( binary-float ( arg 2 ) ) ) ) )
+      ( define ( arity ) ( nil example:ok example:error ) ( 3 example:foobaz example:foobaz/i example:foobaz/f ) )
+      ]) )
+   #+END_src
+
+   If the message format must be flexible to removing and adding
+   fields, they could be used with the following namespace instead,
+   where the forms are evaluated into JSON-like maps:
+
+   #+BEGIN_src bulktext
+     ( define ( namespace ( uuid:v4 #[16] 0x91CCF77B-F678-483B-A75D-573A11281C34 ) 21 )
+      ([ nil
+      ( mnemonic ( namespace 21 ) "example" )
+      ( explain (namespace 21 ) "Message format example" )
+      ( define+ example:ok "ok" "successful message containing data list"
+       ( subst ( boon:map "status" "ok" "data" ( rest 0 ) ) ) )
+      ( define+ example:error "error" "error message with code and message"
+       ( subst ( boon:map "status" "error" "code" ( arg 0 ) "message" ( arg 1 ) ) ) )
+      ( define+ example:foobaz "foobaz" "foobaz data item"
+       ( subst ( boon:map "foo" ( arg 0 ) "baz" ( arg 1 ) "value" ( arg 2 ) ) ) )
+      ( define+ example:foobaz/i "foobaz/i" "foobaz data item with int"
+       ( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( signed-int ( arg 2 ) ) ) ) )
+      ( define+ example:foobaz/f "foobaz/f" "foobaz data item with float"
+       ( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( binary-float ( arg 2 ) ) ) ) )
+      ( define ( arity ) ( 3 example:foobaz example:foobaz/i example:foobaz/f ) )
+      ]) )
+   #+END_src
+
+** BULK bytecode
    - 1 :: =example:ok example:foobaz/f "bar" "quux" #[4] 0x41480000 example:foobaz/i "bar" "quuux" 0 example:foobaz/i "fubar" "quuuux" #[1] 0xD8=
    - 2 :: =example:error 735 "delegation expired"=
    - 3 :: =example:ok example:foobaz/f "bar" "quux" #[4] 0x41480000 example:foobaz/f "bar" "quux" #[4] 0x41480000 …=
 
-*** Profile
-    These examples are intended to be used with the following profile:
-    
-    #+BEGIN_src bulktext
-      ( define ( namespace ( uuid:v4 #[16] 0x4C89D12F-1D71-4132-92E9-6335797659EE ) 21 )
-       ([ nil
-       ( mnemonic ( namespace 21 ) "example" )
-       ( explain (namespace 21 ) "Message format example" )
-       ( define+ example:ok "ok" "successful message containing data list" )
-       ( define+ example:error "error" "error message with code and message" )
-       ( define+ example:foobaz "foobaz" "foobaz data item" )
-       ( define+ example:foobaz/i "foobaz/i" "foobaz data item with int"
-	( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( signed-int ( arg 2 ) ) ) ) )
-       ( define+ example:foobaz/f "foobaz/f" "foobaz data item with float"
-	( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( binary-float ( arg 2 ) ) ) ) )
-       ( define ( arity ) ( nil example:ok example:error ) ( 3 example:foobaz example:foobaz/i example:foobaz/f ) )
-       ]) )
-      prefix
-    #+END_src
 
-    If the message format must be flexible to removing and adding
-    fields, this example could be used with the following profile
-    where the forms are evaluated into JSON-like maps:
+   These are parsed with the following profile:
 
-    #+BEGIN_src bulktext
-      ( define ( namespace ( uuid:v4 #[16] 0x91CCF77B-F678-483B-A75D-573A11281C34 ) 21 )
-       ([ nil
-       ( mnemonic ( namespace 21 ) "example" )
-       ( explain (namespace 21 ) "Message format example" )
-       ( define+ example:ok "ok" "successful message containing data list"
-	( subst ( boon:map "status" "ok" "data" ( rest 0 ) ) ) )
-       ( define+ example:error "error" "error message with code and message"
-	( subst ( boon:map "status" "error" "code" ( arg 0 ) "message" ( arg 1 ) ) ) )
-       ( define+ example:foobaz "foobaz" "foobaz data item"
-	( subst ( boon:map "foo" ( arg 0 ) "baz" ( arg 1 ) "value" ( arg 2 ) ) ) )
-       ( define+ example:foobaz/i "foobaz/i" "foobaz data item with int"
-	( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( signed-int ( arg 2 ) ) ) ) )
-       ( define+ example:foobaz/f "foobaz/f" "foobaz data item with float"
-	( subst ( example:foobaz ( arg 0 ) ( arg 1 ) ( binary-float ( arg 2 ) ) ) ) )
-       ( define ( arity ) ( 3 example:foobaz example:foobaz/i example:foobaz/f ) )
-       ]) )
-      prefix
-    #+END_src
+   #+BEGIN_src bulktext
+     ( import 21 ( namespace ( uuid:v4 #[16] 0x91CCF77B-F678-483B-A75D-573A11281C34 ) ) )
+     prefix
+   #+END_src
+   
+** BULK basic
+   - 1 :: =example:ok ( example:foobaz/f "bar" "quux" #[4] 0x41480000 ) ( example:foobaz/i "bar" "quuux" 0 ) ( example:foobaz/i "fubar" "quuuux" #[1] 0xD8 )=
+   - 2 :: =example:error 735 "delegation expired"=
+   - 3 :: =example:ok ( example:foobaz/f "bar" "quux" #[4] 0x41480000 ) ( example:foobaz/f "bar" "quux" #[4] 0x41480000 ) …=
 
-** Naive BULK
+** BULK maps
    This makes no use of BULK's ability to abstract common patterns, just encodes JSON maps and arrays as-is.
 
    - 1 :: =( boon:map "status" "ok" "data" ( ( boon:map "foo" "bar" "baz" "quux" "value" ( bulk:binary-float #[4] 0x41480000 ) ) ( boon:map "foo" "bar" "baz" "quuux" "value" 0 ) ( boon:map "foo" "fubar" "baz" "quuuux" "value" -40 ) ) )=

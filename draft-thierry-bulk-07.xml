@@ -387,14 +387,16 @@
 	  sequence.
 	</t>
 	<t>
-	  The <spanx style="verb">0x01</spanx> and <spanx style="verb">0x02</spanx> marker bytes
-	  are special cases. When the parser reads <spanx style="verb">0x01</spanx>, it immediately
+	  The <spanx style="verb">0x01</spanx> and <spanx style="verb">0x02</spanx> marker bytes are
+	  special cases. When the parser reads <spanx style="verb">0x01</spanx>, it immediately
 	  appends an empty list to the current context. This list becomes the new context. This new
 	  context has the previous context as parent. Then the parser returns to its dispatch
 	  stage. When the parser reads <spanx style="verb">0x02</spanx>, it appends nothing to the
 	  context, but instead the parent of the current context becomes the new context and the
 	  parser returns to the dispatch stage. Thus it is a parsing error to read <spanx
-	  style="verb">0x02</spanx> when the context is the abstract yield.
+	  style="verb">0x02</spanx> when the context is the abstract yield. It is also a parsing
+	  error when the stream ends and the parser is not at the dispatch stage in the abstract
+	  yield.
 	</t>
 	<t>
 	  Some forms have side-effects in their semantics. Those side-effects MUST not affect the
@@ -455,8 +457,8 @@
 	    evaluates to itself.
 	  </t>
 	  <t>
-	    When an application evaluates a BULK expression, it MUST verify that evaluation will
-	    terminate in a finite number of evaluation steps. An application MAY verify finite
+	    When an application evaluates a BULK expression, it MUST verify that evaluation
+	    terminates in a finite number of evaluation steps. An application MAY verify finite
 	    termination statically or dynamically. For example, an application MAY stop evaluation
 	    in error after a predetermined number of steps.
 	  </t>
@@ -464,6 +466,18 @@
 	    Whenever this specification describes the semantics of an expression, it describes the
 	    result of evaluating that expression, either in terms of the value returned or the
 	    side-effects executed by evaluation of the expression.
+	  </t>
+	  <t>
+	    When an evaluation error is encountered, a processing application MAY not stop
+	    processing with an error. If the processing application produces a partially evaluated
+	    concrete yield, it MUST convey enough information for the using agent to know the order
+	    of all expressions in the original BULK stream, which expressions were sucessfully
+	    evaluated, and which were not because of evaluation errors. A processing application MAY
+	    stop evaluation at the first evaluation error and produce the concrete yield in two
+	    separated sections, the successfully evaluated part, followed by the unevaluated one. A
+	    processing application MAY continue evaluation and produce the concrete yield as a
+	    sequence of expressions, each tagged with the fact that it was successfully evaluated or
+	    not.
 	  </t>
 	</section>
       </section>
@@ -719,11 +733,21 @@
 
     </section>
 
-    <section title="Standard namespaces">
+    <section title="Kinds of namespaces">
       <t>
 	Standard namespaces have a fixed marker value and are not identified by a unique
 	identifier.
       </t>
+      <t>
+	Extension namespaces are defined with a unique identifier, to be associated to a marker
+	value.
+      </t>
+      <t>
+	By is decentralized nature, as far as a processing application is concerned, apart from
+	standard namespaces, there is no difference between a namespace defined as part of the
+	official BULK suite and a user-defined one.
+      </t>
+    </section>
 
       <section title="BULK core namespace">
 	<t>
@@ -1500,7 +1524,7 @@
 	  </section>
 	</section>
 
-	<section title="Compact formats">
+	<section title="Bytecodes">
 	  <t>
 	    This specification and other official BULK specifications take the option to use as
 	    their basic building block a form with a discriminating reference as first element
@@ -1529,7 +1553,8 @@
 	  <t>
 	    Still, even this extreme in the design space retains the ability to insert expressions
 	    in the BULK stream, whatever their type. Thus metadata can be added about data that is
-	    represented in a format that doesn't allow for metadata or for limited metadata.
+	    represented in a format that doesn't allow for metadata or that allows only xfor limited
+	    metadata.
 	  </t>
 	  <t>
 	    In-between these two extremes, several options are available to produce a format that
@@ -1548,10 +1573,10 @@
 	    their operands. In the following forms, operators MUST be references.
 	  </t>
 	  <t>
-	    When evaluating a bytecode, a processing application MUST abort the transformation as
-	    soon as it encounters a reference for which it cannot determine if it is an operator or
-	    its arity (the number of operands it will have). An expression that is not a reference
-	    is always an operand.
+	    When evaluating a bytecode, it is an evaluation error when the processing application
+	    encounters a reference for which it cannot determine if it is an operator or its arity
+	    (the number of operands it will have). An expression that is not a reference is always
+	    an operand.
 	  </t>
 
 	  <section anchor="prefix" title="Prefix bytecode">
@@ -1690,69 +1715,76 @@
 	      </list>
 	    </t>
 	  </section>
+	</section>
+      </section>
 
-	  <section title="Going further in compactness">
-	    <section anchor="packing" title="Packing">
-              <t>
-		If the overhead of several marker bytes in the operands of some operators is too
-		much, even more compactness can be achieved by packing together small operands. For
-		example, instead of an operator with two integers as its operands, one could specify
-		an operator to take a single word as operand and extract the integers from it (while
-		still retaining the ability to operate on many sizes of integers, because it can
-		still deduce the size of the integers by dividing the size of the array by two).
-	      </t>
-	      <t>
-		For example, a BULK format representing player moves with a pair of coordinates on a
-		large board might represent a single move with the following shapes:
-	      </t>
-	      <t>
-		<list style="hanging">
-		  <t hangText="basic (8 bytes)"><spanx style="verb">( game:black/2 #[1] 0x41 #[1]
-		  0x5A )</spanx></t>
-		  <t hangText="packed basic (7 bytes)"><spanx style="verb">( game:black/1 #[2] 0x41
-		  0x5A )</spanx></t>
-		  <t hangText="bytecode (6 bytes)"><spanx style="verb">game:black/2 #[1] 0x41 #[1]
-		  0x5A</spanx></t>
-		  <t hangText="packed bytecode (5 bytes)"><spanx style="verb">game:black/1 #[2] 0x41
-		  0x5A</spanx></t>
-		</list>
-	      </t>
-	      <t>
-		Packing can also be done without adding its burden on the logic of the processing
-		application, by using evaluation to transform packed forms into simpler forms (but
-		they need to be created for each size of operands). For example, the following:
-	      </t>
-	      <t><figure><artwork>( define game:black/1-16
-  ( subst ( game:black/2 ( indexed-array ( arg 0 ) 0 1 )
+      <section title="Optimizing compactness">
+	<section anchor="packing" title="Packing">
+          <t>
+	    If the overhead of several marker bytes in the operands of some operators is too much,
+	    more compactness can be achieved by packing together small operands. For example,
+	    instead of an operator with two integers as its operands, one could specify an operator
+	    to take a single array as operand and extract the integers from it. When the processing
+	    application does this extraction, the format retains the ability to operate on many
+	    sizes of integers, because the processing application can still deduce the size of the
+	    integers by dividing the size of the array by two. This can be used outside or inside of
+	    bytecodes (to stack the compacting effects of both).
+	  </t>
+	  <t>
+	    For example, a BULK format representing player moves with a pair of coordinates on a
+	    large board might represent a single move with the following shapes:
+	  </t>
+	  <t>
+	    <list style="hanging">
+	      <t hangText="basic (8 bytes)"><spanx style="verb">( game:move/2 #[1] 0x41 #[1] 0x5A
+	      )</spanx></t>
+	      <t hangText="packed basic (7 bytes)"><spanx style="verb">( game:move/1 #[2] 0x41 0x5A
+	      )</spanx></t>
+	      <t hangText="bytecode (6 bytes)"><spanx style="verb">game:move/2 #[1] 0x41 #[1]
+	      0x5A</spanx></t>
+	      <t hangText="packed bytecode (5 bytes)"><spanx style="verb">game:move/1 #[2] 0x41
+	      0x5A</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    Packing can also be done without adding its burden on the logic of the processing
+	    application, by using evaluation to transform packed forms into simpler forms (but they
+	    need to be created separately for each size of operands). For example, the following:
+	  </t>
+	  <t><figure><artwork>( define game:move/1-16
+  ( subst ( game:move/2 ( indexed-array ( arg 0 ) 0 1 )
                          ( indexed-array ( arg 0 ) 1 1 ) ) ) )
-( game:black/1-16 #[2] 0x415A )
+( game:move/1-16 #[2] 0x415A )
 </artwork></figure></t> 
-	      <t>Would be evaluated into:</t>
-	      <t><figure><artwork>( game:black/2 #[1] 0x41 #[1] 0x5A )</artwork></figure></t>
-	      <t>
-		More complex packing can be encoded as well. For example, this would be a form that
-		packs two 16-bits unsigned integers, one 32-bits signed integer, one reference, and
-		one variable-length string:
-	      </t>
-	      <t><figure><artwork>( define foo:pack-224-ref-str
+	  <t>Would be evaluated into:</t>
+	  <t><figure><artwork>( game:move/2 #[1] 0x41 #[1] 0x5A )</artwork></figure></t>
+	  <t>
+	    More complex packing can be encoded as well. For example, this would be a form that
+	    packs two 16-bits unsigned integers, one 32-bits signed integer, one reference, and one
+	    variable-length string:
+	  </t>
+	  <t><figure><artwork>( define foo:pack-224-ref-str
   ( subst ( foo:bar ( indexed-array ( arg 0 ) 0 2 )
                     ( indexed-array ( arg 0 ) 2 2 )
                     ( signed-int ( indexed-array ( arg 0 ) 4 4 ) )
                     ( indexed-bulk ( arg 0 ) 8 )
                     ( indexed-array ( arg 0 ) 10 ) ) )</artwork></figure></t>
-	    </section>
-	    <section title="Mixing literals">
-	      <t>
-		The transformation defined for the bytecode forms makes it possible to mix literal
-		expressions and operations represented by a sequence of operators and operands. A
-		typical example would be that instead of explicitly encoding which player is playing
-		in turn, to only encode the move and let the player information be implicit, when
-		the order of players is dictated by the game logic. In the previous go example, for
-		instance, one might represent each alternating move by the two players as two
-		integers, lowering the weight of each normal move to 2 bytes as coordinates are
-		below 64:
-	      </t>
-	      <t><figure><artwork>( define ( arity postfix )
+	  <t>
+	    In essence, packing makes it possible to embed simple ad hoc binary formats described
+	    within the BULK framework.
+	  </t>
+	</section>
+	<section title="Mixing literals">
+	  <t>
+	    The transformation defined for the bytecode forms makes it possible to mix literal
+	    expressions and operations represented by a sequence of operators and operands. A
+	    typical example would be that instead of explicitly encoding which player is playing in
+	    turn, to only encode the move and let the player information be implicit, when the order
+	    of players is dictated by the game logic. In the previous go example, for instance, one
+	    might represent each alternating move by the two players as two integers, lowering the
+	    weight of each normal move to 2 bytes as coordinates are below 64:
+	  </t>
+	  <t><figure><artwork>( define ( arity postfix )
  ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
 ( postfix
   ( ( nil go:game ) ( 2 go:white go:comment go:alternative ) )
@@ -1763,54 +1795,63 @@
   go:alternative
   2 3
   4 5 )</artwork></figure></t> 
-              <t>
-		The difference between all these schemes and an array containing fixed-size elements
-		is that you keep the ability to insert other forms, like here to represent comments
-		on the game or variants.
-	      </t>
-	    </section>
-	    <section>
-	      <t>
-		The cost of the bytecode format is that if it contains operators whose arity is
-		unknown to a processing application, the whole list after the first occurrence of
-		them is unreadable to that processing application, whereas in the basic format, the
-		processing application can still process all the forms it understands, and that
-		requires no anticipation by the application creating the BULK stream.
-	      </t>
-	      <t>
-		The only case where operators could have an unknown arity is when the application
-		writing the stream didn't include the arities of every operator used in the stream
-		to avoid the redundancy with their previous definition (typically in the definition
-		of their respective namespaces). That redundancy would be offset by the space
-		reduction of postfix bytecode for streams containing a few dozens forms. At that
-		point, with all arities explicit, with packing and with literals for the most used
-		forms, postfix bytecode gets on the Pareto front for size and generality, retaining
-		the full generality of BULK while saving a lot of space.
-	      </t>
-	      <t>
-		It is RECOMMENDED that whenever explicit arities would be a small fraction of the
-		total stream size, they all ge given. An processing application MAY choose to never
-		include explicit arities for the names of the main namespace of the format, if that
-		namespace's definition includes arities, when processing the stream without
-		knowledge of that definition wouldn't make sense.
-	      </t>
-	    </section>
-	  </section>
+          <t>
+	    The difference between all these schemes and an array containing fixed-size elements is
+	    that you keep the ability to insert other forms, like here to represent comments on the
+	    game or variants.
+	  </t>
+	</section>
+	<section title="Trade-offs">
+	  <t>
+	    The most visible cost of the bytecode format is that if it contains operators whose
+	    arity is unknown to a processing application, the whole list after the first occurrence
+	    of them is unreadable to that processing application, whereas in the basic format, the
+	    processing application can still process all the forms it understands, and that requires
+	    no anticipation by the application creating the BULK stream.
+	  </t>
+	  <t>
+	    The only case where operators could have an unknown arity is when the application
+	    writing the stream didn't include the arities of every operator used in the stream to
+	    avoid the redundancy with their previous definition (typically in the definition of
+	    their respective namespaces). That redundancy would be offset by the space reduction of
+	    postfix bytecode for streams containing a few dozens forms. At that point, with all
+	    arities explicit, with packing and with literals for the most used forms, postfix
+	    bytecode gets on the Pareto front for size and generality, retaining the full generality
+	    of BULK while saving a lot of space.
+	  </t>
+	  <t>
+	    It is RECOMMENDED that whenever explicit arities would be a small fraction of the total
+	    stream size, they all ge given. An processing application MAY choose to never include
+	    explicit arities for the names of the main namespace of the format, if that namespace's
+	    definition includes arities, when processing the stream without knowledge of that
+	    definition wouldn't make sense.
+	  </t>
+	  <t>
+	    But another cost of the bytecode format is the loss of resilience. If a BULK stream ends
+	    up with errors in the content, whether during creation or transit, but those errors
+	    don't affect the syntactic structure of the stream, then those errors will only prevent
+	    processing the form they are in. If errors occur within a metadata form, the data is
+	    still readable. If errors occur within one entry in an archive, other entries are still
+	    readable. But a far wider class or errors will make a bytecode impossible to evaluate,
+	    and the blast radius is everything after the error.
+	  </t>
+	  <t>
+	    When a protocol needs the exchange of messages where every byte spared counts and there
+	    is no sense in trying to recover a partial message after corruption, then using a packed
+	    bytecode is probably an excellent solution. When writing large quantities of small data
+	    elements to long-term storage, when overhead adds up significantly, it is RECOMMENDED to
+	    use a mechanism to limit the blast radius of possible data corruption.
+	  </t>
+	  <t>
+	    There are several possible solutions to limit where bytecode errors propagage: one is
+	    chunking the bytecode into several bytecode forms, another is inserting at regular
+	    intervals a beacon expression that can never be an operand, and that can "reset" the
+	    bytecode transformation process that had been corrupted before. The former is simpler
+	    but the latter might be better suited when data is streamed.
+	  </t>
 	</section>
       </section>
-    </section>
 
-    <section title="Extension namespaces">
-      <t>
-	Extension namespaces are defined with a unique identifier, to be associated to a marker
-	value.
-      </t>
-      <t>
-	By is decentralized nature, as far as a processing application is concerned, apart from
-	standard namespaces, there is no difference between a namespace defined as part of the
-	official BULK suite and a user-defined one.
-      </t>
-    </section>
 
     <section anchor="profiles" title="Profiles">
       <t>
