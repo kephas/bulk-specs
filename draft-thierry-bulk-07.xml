@@ -212,7 +212,10 @@
 	    extension gains any traction while in experimentation, its authors face the difficulty
 	    to switch all existing implementations to the definitive values they'll get. And how
 	    experimenters choose their temporary values makes them vulnerable to conflicts with
-	    others.
+	    others. Furthermore, the process of switching between the experimental and registered
+	    versions of the format or protocol might be error-prone and add a significant editorial
+	    workload (<xref target="cbor-draft-numbers"/> details some of the pitfalls and suggests
+	    a process to deal with this transition).
 	  </t>
 	</section>
       </section>
@@ -2085,6 +2088,29 @@
 	  </author>
 	  <date month="April" year="2007"/>
 	</front>
+      </reference>
+
+      <reference anchor="cbor-draft-numbers">
+        <front>
+          <title>Managing CBOR codepoints in Internet-Drafts</title>
+          <author fullname="Carsten Bormann" initials="C." surname="Bormann">
+            <organization>Universität Bremen TZI</organization>
+          </author>
+          <date day="12" month="January" year="2026"/>
+          <abstract>
+            <t>
+	      CBOR-based protocols often make use of numbers allocated in a registry. During
+	      development of the protocols, those numbers may not yet be available.  This impedes
+	      the generation of data models and examples that actually can be used by tools.
+
+	      This short draft proposes a common way to handle these situations, without any changes
+	      to existing tools.  Also, in conjunction with the application-oriented EDN literal
+	      e'', a further reduction in editorial processing of CBOR examples around the time of
+	      approval can be achieved.
+            </t>
+          </abstract>
+        </front>
+        <seriesInfo name="Internet-Draft" value="draft-bormann-cbor-draft-numbers-07"/>
       </reference>
 
     </references>
