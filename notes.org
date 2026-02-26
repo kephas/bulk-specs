@@ -473,35 +473,54 @@
     QName. Any Bytes whose content satisfy the NCName production also has.
 
 ** Dates namespace
-   - Nat123 := Nat | Nat Nat | Nat Nat Nat
-   - NatsF := Nat* ( Float | Nat )
    - Time = Date | TimeOfDay
 
 
-   - 0x00 :: ( calendar Nat123 )
-   - 0x01 :: ( weekdate Nat123 )
-   - 0x02 :: ( ordinal Nat Nat )
-   - 0x03 :: ( time NatsF )
-   - 0x04 :: ( point Date TimeOfDay )
-   - 0x05 :: ( zulu Time )
-   - 0x06 :: ( offset TimeOfDay Time )
-   - 0x07 :: ( years NatsF )
-   - 0x08 :: ( months NatsF )
-   - 0x09 :: ( days NatsF )
-   - 0x0A :: ( hours NatsF )
-   - 0x0B :: ( minutes NatsF )
-   - 0x0C :: ( seconds NatsF )
-   - 0x0D :: ( weeks Nat )
-   - 0x0E :: ( interval {exprs} )
-     - {exprs} = Time Time | Duration Time | Time Duration | Duration
-   - 0x0F :: ( repeat Nat Interval ) / ( repeat Interval )
-   -  :: ( julian Number )
-   -  :: ( anno-mundi Nat123 )
-   -  :: ( anno-hegirae Nat123 )
-   -  :: ( unix Int )
-   -  :: ( ntp Word )
-   -  :: ( tai64 Word64 )
-   -  :: ( tng-stardate Nat Nat )
+   - =calendar-date=
+     - =( calendar Nat )=
+     - =( calendar Nat Nat )=
+     - =( calendar Nat Nat Real )=
+   - =week-date=
+     - =( weekdate Nat )=
+     - =( weekdate Nat Nat )=
+     - =( weekdate Nat Nat Real )=
+   - =( ordinal-date Nat Nat )=
+   - =time-of-day=
+     - =( time-of-day Nat )=
+     - =( time-of-day Nat Nat )=
+     - =( time-of-day Nat Nat Real )=
+   - =( point-in-time Date TimeOfDay )=
+   - =( zulu Time )=
+   - =( offset TimeOfDay Time )=
+   - =( years Nat Nat Nat Nat Nat Real )=
+   - =( months Nat Nat Nat Nat Real )=
+   - =( days Nat Nat Nat Real )=
+   - =( hours Nat Nat Real )=
+   - =( minutes Nat Real )=
+   - =( seconds Real )=
+   - =( weeks Nat )=
+   - =( interval {exprs} ):Interval=
+     - ={exprs}= is shaped =Time Time= | =Duration Time= | =Time Duration= | =Duration=
+   - =repeat=
+     - =( repeat Nat Interval )=
+     - =( repeat Interval )=
+   - =julian=
+     - Julian Day Number :: =( julian Int )=
+     - Julian Date :: =( julian Real )=
+   - =anno-mundi=
+     - =( anno-mundi Nat )=
+     - =( anno-mundi Nat Nat )=
+     - =( anno-mundi Nat Nat Real )=
+   - =anno-hegirae=
+     - =( anno-hegirae Int )=
+     - =( anno-hegirae Int Nat )=
+     - =( anno-hegirae Int Nat Real )=
+   - =( unix-s Int )=
+   - =( unix-ms Int )=
+   - =( unix-ns Int )=
+   - =( ntp Bytes )=
+   - =( tai64 Bytes )=
+   - =( tng-stardate Int Nat )=
 
 ** Hash
    #+BEGIN_SRC bulktext
