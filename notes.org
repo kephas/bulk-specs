@@ -1,15 +1,18 @@
 * BULK
 ** Trade-off
-   - uniformity :: as good as Lisp
-   - generality :: as good as Lisp
-   - extensibility :: 
+   - transparency :: as good as Lisp
+   - syntax complexity :: better than most Lisps
+   - generality :: better than Lisp (stores arbitrary bytes without escaping)
+   - extensibility :: TODO
    - decentralization :: only decentralized binary format? on par with plain text formats using
      decentralized IDs (like URI based on decentralized DNS)
+   - discoverability :: TODO
    - compactness :: better than all general binary formats because they lack abstraction, worse
      than any ad hoc format (like ASN1)
    - processing speed :: extremely simple to parse
      - easy to evaluate
      - possible to forbid evaluation for extremely restricted environments (embedded)
+   - processing footprint :: TODO
 
 ** Syntax
 
