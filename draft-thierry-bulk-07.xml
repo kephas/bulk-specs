@@ -332,7 +332,7 @@
 	</t>
 	<t>
 	  For example, this specification defines a way do encode a string with explicit encoding
-	  with forms of the shape <spanx style="verb">( string {enc}:Encoding {string}:Bytes
+	  with forms of the shape <spanx style="verb">( string {enc}:Expr {string}:Expr
 	  )</spanx>. But the shapes <spanx style="verb">( string {arg1}:Int {arg2}:Int )</spanx> or
 	  <spanx style="verb">( {arg1}:Int string {arg2}:Int )</spanx> are syntactly valid. They
 	  just evaluate to themselves as lists of three expressions, as far as this specification
@@ -368,8 +368,9 @@
       </t>
       <t>
 	When a sequence of bytes is named in a shape, its name can be used in this specification to
-	designate either the byte sequence, or the expression or sequence of expressions it
-	encodes. When there could be ambiguity, this specification specifies which is designated.
+	designate either the byte sequence, the expression or sequence of expressions it encodes, or
+	the result of evaluating those expressions. When there could be ambiguity, this
+	specification specifies which is designated.
       </t>
 
       <section anchor="parsing" title="Parsing algorithm">
@@ -453,8 +454,16 @@
 	    style="verb">EagerFunction</spanx> also has type <spanx style="verb">Function</spanx>.
 	  </t>
 	  <t>
+	    When this specification describes the evaluation of a form starting with a <spanx
+	    style="verb">LazyFunction</spanx>, by default, named shapes designate the unevaluated
+	    expressions. When this specification describes the evaluation of a form starting with an
+	    <spanx style="verb">EagerFunction</spanx>, by default, named shapes designate the result
+	    of evaluating expressions.
+	  </t>
+	  <t>
 	    A form whose first expression doesn't have the type <spanx style="verb">Function</spanx>
-	    evaluates to itself.
+	    evaluates to a form containing the result of evaluating each expression of the original
+	    form, from left to right.
 	  </t>
 	  <t>
 	    When an application evaluates a BULK expression, it MUST verify that evaluation
@@ -757,69 +766,69 @@
 	  </list>
 	</t>
 	<table>
-	  <thead><tr><th>name</th><th>mnemonic</th></tr></thead>
+	  <thead><tr><th>name</th><th>mnemonic</th><th>type</th></tr></thead>
 	  <tbody>
 	    <tr><td><spanx style="verb">00</spanx></td><td><spanx style="verb"><xref
-	    target="version" format="none">version</xref></spanx></td></tr>
+	    target="version" format="none">version</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">01</spanx></td><td><spanx style="verb">import</spanx> (<xref
 	    target="import-ns" format="none">namespace</xref>, <xref target="import-pkg"
-	    format="none">package</xref>)</td></tr>
-	    <tr><td><spanx style="verb">02</spanx></td><td><spanx style="verb">namespace</spanx></td></tr>
-	    <tr><td><spanx style="verb">03</spanx></td><td><spanx style="verb">package</spanx></td></tr>
+	    format="none">package</xref>)</td><td><spanx style="verb">LazyFunction</spanx></td></tr>
+	    <tr><td><spanx style="verb">02</spanx></td><td><spanx style="verb">namespace</spanx></td><td/></tr>
+	    <tr><td><spanx style="verb">03</spanx></td><td><spanx style="verb">package</spanx></td><td/></tr>
 	    <tr><td><spanx style="verb">04</spanx></td><td><spanx style="verb">define (<xref
 	    target="def-ns" format="none">namespace</xref>, <xref target="def-pkg"
 	    format="none">package</xref>, <xref target="def-name"
-	    format="none">name</xref>)</spanx></td></tr>
+	    format="none">name</xref>)</spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">05</spanx></td><td><spanx style="verb"><xref
-	    target="mnemonic" format="none">mnemonic</xref></spanx></td></tr>
+	    target="mnemonic" format="none">mnemonic</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">06</spanx></td><td><spanx style="verb"><xref
-	    target="explain" format="none">explain</xref></spanx></td></tr>
+	    target="explain" format="none">explain</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">07</spanx></td><td><spanx style="verb"><xref target="string"
-	    format="none">string</xref></spanx></td></tr>
+	    format="none">string</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">08</spanx></td><td><spanx style="verb"><xref
-	    target="iana-charset" format="none">iana-charset</xref></spanx></td></tr>
+	    target="iana-charset" format="none">iana-charset</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">09</spanx></td><td><spanx style="verb"><xref
-	    target="nested-bulk" format="none">bulk</xref></spanx></td></tr>
+	    target="nested-bulk" format="none">bulk</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">0A</spanx></td><td><spanx style="verb"><xref target="blob"
-	    format="none">blob</xref></spanx></td></tr>
+	    format="none">blob</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">0B</spanx></td><td><spanx style="verb"><xref target="concat"
-	    format="none">concat</xref></spanx></td></tr>
+	    format="none">concat</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">0C</spanx></td><td><spanx style="verb"><xref
-	    target="indexed-bulk" format="none">indexed-bulk</xref></spanx></td></tr>
+	    target="indexed-bulk" format="none">indexed-bulk</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">0D</spanx></td><td><spanx style="verb"><xref
-	    target="indexed-array" format="none">indexed-array</xref></spanx></td></tr>
+	    target="indexed-array" format="none">indexed-array</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">0E</spanx></td><td><spanx style="verb"><xref target="booleans"
-	    format="none">true</xref></spanx></td></tr>
+	    format="none">true</xref></spanx></td><td><spanx style="verb">Boolean</spanx></td></tr>
 	    <tr><td><spanx style="verb">0F</spanx></td><td><spanx style="verb"><xref target="booleans"
-	    format="none">false</xref></spanx></td></tr>
+	    format="none">false</xref></spanx></td><td><spanx style="verb">Boolean</spanx></td></tr>
 	    <tr><td><spanx style="verb">10</spanx></td><td><spanx style="verb"><xref target="subst"
-	    format="none">subst</xref></spanx></td></tr>
+	    format="none">subst</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">11</spanx></td><td><spanx style="verb"><xref target="arg"
-	    format="none">arg</xref></spanx></td></tr>
+	    format="none">arg</xref></spanx></td><td/></tr>
 	    <tr><td><spanx style="verb">12</spanx></td><td><spanx style="verb"><xref target="rest"
-	    format="none">rest</xref></spanx></td></tr>
-	    <tr><td><spanx style="verb">13</spanx></td><td><spanx style="verb"><xref target="last"
-	    format="none">last</xref></spanx></td></tr>
+	    format="none">rest</xref></spanx></td><td/></tr>
+	    <tr><td><spanx style="verb">13</spanx></td><td><spanx style="verb"><xref target="with"
+	    format="none">with</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">14</spanx></td><td><spanx style="verb"><xref
-	    target="unsigned-int" format="none">unsigned-int</xref></spanx></td></tr>
+	    target="unsigned-int" format="none">unsigned-int</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">15</spanx></td><td><spanx style="verb"><xref
-	    target="signed-int" format="none">signed-int</xref></spanx></td></tr>
+	    target="signed-int" format="none">signed-int</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">16</spanx></td><td><spanx style="verb"><xref
-	    target="fraction" format="none">fraction</xref></spanx></td></tr>
+	    target="fraction" format="none">fraction</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">17</spanx></td><td><spanx style="verb"><xref
-	    target="binary-float" format="none">binary-float</xref></spanx></td></tr>
+	    target="binary-float" format="none">binary-float</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">18</spanx></td><td><spanx style="verb"><xref
-	    target="decimal-float" format="none">decimal-float</xref></spanx></td></tr>
+	    target="decimal-float" format="none">decimal-float</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">19</spanx></td><td><spanx style="verb"><xref
-	    target="binary-fixed" format="none">binary-fixed</xref></spanx></td></tr>
+	    target="binary-fixed" format="none">binary-fixed</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">1A</spanx></td><td><spanx style="verb"><xref
-	    target="decimal-fixed" format="none">decimal-fixed</xref></spanx></td></tr>
+	    target="decimal-fixed" format="none">decimal-fixed</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">1B</spanx></td><td><spanx style="verb"><xref target="prefix"
-	    format="none">prefix</xref></spanx></td></tr>
+	    format="none">prefix</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">1C</spanx></td><td><spanx style="verb"><xref
-	    target="postfix" format="none">postfix</xref></spanx></td></tr>
+	    target="postfix" format="none">postfix</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	    <tr><td><spanx style="verb">1D</spanx></td><td><spanx style="verb"><xref target="arity"
-	    format="none">arity</xref></spanx></td></tr>
+	    format="none">arity</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
 	  </tbody>
 	</table>
 
@@ -839,7 +848,7 @@
 	  </t>
 	  <t>
 	    If the version is expressed within a BULK stream, this form MUST be the first in the
-	    stream. In any other place, this form is self-evaluating. This specification defines
+	    stream. In any other place, this form evaluates to itself. This specification defines
 	    BULK 1.0. When writing a BULK stream, an application MUST encode <spanx
 	    style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the smallest
 	    byte sequence as described in <xref target="nat-enc"></xref>.
@@ -871,9 +880,9 @@
 	      </list>
 	    </t>
 	    <t>
-	      This associates the namespace identified by <spanx style="verb">{id}</spanx> to the
-	      namespace marker <spanx style="verb">{marker}</spanx>, within the scope of this
-	      expression.
+	      The semantics of this form is the side-effect of associating the namespace identified
+	      by <spanx style="verb">{id}</spanx> to the namespace marker <spanx
+	      style="verb">{marker}</spanx>, within the scope of this expression.
 	    </t>
 	  </section>
 
@@ -886,15 +895,20 @@
 	    </t>
 
 	    <t>
-	      This associates the first <spanx style="verb">{count}</spanx> namespaces in the
-	      package identified by <spanx style="verb">{id}</spanx> with a continuous range of
-	      marker bytes starting at <spanx style="verb">{base}</spanx> within the scope of this
-	      expression.
+	      The semantics of this form is the side-effect of associating the first <spanx
+	      style="verb">{count}</spanx> namespaces in the package identified by <spanx
+	      style="verb">{id}</spanx> with a continuous range of marker bytes starting at <spanx
+	      style="verb">{base}</spanx> within the scope of this expression.
 	    </t>
 	    <t>
-	      Example: <spanx style="verb">( import 21 ( package 0x0123456789ABCDEF 3 ) )</spanx>
-	      associates the first 3 namespaces of the package identified by <spanx
-	      style="verb">0x0123456789ABCDEF</spanx> to the markers 21, 22 and 23.
+	      It is not an evaluation error if the package is unknown to the processing application,
+	      or if it is known but not all namespaces packaged inside are. A processing application
+	      MAY produce warnings when it encounters those cases.
+	    </t>
+	    <t>
+	      Example: <spanx style="verb">( import 21 ( package {foo} 3 ) )</spanx> associates the
+	      first 3 namespaces of the package identified by <spanx style="verb">{foo}</spanx> to
+	      the markers 21, 22 and 23.
 	    </t>
 	  </section>
 	  
@@ -1028,8 +1042,8 @@
 	  <section anchor="mnemonic" title="Mnemonic">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( mnemonic ( namespace {marker}:Nat )
-		{mnemonic}:String )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( mnemonic ( namespace {marker}:Expr )
+		{mnemonic}:Expr )</spanx></t>
 		<t hangText="shape"><spanx style="verb">( mnemonic Ref {mnemonic}:String
 		)</spanx></t>
 	      </list>
@@ -1072,55 +1086,56 @@
 	  <section anchor="stringenc" title="Current encoding">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( define string {enc}:Encoding
-		)</spanx></t>
+		<t hangText="shape"><spanx style="verb">( define string {enc}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This tells the processing application that, in the scope of this expression, all
-	      expressions that are understood by the application as character strings will be
-	      encoded with the encoding designated by <spanx style="verb">{enc}</spanx>.
+	      The semantics of this form is the side-effect that, in the scope of this expression,
+	      the default encoding for expressions that are understood by the application as
+	      character strings is the encoding designated by <spanx style="verb">{enc}</spanx>.
 	    </t>
 	    <t>
 	      As the abstract yield doesn't contain strings but expressions that will be used as
 	      strings by the application, it is not a parsing error if the application doesn't
-	      recognize <spanx style="verb">{enc}</spanx>. In this situation, it is a parsing error
-	      when the application actually needs to decode a byte sequence as a string. It is not
-	      a parsing error when a processing application only transmits a byte sequence encoding
-	      a string, if it can accurately convey the encoding to the receiving application.
+	      recognize <spanx style="verb">{enc}</spanx>. In this situation, it is only a parsing
+	      error when the application actually needs to decode a byte sequence as a string with
+	      that encoding. It is not a parsing error when a processing application only transmits
+	      a byte sequence encoding a string, if it can accurately convey the encoding to the
+	      receiving application.
 	    </t>
 	  </section>
 
 	  <section anchor="string" title="String">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( string {string}:Bytes )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( string {string}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This form indicates that the bytes contained in <spanx style="verb">{string}</spanx>
-	      are meant to be interpreted as a string encoded with the current string encoding.
+	      This form indicates that the bytes contained in the expression <spanx
+	      style="verb">{string}</spanx> are meant to be interpreted as a string encoded with the
+	      current default string encoding.
 	    </t>
 	  </section>
 
 	  <section anchor="string*" title="String with explicit encoding">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( string {enc}:Encoding {string}:Bytes
+		<t hangText="shape"><spanx style="verb">( string {enc}:Expr {string}:Epxr
 		)</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This form indicates that the bytes contained in <spanx style="verb">{string}</spanx>
-	      are meant to be interpreted as a string encoded with the encoding designated by the
-	      <spanx style="verb">{enc}</spanx>.
+	      This form indicates that the bytes contained in the expression <spanx
+	      style="verb">{string}</spanx> are meant to be interpreted as a string encoded with the
+	      encoding designated by <spanx style="verb">{enc}</spanx>.
 	    </t>
 	  </section>
 
 	  <section anchor="iana-charset" title="IANA registered character set">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( iana-charset {id}:Nat )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( iana-charset {id}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1136,23 +1151,23 @@
 	  <section anchor="nested-bulk" title="Nested BULK stream">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( bulk {bulk}:Bytes )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( bulk {bulk}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This form indicates that the bytes contained in <spanx style="verb">{bulk}</spanx>
-	      are meant to be interpreted as a BULK stream. If the stream doesn't start with a
-	      <spanx style="verb">version</spanx> form, the stream MUST be assumed to have the same
-	      version as the parent stream.
+	      This form indicates that the bytes contained in the expression <spanx
+	      style="verb">{bulk}</spanx> are meant to be interpreted as a BULK stream. If the
+	      stream doesn't start with a <spanx style="verb">version</spanx> form, the stream MUST
+	      be assumed to have the same version as the parent stream.
 	    </t>
 	    <t>
 	      This form can be useful to let the application reading a BULK stream skip parsing a
 	      large section.
 	    </t>
 	    <t>
-	      The evaluation of this form is the same as the evaluation of the BULK stream in
-	      <spanx style="verb">{bulk}</spanx> taken as a form. For example, these two forms have
-	      the same evaluation:
+	      The semantics of this form is the same as the evaluation of the BULK stream in <spanx
+	      style="verb">{bulk}</spanx> taken as a form. For example, these two forms have the
+	      same evaluation:
               <list style="symbols">
 		<t><spanx style="verb">( 4 5 )</spanx></t>
 		<t><spanx style="verb">( bulk true #[2] 4 5 )</spanx></t>
@@ -1176,7 +1191,7 @@
 	  <section anchor="blob" title="Blob">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( blob {blob}:Bytes )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( blob {blob}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1190,20 +1205,16 @@
 	  <section anchor="concat" title="Array concatenation">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( concat {array1}:Bytes {array2}:Bytes
+		<t hangText="shape"><spanx style="verb">( concat {array1}:Expr {array2}:Expr
 		)</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      <list style="hanging">
-		<t hangText="Name's type">EagerFunction</t>
-		<t hangText="Form's type">Bytes</t>
-		<t hangText="Form's value">the concatenation of {array1} and {array2}.</t>
-	      </list>
-	    </t>
-	    <t>
-	      The value of this form is an array that contains the bytes in array1 followed by the
-	      bytes in array2.
+	      The value of this form is an array that contains the bytes contained in the expression
+	      <spanx style="verb">{array1}</spanx> followed by the bytes contained in the expression
+	      <spanx style="verb">{array2}</spanx>. It is an evaluation error if <spanx
+	      style="verb">{array1}</spanx> and <spanx style="verb">{array2}</spanx> don't evaluate
+	      to containers of bytes.
 	    </t>
 	  </section>
 
@@ -1230,27 +1241,24 @@
 	    <section anchor="indexed-bulk" title="Indexed BULK expression">
 	      <t>
 		<list style="hanging">
-		  <t hangText="shape"><spanx style="verb">( indexed-bulk {container}:Expr {start}:Nat
-		  )</spanx></t>
-		  <t hangText="Name's type">EagerFunction</t>
+		  <t hangText="shape"><spanx style="verb">( indexed-bulk {container}:Expr
+		  {start}:Expr )</spanx></t>
 		</list>
 	      </t>
 	      <t>
 		The semantics of this form is the value of evaluating the BULK expression starting
-		at offset <spanx style="verb">{start}</spanx> in the array <spanx
-		style="verb">{container}</spanx>. (in most cases, <spanx
-		style="verb">{container}</spanx> will be a reference defined to an array earlier in
-		the stream)
+		at offset <spanx style="verb">{start}</spanx> in the bytes contained in expression
+		<spanx style="verb">{container}</spanx>.
 	      </t>
 	      <t>
-		The goal of indexed data is to selectively parse only part of the BULK stream, so the
-		same security risks as with <xref target="nested-bulk"><spanx
-		style="verb">bulk</spanx></xref> are present. It could be a security risk if a single
-		BULK stream could be parsed into two different abstract yields by two conformant
-		applications, so the semantics of the whole stream cannot change whether the indexed
-		expression is decoded or not. For that reason, any effects in the indexed expression
-		that affect how BULK expressions are parsed or evaluated (like namespace associations
-		or definitions) MUST be isolated within this form.
+		The goal of indexed data is to selectively parse only part of the BULK stream, so
+		the same security risks as with <xref target="nested-bulk"><spanx
+		style="verb">bulk</spanx></xref> are present. It could be a security risk if a
+		single BULK stream could be parsed into two different abstract yields by two
+		conformant applications, so the semantics of the whole stream cannot change whether
+		the indexed expression is decoded or not. For that reason, any effects in the
+		indexed expression that affect how BULK expressions are evaluated (like namespace
+		associations or definitions) MUST be isolated within this form.
 	      </t>
 	      <t>
 		Beware that, although evaluations of all other BULK definitions follow lexical
@@ -1264,37 +1272,32 @@
 	      <t>
 		<list style="hanging">
 		  <t hangText="shape"><spanx style="verb">( indexed-array {container}:Expr
-		  {start}:Nat {size}:Nat )</spanx></t>
-		  <t hangText="Name's type">EagerFunction</t>
+		  {start}:Expr {size}:Expr )</spanx></t>
 		</list>
 	      </t>
 	      <t>
 		The semantics of this form is the value of an array whose content are <spanx
 		style="verb">{size}</spanx> bytes, starting at offset <spanx
-		style="verb">{start}</spanx> in the array <spanx
-		style="verb">{container}</spanx>. (in most cases, <spanx
-		style="verb">{container}</spanx> will be a reference defined to an array earlier in
-		the stream)
+		style="verb">{start}</spanx> in the bytes contained in the expression <spanx
+		style="verb">{container}</spanx>.
 	      </t>
 	      <t>
 		<list style="hanging">
 		  <t hangText="shape"><spanx style="verb">( indexed-array {container}:Expr
-		  {start}:Nat )</spanx></t>
-		  <t hangText="Name's type">EagerFunction</t>
+		  {start}:Expr )</spanx></t>
 		</list>
 	      </t>
 	      <t>
 		The semantics of this form is the value of an array whose content are the bytes
 		starting at offset <spanx style="verb">{start}</spanx> in the array <spanx
-		style="verb">{container}</spanx> until its end. (in most cases, <spanx
-		style="verb">{container}</spanx> will be a reference defined to an array earlier in
-		the stream)
+		style="verb">{container}</spanx> until its end.
 	      </t>
 	      <t>
 		Compared to <spanx style="verb">indexed-bulk</spanx>, which can reference an array
 		expression, <spanx style="verb">indexed-array</spanx> is useful when several
 		different but overlapping sections of the same byte sequence are needed as arrays,
-		or when reversing <xref target="packing">packing</xref> through evaluation.
+		or when reversing <xref target="packing">packing</xref> through evaluation (to avoid
+		packing the marker bytes).
 	      </t>
 	    </section>
 	  </section>
@@ -1321,65 +1324,61 @@
 	      </list>
 	    </t>
 	    <t>
-	      <list style="hanging">
-		<t hangText="Name's type">LazyFunction</t>
-		<t hangText="Form's type">EagerFunction</t>
-		<t hangText="Form's value">A substitution function whose return value is the
-		value of <spanx style="verb">{code}</spanx>. Within <spanx
-		style="verb">{code}</spanx>'s specific yield, the names <spanx
-		style="verb">arg</spanx> and <spanx style="verb">rest</spanx> are defined:</t>
-	      </list>
-	    </t>
-	  </section>
-	  <section anchor="arg" title="Argument">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( arg {n}:Nat )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      <list style="hanging">
-		<t hangText="Name's type">EagerFunction</t>
-		<t hangText="Form's type">Expr</t>
-		<t hangText="Form's value">the element number <spanx style="verb">{n}</spanx>
-		(starting at zero) of the substitution function's arguments list</t>
-	      </list>
-	    </t>
-	  </section>
-	  <section anchor="rest" title="Rest of arguments list">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( rest {n}:Nat )</spanx></t>
+	      The semantics of this form is an expression of type <spanx
+	      style="verb">LazyFunction</spanx>, called the substitution function. The semantics of
+	      the substitution function are the semantics of <spanx style="verb">{code}</spanx>, but
+	      where the names <spanx style="verb">arg</spanx> and <spanx style="verb">rest</spanx>
+	      are substituted as such:
+	      <list style="symbols">
+		<t anchor="arg"><spanx style="verb">( arg {n}:Nat )</spanx> is replaced by the
+		element number <spanx style="verb">{n}</spanx> (starting at zero) of the
+		substitution function's arguments list.</t>
+		<t anchor="rest"><spanx style="verb">( rest {n}:Nat )</spanx> is replaced by the
+		substitution function's arguments list without its first <spanx
+		style="verb">{n}</spanx> elements.</t>
 	      </list>
 	    </t>
 	    <t>
-	      <list style="hanging">
-		<t hangText="Name's type">EagerFunction</t>
-		<t hangText="Form's type">Expr</t>
-		<t hangText="Form's value">the substitution function's arguments list without its
-		first <spanx style="verb">{n}</spanx> elements.</t>
-	      </list>
+	      It is an evaluation error if the substitution function is called with too few
+	      arguments with respect to the <spanx style="verb">arg</spanx> and <spanx
+	      style="verb">rest</spanx> forms in <spanx style="verb">{code}</spanx>.
 	    </t>
 	  </section>
 	  <section title="Examples">
-	    <t>Here is a definition of the inverse followed by the numbers 1/2, 1/3 and 1/4:</t>
-	    <t><spanx style="verb">( define inverse ( subst ( fraction 1 ( arg 0 ) ) ) ) ( inverse 2
-	    ) ( inverse 3 ) ( inverse 4 )</spanx></t>
-	    <t>Substitution will splice multiple expressions in place:</t>
-	    <t>The evaluation of <spanx style="verb">( ( subst 1 ( rest 0 ) 4 ) 2 3 )</spanx>
-	    must yield the same as <spanx style="verb">( 1 2 3 4 )</spanx></t>
+	    <t>
+	      Here is a definition of the inverse followed by the numbers 1/2, 1/3 and 1/4:
+	    </t>
+	    <t><figure><artwork>( define inverse ( subst ( fraction 1 ( arg 0 ) ) ) )
+( inverse 2 )
+( inverse 3 )
+( inverse 4 )</artwork></figure></t>
+            <t>
+	      Substitution will splice multiple expressions in place:
+	    </t>
+	    <t>
+	      The evaluation of:
+	    </t>
+	    <t><figure><artwork>( define foo ( subst 20 ( rest 0 ) 50 ) )
+( 10 ( foo 30 40 ) 60 )</artwork></figure></t>
+            <t>
+	      must produce: <spanx style="verb">( 10 20 30 40 50 60 )</spanx>
+	    </t>
 	  </section>
 
-	  <section anchor="last" title="Isolated scope">
+	  <section anchor="with" title="Isolated scope">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( last {exprs} )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( with ( {isolated} ) {exprs} )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
-	      This form's semantics is the value of evaluating the last expression in the sequence
-	      of expressions in <spanx style="verb">{exprs}</spanx>, after evaluating all of
-	      them. It makes it possible to isolate evaluation side-effects.
+	      This form's semantics is the semantics of evaluating the sequence of expressions in
+	      <spanx style="verb">{exprs}</spanx>, in the scope of evaluating the sequence of
+	      expressions <spanx style="verb">{isolated}</spanx>.  This means that the side-effects
+	      in <spanx style="verb">{isolated}</spanx> can affect the evaluation of <spanx
+	      style="verb">{exprs}</spanx>, but not the scope of the <spanx
+	      style="verb">with</spanx> form. It makes it possible to isolate evaluation
+	      side-effects.
 	    </t>
 	  </section>
 
@@ -1388,9 +1387,10 @@
 	<section anchor="arithmetic" title="Arithmetic">
 	  <t>
 	    A processing application must recognize the type of all expressions defined in this
-	    specification that have the type Number, but an application MAY consider a number as
-	    having an unknown value if it can't decode its value or has no adequate data type to
-	    store it.
+	    specification that have the type Nat, but an application MAY consider a number as having
+	    an unknown value if it can't decode its value or has no adequate data type to store
+	    it. It is only a parsing error if the number is needed by the parsing algorithm. It is
+	    only an evaluation error if the numberis needed by the evaluation algorithm.
 	  </t>
 	  <t>
 	    In the text notation of a BULK stream, a decimal integer is the notation for the
@@ -1402,13 +1402,13 @@
 	  <section anchor="unsigned-int" title="Unsigned integer">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( unsigned-int {bits}:Bytes )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( unsigned-int {bits}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
 	      The semantics of this form is the value of the unsigned integer represented in binary
 	      notation in the bits contained in <spanx style="verb">{bits}</spanx>. This form exists
-	      in case disambiguation of the semantics of an array (or another bit sequence) is
+	      in case disambiguation of the semantics of an array (or another bit container) is
 	      necessary.
 	    </t>
 	    <t>
@@ -1420,7 +1420,7 @@
 	  <section anchor="signed-int" title="Signed integer">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( signed-int {bits}:Bytes )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( signed-int {bits}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1436,7 +1436,7 @@
 	  <section anchor="fraction" title="Fraction">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( fraction {num}:Int {div}:Int )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( fraction {num}:Expr {div}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1451,7 +1451,7 @@
 	  <section anchor="binary-float" title="Binary floating-point number">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( binary-float {bits}:Bytes )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( binary-float {bits}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1469,7 +1469,7 @@
 	  <section anchor="decimal-float" title="Decimal floating-point number">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( decimal-float {bits}:Bytes )</spanx></t>
+		<t hangText="shape"><spanx style="verb">( decimal-float {bits}:Expr )</spanx></t>
 	      </list>
 	    </t>
 	    <t>
@@ -1487,7 +1487,7 @@
 	  <section anchor="binary-fixed" title="Binary fixed point number">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( binary-fixed {point}:Nat {bits}:Bytes
+		<t hangText="shape"><spanx style="verb">( binary-fixed {point}:Expr {bits}:Expr
 		)</spanx></t>
 	      </list>
 	    </t>
@@ -1507,7 +1507,7 @@
 	  <section anchor="decimal-fixed" title="Decimal fixed point number">
 	    <t>
 	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( decimal-fixed {point}:Nat {bits}:Bytes
+		<t hangText="shape"><spanx style="verb">( decimal-fixed {point}:Expr {bits}:Expr
 		)</spanx></t>
 	      </list>
 	    </t>
