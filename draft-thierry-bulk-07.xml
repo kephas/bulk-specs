@@ -1553,7 +1553,7 @@
 	  <t>
 	    Still, even this extreme in the design space retains the ability to insert expressions
 	    in the BULK stream, whatever their type. Thus metadata can be added about data that is
-	    represented in a format that doesn't allow for metadata or that allows only xfor limited
+	    represented in a format that doesn't allow for metadata or that allows only for limited
 	    metadata.
 	  </t>
 	  <t>
@@ -1590,21 +1590,21 @@
 	      expressions in <spanx style="verb">{bytecode}</spanx>.
 	    </t>
 	    <t>
-	      To transform a prefix bytecode form, a processing application creates an alternate
-	      context. If the first expression of the bytecode is an operand, it is removed from
-	      the beginning of the bytecode and appended at the end of the alternate context. If
-	      the first expression of the bytecode is an operator, it is removed from the beginning
-	      of the bytecode and a list is created with the operator as the first expression, then
-	      as many next expressions as its arity are removed from the beginning of the bytecode
-	      and appended at the end of this list. Then that resulting list is appended at the end
-	      of the alternate context. The transformation continues until the bytecode is empty,
-	      in which case the alternate context replaces the bytecode form and the transformation
-	      is complete. The resulting form can then be evaluated in turn.
+	      To transform a prefix bytecode, a processing application creates an alternate
+	      context. If the first expression of the bytecode is an operand, it is removed from the
+	      beginning of the bytecode and appended at the end of the alternate context. If the
+	      first expression of the bytecode is an operator, it is removed from the beginning of
+	      the bytecode and a list is created with the operator as the first expression, then as
+	      many next expressions as its arity are removed from the beginning of the bytecode and
+	      appended at the end of this list. Then that resulting list is appended at the end of
+	      the alternate context. The transformation continues until the bytecode is empty, in
+	      which case the alternate context replaces the bytecode form and the transformation is
+	      complete. The resulting form can then be evaluated in turn.
 	    </t>
 	    <t>Example: the evaluation of</t>
-	    <t><figure><artwork>( bulk
- ( define ( arity prefix ) ( nil go:game ) ( 2 go:black ) )
- ( prefix go:game go:black 1 2 go:black 3 4 go:black 5 6 )
+	    <t><figure><artwork>( define ( arity prefix )
+  ( nil go:game ) ( 2 go:black ) )
+( prefix go:game go:black 1 2 go:black 3 4 go:black 5 6 )
 	    </artwork></figure></t>
 	    <t>is</t>
 	    <t><figure><artwork>( go:game
@@ -1612,6 +1612,10 @@
  ( go:black 3 4 )
  ( go:black 5 6 ) )
 	    </artwork></figure></t>
+            <t>
+	      It is an evaluation error when there are less expressions remaining in the bytecode
+	      than the arity of the current operator.
+	    </t>
 	  </section>
 	  <section anchor="postfix" title="Postfix bytecode">
 	    <t>
@@ -1624,17 +1628,17 @@
 	      expressions in <spanx style="verb">{bytecode}</spanx>.
 	    </t>
 	    <t>
-	      To transform a postfix bytecode form, a processing application creates a data
-	      stack. If the first expression of the bytecode is an operand, it is removed from the
-	      beginning of the bytecode and pushed on top of the stack. If the first expression of
-	      the bytecode is an operator, it is removed from the beginning of the bytecode and a
-	      list is created with the operator as the first expression, then as many next
-	      expressions as its arity are popped from the stack and appended at the end of this
-	      list (with the top of the stack as the last element). Then that resulting list is
-	      pushed on top of the stack. The transformation continues until the bytecode is empty,
-	      in which case the list of the elements on the stack (with the top of the stack as the
-	      last element) replaces the bytecode form and the transformation is complete. The
-	      resulting form can then be evaluated in turn.
+	      To transform a postfix bytecode, a processing application creates a data stack. If the
+	      first expression of the bytecode is an operand, it is removed from the beginning of
+	      the bytecode and pushed on top of the stack. If the first expression of the bytecode
+	      is an operator, it is removed from the beginning of the bytecode and a list is created
+	      with the operator as the first expression, then as many next expressions as its arity
+	      are popped from the stack and appended at the end of this list (with the top of the
+	      stack as the last element). Then that resulting list is pushed on top of the
+	      stack. The transformation continues until the bytecode is empty, in which case the
+	      list of the elements on the stack (with the top of the stack as the last element)
+	      replaces the bytecode form and the transformation is complete. The resulting form can
+	      then be evaluated in turn.
 	    </t>
 	    <t> Example: the evaluation of </t>
 	    <t><figure><artwork>( define ( arity postfix )
@@ -1663,6 +1667,10 @@
 	      frequently enough, an application can define a specific form for it. The trade-offs
 	      for this are explained in <xref target="arityForm"/>
 	    </t>
+            <t>
+	      It is an evaluation error when there are less expressions remaining on the data stack
+	      than the arity of the current operator.
+	    </t>
 	  </section>
 	  <section anchor="arity" title="Arity definition">
 	    <t>
@@ -1682,8 +1690,8 @@
 	      modified in the context of all kinds of bytecodes.
 	    </t>
 	    <t>
-	      <spanx style="verb">{arities}</spanx> is a sequence of expressions that can be
-	      shaped:
+	      <spanx style="verb">{arities}</spanx> is a sequence of expressions that each can be
+	      shaped as such:
 	      <list style="symbols">
 		<t><spanx style="verb">nil</spanx>: meaning all known arities should be
 		forgotten</t>
@@ -1721,14 +1729,14 @@
       <section title="Optimizing compactness">
 	<section anchor="packing" title="Packing">
           <t>
-	    If the overhead of several marker bytes in the operands of some operators is too much,
-	    more compactness can be achieved by packing together small operands. For example,
-	    instead of an operator with two integers as its operands, one could specify an operator
-	    to take a single array as operand and extract the integers from it. When the processing
-	    application does this extraction, the format retains the ability to operate on many
-	    sizes of integers, because the processing application can still deduce the size of the
-	    integers by dividing the size of the array by two. This can be used outside or inside of
-	    bytecodes (to stack the compacting effects of both).
+	    If the overhead of several marker bytes in some operands is too much, more compactness
+	    can be achieved by packing together small operands. For example, instead of an operator
+	    with two integers as its operands, one could specify an operator to take a single array
+	    as operand and extract the integers from it. When the processing application does this
+	    extraction, the format retains the ability to operate on many sizes of integers, because
+	    the processing application can still deduce the size of the integers by dividing the
+	    size of the array by two. This can be used outside or inside of bytecodes (to stack the
+	    compacting effects of both).
 	  </t>
 	  <t>
 	    For example, a BULK format representing player moves with a pair of coordinates on a
@@ -1821,7 +1829,7 @@
 	  </t>
 	  <t>
 	    It is RECOMMENDED that whenever explicit arities would be a small fraction of the total
-	    stream size, they all ge given. An processing application MAY choose to never include
+	    stream size, they all ge given. A processing application MAY choose to never include
 	    explicit arities for the names of the main namespace of the format, if that namespace's
 	    definition includes arities, when processing the stream without knowledge of that
 	    definition wouldn't make sense.
@@ -1913,10 +1921,15 @@
 	</t>
 	<t>
 	  Fixed BULK mode lets a format or protocol use BULK's syntax while operating more like
-	  binary format frameworks, like ASN.1 or Protocol Buffers. An interesting difference is
-	  that the concatenation of the profile and the Fixed BULK stream is a normal BULK stream.
+	  binary format frameworks, like ASN.1, Protocol Buffers, or CBOR. An interesting difference
+	  is that the concatenation of the profile and the Fixed BULK stream is a normal BULK
+	  stream.
 	</t>
       </section>
+    </section>
+
+    <section title="Streaming">
+      <t>TODO</t>
     </section>
 
     <section title="Security Considerations" anchor="sec">
@@ -1926,12 +1939,11 @@
 	  application, apart from storing the parsed results.
 	</t>
 	<t>
-	  Arrays in BULK carry their size, to avoid the need for escaping their content. A
-	  malicious software, however, may announce an array with a size choosen to get an
-	  application to exhaust its available memory. When a BULK stream has been completely
-	  received, an array bigger than the remaining data MUST trigger an error. When a BULK
-	  stream's size is not known in advance, the application SHOULD use a growable data
-	  structure.
+	  Arrays in BULK carry their size, to avoid the need for escaping their content. A malicious
+	  software, however, may announce an array with a size choosen to get an application to
+	  exhaust its available memory. When a BULK stream has been completely received, an array
+	  bigger than the remaining data is a parsing error. When a BULK stream's size is not known
+	  in advance, the application SHOULD use a growable data structure.
 	</t>
 	<t>
 	  Evaluation opens up some known attacks that appear whenever a format provides a way to
@@ -1943,9 +1955,7 @@
 	</t>
 	<t>
 	  Applications MAY use out-of-band information to select size limits (like HTTP
-	  attributes), or a BULK namespace MAY provide hints. An implementation SHOULD emit
-	  warnings when the size of the abstract yield would exceed the size limits set by such
-	  out-of-band or in-band information.
+	  attributes), or a BULK namespace MAY provide hints.
 	</t>
       </section>
       <section title="Forwarding">
@@ -1978,33 +1988,46 @@
     <section title="IANA Considerations">
       <t>
 	This specification defines a new media type, application/bulk. Here are the informations
-	for its registration to IANA:
+	for its registration to IANA <xref target="RFC6838"/>:
       </t>
       <t>
 	<list style="hanging">
 	  <t hangText="Type name">application</t>
 	  <t hangText="Subtype name">bulk</t>
-	  <t hangText="Required parameters">none</t>
-	  <t hangText="Optional parameters">none</t>
+	  <t hangText="Required parameters">N/A</t>
+	  <t hangText="Optional parameters">N/A</t>
 	  <t hangText="Encoding considerations">none, content is self-describing</t>
 	  <t hangText="Security considerations">cf. <xref target="sec"/></t>
-	  <t hangText="Interoperability considerations">the constraint to start any BULK file with
-	  a version form has the side-effect that classes of BULK streams can be identified by a
-	  sequence of bytes acting as "magic number", at offset 0:
-	  <list style="hanging">
-	    <t hangText="0x011000">any BULK stream</t>
-	    <t hangText="0x01100081">a BULK stream of major version 1</t>
-	    <t hangText="0x011000818002">a BULK stream of version 1.0</t>
-	  </list>
-	  </t>
+	  <t hangText="Interoperability considerations">N/A</t>
 	  <t hangText="Published specification">this document</t>
-	  <t hangText="Applications that use this media type">none so far</t>
+	  <t hangText="Applications that use this media type">the BARK manifest prototype</t>
 	  <t hangText="Fragment identifier considerations">this specification defines no semantics
 	  for addressing the data with a fragment identifier; a future specification MAY define
 	  fragment identifier syntaxes to address the content by byte offset or the parsed results
-	  by their position in the yielded list</t>
-	  <t hangText="Additional information">a future specification MAY define a naming
-	  convention for media types based on bulk with a +bulk suffix, as for XML with +xml</t>
+	  by their position in the abstract yield</t>
+	  <t hangText="Additional information"><br/>
+	    <list style="hanging">
+	      <t hangText="Magic numbers">
+		the constraint to start any BULK file with a version form has the side-effect that
+		classes of BULK streams can be identified by a sequence of bytes acting as "magic
+		number", at offset 0:
+		<list style="hanging">
+		  <t hangText="0x011000">any BULK stream</t>
+		  <t hangText="0x01100081">a BULK stream of major version 1</t>
+		  <t hangText="0x011000818002">a BULK stream of version 1.0</t>
+		</list>
+	      </t>
+	      <t hangText="File extensions"><br/>
+		<list style="hanging">
+		  <t hangText=".bulk">BULK binary streams</t>
+		  <t hangText=".bulktext">BULK streams in text notation</t>
+		</list>
+	      </t>
+	      <t hangText="Structured type name suffix"> <xref target="RFC6839"/><br/>this specification defines a suffix <spanx
+	      style="verb">+bulk</spanx> for naming media types that use BULK as their core
+	      syntax</t>
+	    </list>
+	  </t>
 	</list>
       </t>
     </section>
@@ -2021,6 +2044,41 @@
 
   <back>
     <references title="Normative References">
+      <reference anchor="RFC6838">
+        <front>
+          <title>
+            Media Type Specifications and Registration Procedures
+          </title>
+          <author initials="N." surname="Freed">
+            <organization>Oracle</organization>
+          </author>
+          <author initials="J." surname="Klensin">
+          </author>
+          <author initials="T." surname="Hansen">
+            <organization>AT&amp;T Laboratories</organization>
+          </author>
+          <date month="January" year="2013"/>
+        </front>
+        <seriesInfo name="BCP" value="13"/>
+        <seriesInfo name="RFC" value="6838"/>
+      </reference>
+
+      <reference anchor="RFC6839">
+        <front>
+          <title>
+            Additional Media Type Structured Syntax Suffixes
+          </title>
+          <author initials="T." surname="Hansen">
+            <organization>AT&amp;T Laboratories</organization>
+          </author>
+          <author initials="A." surname="Melnikov">
+            <organization>Isode Ltd</organization>
+          </author>
+          <date month="January" year="2013"/>
+        </front>
+        <seriesInfo name="RFC" value="6839"/>
+      </reference>
+
       <reference anchor="RFC2119">
         <front>
           <title>
