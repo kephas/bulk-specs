@@ -208,11 +208,11 @@
 	    compression method usually comes with its own new format.
 	  </t>
 	  <t>
-	    When extensions are managed with any form of registry, another issue is that you
-	    usually need to reserve a large set of values for free experimentation, and once an
-	    extension gains any traction while in experimentation, its authors face the difficulty
-	    to switch all existing implementations to the definitive values they'll get. And how
-	    experimenters choose their temporary values makes them vulnerable to conflicts with
+	    When extensions are managed with any form of registry, another issue is that you usually
+	    need to reserve a large set of values for free experimentation, and once an extension
+	    gains any traction while in experimentation, its authors face the difficulty to switch
+	    all existing implementations to the definitive values they'll get. And how experimenters
+	    choose their temporary values makes them vulnerable to conflicts with
 	    others. Furthermore, the process of switching between the experimental and registered
 	    versions of the format or protocol might be error-prone and add a significant editorial
 	    workload (<xref target="I-D.bormann-cbor-draft-numbers"/> details some of the pitfalls
@@ -401,6 +401,11 @@
 	  yield.
 	</t>
 	<t>
+	  When a form contains at least one expression, the first expression is called the operator
+	  of that form. When a form contains more than one expression, all but the first expression
+	  are called the operands of that form.
+	</t>
+	<t>
 	  Some forms have side-effects in their semantics. Those side-effects MUST not affect the
 	  parsing of any expression. They can affect evaluation, in which case they MUST only
 	  affect the evaluation of expressions in the scope of the form. The outer scope of an
@@ -444,14 +449,14 @@
 	    standard API to access it, similar to the Document Object Model for XML.
 	  </t>
 	  <t>
-	    The evaluation of a form obeys a special rule, though: if the first expression of the
-	    form has type <spanx style="verb">Function</spanx>, that function is called with an
-	    argument list and the form evaluates to the return value if it's an atom or the
-	    evaluation of the return value if it is a form. If the function has type <spanx
-	    style="verb">LazyFunction</spanx>, the argument list is the rest of the form. If the
+	    The evaluation of a form obeys a special rule, though: if the operator of the form has
+	    type <spanx style="verb">Function</spanx>, that function is called with an argument list
+	    and the form evaluates to the return value if it's an atom or the evaluation of the
+	    return value if it is a form. If the function has type <spanx
+	    style="verb">LazyFunction</spanx>, the argument list is the operands of the form. If the
 	    function has type <spanx style="verb">EagerFunction</spanx>, the argument list is the
-	    rest of the form, where each expression is replaced by what it evaluates to. Any
-	    expression that has type <spanx style="verb">LazyFunction</spanx> or <spanx
+	    result of evaluating the operands of the form, from left to right. Any expression that
+	    has type <spanx style="verb">LazyFunction</spanx> or <spanx
 	    style="verb">EagerFunction</spanx> also has type <spanx style="verb">Function</spanx>.
 	  </t>
 	  <t>
@@ -462,9 +467,9 @@
 	    of evaluating expressions.
 	  </t>
 	  <t>
-	    A form whose first expression doesn't have the type <spanx style="verb">Function</spanx>
-	    evaluates to a form containing the result of evaluating each expression of the original
-	    form, from left to right.
+	    A form whose operand doesn't have the type <spanx style="verb">Function</spanx>
+	    evaluates to a form containing the result of evaluating each expression of the form,
+	    from left to right.
 	  </t>
 	  <t>
 	    When an application evaluates a BULK expression, it MUST verify that evaluation
