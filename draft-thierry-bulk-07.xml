@@ -1973,7 +1973,53 @@
     </section>
 
     <section title="Streaming">
-      <t>TODO</t>
+      <t>
+	The parsing and evaluation algorithms allow for reading a BULK stream while it has not been
+      completely received by the processing application. Once the parser reaches the dispatch stage,
+      the fully parsed expression can be evaluated if evaluation is enabled.
+      </t>
+      <t>
+	This makes BULK usable for streaming data, including in the case of a communication protocol
+	with a long-lived connection where requests and responses must be processed immediately,
+	including a full-duplex communication (see <xref target="full-duplex"/>).
+      </t>
+      <section title="Broadcasting BULK">
+	<t>
+	  It is possible to stream BULK data in a broadcast setting, meaning that a processing
+	  application could start receiving data mid-stream and never see the data sent before it
+	  started listening to the broadcasted stream.
+	</t>
+	<t>
+	  A broadcasted BULK stream MUST NOT contain expressions whose evaluation have side-effects
+	  when their scope is the abstract yield. If it contained such expressions, the same
+	  processing application that started listening at different points in the stream could
+	  produce different results for a common portion of the concrete yield.
+	</t>
+	<t>
+	  This means that a protocol that employs BULK broadcasting MUST provide a profile, either
+	  in the protocol specification, or during connection establishment. For the latter, when a
+	  BULK stream is broadcasted by HTTP, the server can use the <spanx
+	  style="verb">bulk-profile</spanx> link relation in headers.
+	</t>
+	<t>
+	  When broadcasting BULK, one issue is stream capture, to discover an offset in the stream
+	  that correpond to the dispatch stage. This specification describes two ways: beacon
+	  expressions and Ogg encapsulation.
+	</t>
+	<section title="Beacon expressions">
+	</section>
+	<section title="Ogg encapsulation">
+	  <t>
+	    The Ogg format<xref target="RFC3533"/> already provides an efficient mechanism for
+	    stream capture with a relatively low overhead. It can stream and multiplex data from
+	    multiple codecs. The BULK stream MUST begin with a version form, and that form
+	    constitutes the codec identifier. As much as possible, an ogg encoder SHOULD end Ogg
+	    packets at expression ends.
+	  </t>
+	</section>
+      </section>
+      <section anchor="full-duplex" title="Full-duplex communication">
+      </section>
     </section>
 
     <section title="Security Considerations" anchor="sec">
@@ -2092,6 +2138,18 @@
 	  </list>
 	</t>
       </section>
+      <section title="Ogg encapsulation">
+	<t>
+	  This specification defines a new Ogg logical bitsream type<xref target="RFC5334"/>, for
+	  the media type <spanx style="verb">application/bulk</spanx>:
+	</t>
+	<t>
+	  <list style="hanging">
+	    <t hangText="Codec identifier"><spanx style="verb">char[6]: '\x01\x10\x00\x81\x80\x02'</spanx></t>
+	    <t hangText="Codecs parameter">bulk1.0</t>
+	  </list>
+	</t>
+      </section>
     </section>
 
     <section title="Acknowledgements">
@@ -2110,6 +2168,8 @@
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.14.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6839.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.3533.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5334.xml"/>
 
       <reference anchor="IANA-Charsets" target="http://www.iana.org/assignments/character-sets">
         <front>
