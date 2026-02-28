@@ -16,7 +16,8 @@
 <rfc ipr="trust200902"
      category="exp"
      submissionType="IETF"
-     docName="draft-thierry-bulk-07">
+     docName="draft-thierry-bulk-07"
+     xmlns:xi="http://www.w3.org/2001/XInclude">
   <front>
     <title abbrev="BULK1">Binary Uniform Language Kit 1.0</title>
 
@@ -60,10 +61,10 @@
 	  technologies like <xref target="protobuf">protocol buffers</xref>, <xref
 	  target="Thrift">Thrift</xref>, the various binary serializations for JSON like <xref
 	  target="Avro">Avro</xref> or <xref target="Smile">Smile</xref>, or the binary <xref
-	  target="HTTP2">HTTP/2</xref> seem to indicate that the time is ripe for a generalized use
-	  of binary, reserved until now for the low-level protocols. The lessons about flexibility
-	  learnt in the previous switch from binary to plain text can now be applied to efficient
-	  binary syntaxes.
+	  target="RFC7540">HTTP/2</xref> seem to indicate that the time is ripe for a generalized
+	  use of binary, reserved until now for the low-level protocols. The lessons about
+	  flexibility learnt in the previous switch from binary to plain text can now be applied to
+	  efficient binary syntaxes.
 	</t>
 	<section anchor="concepts" title="Definitions">
 	  <t>
@@ -214,8 +215,8 @@
 	    experimenters choose their temporary values makes them vulnerable to conflicts with
 	    others. Furthermore, the process of switching between the experimental and registered
 	    versions of the format or protocol might be error-prone and add a significant editorial
-	    workload (<xref target="cbor-draft-numbers"/> details some of the pitfalls and suggests
-	    a process to deal with this transition).
+	    workload (<xref target="I-D.bormann-cbor-draft-numbers"/> details some of the pitfalls
+	    and suggests a process to deal with this transition).
 	  </t>
 	</section>
       </section>
@@ -286,7 +287,7 @@
         <t>
           The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD
           NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as
-          described in <xref target="RFC2119">RFC 2119</xref>.
+          described in <xref target="BCP14"/>.
         </t>
         <t>
           Literal numerical values are provided in decimal or hexadecimal as appropriate.
@@ -1986,26 +1987,28 @@
     </section>
 
     <section title="IANA Considerations">
-      <t>
-	This specification defines a new media type, application/bulk. Here are the informations
-	for its registration to IANA <xref target="RFC6838"/>:
-      </t>
-      <t>
-	<list style="hanging">
-	  <t hangText="Type name">application</t>
-	  <t hangText="Subtype name">bulk</t>
-	  <t hangText="Required parameters">N/A</t>
-	  <t hangText="Optional parameters">N/A</t>
-	  <t hangText="Encoding considerations">none, content is self-describing</t>
-	  <t hangText="Security considerations">cf. <xref target="sec"/></t>
-	  <t hangText="Interoperability considerations">N/A</t>
-	  <t hangText="Published specification">this document</t>
-	  <t hangText="Applications that use this media type">the BARK manifest prototype</t>
-	  <t hangText="Fragment identifier considerations">this specification defines no semantics
-	  for addressing the data with a fragment identifier; a future specification MAY define
-	  fragment identifier syntaxes to address the content by byte offset or the parsed results
-	  by their position in the abstract yield</t>
-	  <t hangText="Additional information"><br/>
+      <section title="Media type">
+	<t>
+	  This specification defines a new media type, <spanx
+	  style="verb">application/bulk</spanx>. Here are the informations for its registration to
+	  IANA <xref target="BCP13"/>:
+	</t>
+	<t>
+	  <list style="hanging">
+	    <t hangText="Type name">application</t>
+	    <t hangText="Subtype name">bulk</t>
+	    <t hangText="Required parameters">N/A</t>
+	    <t hangText="Optional parameters">N/A</t>
+	    <t hangText="Encoding considerations">none, content is self-describing</t>
+	    <t hangText="Security considerations">cf. <xref target="sec"/></t>
+	    <t hangText="Interoperability considerations">N/A</t>
+	    <t hangText="Published specification">this document</t>
+	    <t hangText="Applications that use this media type">the BARK manifest prototype</t>
+	    <t hangText="Fragment identifier considerations">this specification defines no semantics
+	    for addressing the data with a fragment identifier; a future specification MAY define
+	    fragment identifier syntaxes to address the content by byte offset or the parsed results
+	    by their position in the abstract yield</t>
+	    <t hangText="Additional information"><br/>
 	    <list style="hanging">
 	      <t hangText="Magic numbers">
 		the constraint to start any BULK file with a version form has the side-effect that
@@ -2018,18 +2021,34 @@
 		</list>
 	      </t>
 	      <t hangText="File extensions"><br/>
-		<list style="hanging">
-		  <t hangText=".bulk">BULK binary streams</t>
-		  <t hangText=".bulktext">BULK streams in text notation</t>
-		</list>
+	      <list style="hanging">
+		<t hangText=".bulk">BULK binary streams</t>
+		<t hangText=".bulktext">BULK streams in text notation</t>
+	      </list>
 	      </t>
-	      <t hangText="Structured type name suffix"> <xref target="RFC6839"/><br/>this specification defines a suffix <spanx
-	      style="verb">+bulk</spanx> for naming media types that use BULK as their core
-	      syntax</t>
+	      <t hangText="Structured type name suffix"> <xref target="RFC6839"/><br/>this
+	      specification defines a suffix <spanx style="verb">+bulk</spanx> for naming media
+	      types that use BULK as their core syntax</t>
 	    </list>
-	  </t>
-	</list>
-      </t>
+	    </t>
+	  </list>
+	</t>
+      </section>
+      <section title="Link relation">
+	<t>
+	  This specification defines a new media type, <spanx
+	  style="verb">application/bulk</spanx>. Here are the informations for its registration to
+	  IANA <xref target="RFC8288"/>:
+	</t>
+	<t>
+	  <list style="hanging">
+	    <t hangText="Relation name">bulk-profile</t>
+	    <t hangText="Description">This link target is the BULK stream that a processing
+	    application SHOULD use as the profile of the link's context.</t>
+	    <t hangText="Reference">this document</t>
+	  </list>
+	</t>
+      </section>
     </section>
 
     <section title="Acknowledgements">
@@ -2044,55 +2063,10 @@
 
   <back>
     <references title="Normative References">
-      <reference anchor="RFC6838">
-        <front>
-          <title>
-            Media Type Specifications and Registration Procedures
-          </title>
-          <author initials="N." surname="Freed">
-            <organization>Oracle</organization>
-          </author>
-          <author initials="J." surname="Klensin">
-          </author>
-          <author initials="T." surname="Hansen">
-            <organization>AT&amp;T Laboratories</organization>
-          </author>
-          <date month="January" year="2013"/>
-        </front>
-        <seriesInfo name="BCP" value="13"/>
-        <seriesInfo name="RFC" value="6838"/>
-      </reference>
-
-      <reference anchor="RFC6839">
-        <front>
-          <title>
-            Additional Media Type Structured Syntax Suffixes
-          </title>
-          <author initials="T." surname="Hansen">
-            <organization>AT&amp;T Laboratories</organization>
-          </author>
-          <author initials="A." surname="Melnikov">
-            <organization>Isode Ltd</organization>
-          </author>
-          <date month="January" year="2013"/>
-        </front>
-        <seriesInfo name="RFC" value="6839"/>
-      </reference>
-
-      <reference anchor="RFC2119">
-        <front>
-          <title>
-            Key words for use in RFCs to Indicate Requirement Levels
-          </title>
-          <author initials="S." surname="Bradner" fullname="Scott Bradner">
-            <organization>Harvard University</organization>
-            <address><email>sob@harvard.edu</email></address>
-          </author>
-          <date month="March" year="1997"/>
-        </front>
-        <seriesInfo name="BCP" value="14"/>
-        <seriesInfo name="RFC" value="2119"/>
-      </reference>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.13.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.14.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6839.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml"/>
 
       <reference anchor="IANA-Charsets" target="http://www.iana.org/assignments/character-sets">
         <front>
@@ -2109,39 +2083,7 @@
 
     <references title="Informative references">
 
-      <reference anchor="HTTP2">
-	<front>
-	  <title>Hypertext Transfer Protocol version 2 (HTTP/2)</title>
-	  <author initials="M." surname="Belshe" fullname="Mike Belshe">
-	    <organization>BitGo</organization>
-	    <address>
-	      <email>mike@belshe.com</email>
-	    </address>
-	  </author>
-
-	  <author initials="R." surname="Peon" fullname="Roberto Peon">
-	    <organization>Google, Inc</organization>
-	    <address>
-	      <email>fenix@google.com</email>
-	    </address>
-	  </author>
-
-	  <author initials="M." surname="Thomson" fullname="Martin Thomson" role="editor">
-	    <organization>Mozilla</organization>
-	    <address>
-	      <postal>
-		<street>331 E Evelyn Street</street>
-		<city>Mountain View, CA</city>
-		<code>94041</code>
-		<country>US</country>
-	      </postal>
-	      <email>martin.thomson@gmail.com</email>
-	    </address>
-	  </author>
-	  <date month="May" year="2015"/>
-	</front>
-        <seriesInfo name="RFC" value="7540"/>
-      </reference>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7540.xml"/>
 
       <reference anchor="Avro" target="http://avro.apache.org/docs/1.7.4/spec.html">
 	<front>
@@ -2190,28 +2132,7 @@
 	</front>
       </reference>
 
-      <reference anchor="cbor-draft-numbers">
-        <front>
-          <title>Managing CBOR codepoints in Internet-Drafts</title>
-          <author fullname="Carsten Bormann" initials="C." surname="Bormann">
-            <organization>Universität Bremen TZI</organization>
-          </author>
-          <date day="12" month="January" year="2026"/>
-          <abstract>
-            <t>
-	      CBOR-based protocols often make use of numbers allocated in a registry. During
-	      development of the protocols, those numbers may not yet be available.  This impedes
-	      the generation of data models and examples that actually can be used by tools.
-
-	      This short draft proposes a common way to handle these situations, without any changes
-	      to existing tools.  Also, in conjunction with the application-oriented EDN literal
-	      e'', a further reduction in editorial processing of CBOR examples around the time of
-	      approval can be achieved.
-            </t>
-          </abstract>
-        </front>
-        <seriesInfo name="Internet-Draft" value="draft-bormann-cbor-draft-numbers-07"/>
-      </reference>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.bormann-cbor-draft-numbers.xml"/>
 
     </references>
 
