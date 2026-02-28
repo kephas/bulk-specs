@@ -416,6 +416,9 @@
 	<t>
 	  Whenever a parsing error is encountered, parsing of the BULK stream MUST stop.
 	</t>
+	<t>
+	  The version of the BULK stream can affect parsing, see <xref target="version"/>.
+	</t>
 	<section title="Summary of marker bytes">
 	  <table>
 	    <thead><tr><th>marker</th><th>shape</th><th></th></tr></thead>
@@ -493,6 +496,9 @@
 	    processing application MAY continue evaluation and produce the concrete yield as a
 	    sequence of expressions, each tagged with the fact that it was successfully evaluated or
 	    not.
+	  </t>
+	  <t>
+	    The version of the BULK stream can affect evaluation, see <xref target="version"/>.
 	  </t>
 	</section>
       </section>
@@ -867,13 +873,45 @@
 	    Two BULK versions with the same major version MUST share the same parsing rules and the
 	    same definitions of marker bytes. Changing the syntax or semantics of existing marker
 	    bytes and using marker bytes in the reserved interval warrants a new major
-	    version. Changing the syntax or semantics of existing names in standard namespaces
-	    also.
+	    version. Changing the syntax or semantics of existing standard names (meaning names in
+	    standard namespaces) also warrants a new major version.
 	  </t>
 	  <t>
-	    Adding standard namespaces, adding names in existing standard namespaces, or adding new
-	    syntactic uses of existing names that don't overlap with existing uses warrants a new
-	    minor version.
+	    It is a parsing error when a processing application encounters a major version that it
+	    doesn't explicitly support.
+	  </t>
+	  <t>
+	    Adding standard names, or adding new syntactic uses of existing standard names that
+	    don't overlap with existing uses warrants a new minor version.
+	  </t>
+	  <t>
+	    If version A and version B of BULK have a different default profile, and the change of
+	    profile would only affect evaluation of BULK streams that use new standard names or new
+	    syntactic uses of existing standard names, then the profile difference warrants a
+	    difference of minor version between A and B. Otherwise, the profile change warrants a
+	    difference of major version between A and B.
+	  </t>
+	  <t>
+	    Overall, the goal is that if an application writes a BULK stream of version 1.2 that
+	    only contains syntactic and semantic elements from BULK 1.1, a processing application
+	    that only supports BULK 1.1 will be able to parse and evaluate that stream. The writing
+	    application doesn't need to know the features that are specific to BULK 1.0 and BULK
+	    1.1, because as soon as the processing application encounters an unknown standard name
+	    or an unknown syntactic use of a known standard name, it can guess that it cannot
+	    correctly evaluate the stream.
+	  </t>
+	  <t>
+	    For that reason, it is an evaluation error for a processing application when there is an
+	    unknown syntactic use of a standard name, in a BULK stream with a major version
+	    supported by the processing application but a minor version not supported.
+	  </t>
+	  <t>
+	    As far as BULK 1.0 is concerned, using <spanx style="verb">import</spanx>, <spanx
+	    style="verb">define</spanx>, <spanx style="verb">mnemonic</spanx>, <spanx
+	    style="verb">explain</spanx>, and <spanx style="verb">arity</spanx>, when none of their
+	    operands are forms with a standard name as operator, doesn't constitute an unknown
+	    syntactic use. This makes it possible to overload those names in ways that don't
+	    interfere with backwards-compatibility.
 	  </t>
 	</section>
 
