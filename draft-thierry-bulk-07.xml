@@ -2032,50 +2032,83 @@
     <section title="IANA Considerations">
       <section title="Media type">
 	<t>
-	  This specification defines a new media type, <spanx
-	  style="verb">application/bulk</spanx>. Here are the informations for its registration to
-	  IANA <xref target="BCP13"/>:
+	  This specification defines two new media types, <spanx
+	  style="verb">application/bulk</spanx> and <spanx style="verb">text/bulk</spanx>. Here are
+	  the informations for its registration to IANA <xref target="BCP13"/>:
 	</t>
-	<t>
-	  <list style="hanging">
-	    <t hangText="Type name">application</t>
-	    <t hangText="Subtype name">bulk</t>
-	    <t hangText="Required parameters">N/A</t>
-	    <t hangText="Optional parameters">N/A</t>
-	    <t hangText="Encoding considerations">none, content is self-describing</t>
-	    <t hangText="Security considerations">cf. <xref target="sec"/></t>
-	    <t hangText="Interoperability considerations">N/A</t>
-	    <t hangText="Published specification">this document</t>
-	    <t hangText="Applications that use this media type">the BARK manifest prototype</t>
-	    <t hangText="Fragment identifier considerations">this specification defines no semantics
-	    for addressing the data with a fragment identifier; a future specification MAY define
-	    fragment identifier syntaxes to address the content by byte offset or the parsed results
-	    by their position in the abstract yield</t>
-	    <t hangText="Additional information"><br/>
+	<section title="application/bulk">
+	  <t>
 	    <list style="hanging">
-	      <t hangText="Magic numbers">
-		the constraint to start any BULK file with a version form has the side-effect that
-		classes of BULK streams can be identified by a sequence of bytes acting as "magic
-		number", at offset 0:
-		<list style="hanging">
-		  <t hangText="0x011000">any BULK stream</t>
-		  <t hangText="0x01100081">a BULK stream of major version 1</t>
-		  <t hangText="0x011000818002">a BULK stream of version 1.0</t>
-		</list>
-	      </t>
-	      <t hangText="File extensions"><br/>
+	      <t hangText="Type name">application</t>
+	      <t hangText="Subtype name">bulk</t>
+	      <t hangText="Required parameters">N/A</t>
+	      <t hangText="Optional parameters">N/A</t>
+	      <t hangText="Encoding considerations">none, content is self-describing</t>
+	      <t hangText="Security considerations">cf. <xref target="sec"/></t>
+	      <t hangText="Interoperability considerations">N/A</t>
+	      <t hangText="Published specification">this document</t>
+	      <t hangText="Applications that use this media type">the BARK manifest prototype</t>
+	      <t hangText="Fragment identifier considerations">this specification defines no
+	      semantics for addressing the data with a fragment identifier; a future specification
+	      MAY define fragment identifier syntaxes to address the content by byte offset or the
+	      parsed results by their position in the abstract yield</t>
+	      <t hangText="Additional information"><br/>
 	      <list style="hanging">
-		<t hangText=".bulk">BULK binary streams</t>
-		<t hangText=".bulktext">BULK streams in text notation</t>
+		<t hangText="Magic numbers">
+		  the constraint to start any BULK file with a version form has the side-effect that
+		  classes of BULK streams can be identified by a sequence of bytes acting as "magic
+		  number", at offset 0:
+		  <list style="hanging">
+		    <t hangText="0x011000">any BULK stream</t>
+		    <t hangText="0x01100081">a BULK stream of major version 1</t>
+		    <t hangText="0x011000818002">a BULK stream of version 1.0</t>
+		  </list>
+		</t>
+		<t hangText="File extensions">.bulk</t>
+		<t hangText="Structured type name suffix"> <xref target="RFC6839"/><br/>this
+		specification defines a suffix <spanx style="verb">+bulk</spanx> for naming media
+		types that use BULK as their core syntax</t>
 	      </list>
 	      </t>
-	      <t hangText="Structured type name suffix"> <xref target="RFC6839"/><br/>this
-	      specification defines a suffix <spanx style="verb">+bulk</spanx> for naming media
-	      types that use BULK as their core syntax</t>
 	    </list>
-	    </t>
-	  </list>
-	</t>
+	  </t>
+	</section>
+	<section title="text/bulk">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="Type name">text</t>
+	      <t hangText="Subtype name">bulk</t>
+	      <t hangText="Required parameters">N/A</t>
+	      <t hangText="Optional parameters">N/A</t>
+	      <t hangText="Encoding considerations">content MUST be encoded in UTF-8 <xref target="STD63"/></t>
+	      <t hangText="Security considerations">cf. <xref target="sec"/></t>
+	      <t hangText="Interoperability considerations">N/A</t>
+	      <t hangText="Published specification">this document</t>
+	      <t hangText="Applications that use this media type">the BARK manifest prototype</t>
+	      <t hangText="Fragment identifier considerations">this specification defines no
+	      semantics for addressing the data with a fragment identifier; a future specification
+	      MAY define fragment identifier syntaxes to address the content by byte offset or the
+	      parsed results by their position in the abstract yield</t>
+	      <t hangText="Additional information"><br/>
+	      <list style="hanging">
+		<t hangText="Magic numbers">
+		  The text notation allows for arbitary number and kinds of whitespaces around
+		  lexical elements, so there are no "magic numbers" as such but, in most cases, BULK
+		  streams in text notation will not have leading whitespace and use a single space
+		  within the first version form, so the first characters can identify classes of
+		  BULK streams:
+		  <list style="symbol">
+		    <t>'<spanx style='verb'>( version </spanx>' or '<spanx style='verb'>( bulk:version </spanx>': any BULK stream</t>
+		    <t>'<spanx style='verb'>( version 1 </spanx>' or '<spanx style='verb'>( bulk:version 1 </spanx>': a BULK stream of major version 1</t>
+		    <t>'<spanx style='verb'>( version 1 0 )</spanx>' or '<spanx style='verb'>( bulk:version 1 0 )</spanx>': a BULK stream of version 1.0</t>
+		  </list>
+		</t>
+		<t hangText="File extensions">.bulktext</t>
+	      </list>
+	      </t>
+	    </list>
+	  </t>
+	</section>
       </section>
       <section title="Link relation">
 	<t>
@@ -2108,6 +2141,7 @@
     <references title="Normative References">
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.13.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.14.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.STD.63.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6839.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml"/>
 
