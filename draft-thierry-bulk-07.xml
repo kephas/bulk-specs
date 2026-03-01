@@ -19,7 +19,7 @@
      docName="draft-thierry-bulk-07"
      xmlns:xi="http://www.w3.org/2001/XInclude">
   <front>
-    <title abbrev="BULK1">Binary Uniform Language Kit 1.0</title>
+    <title abbrev="BULK1">Binary Universal Language Kit 1.0</title>
 
     <author initials="P." surname="Thierry" fullname="Pierre Thierry">
       <organization>Comonad Dev</organization>
@@ -33,8 +33,8 @@
 
     <abstract>
       <t>
-        This specification describes a uniform, decentrally extensible and efficient format for
-        data serialization.
+        This specification describes a simple, decentrally extensible and efficient format for data
+        serialization.
       </t>
     </abstract>
 
