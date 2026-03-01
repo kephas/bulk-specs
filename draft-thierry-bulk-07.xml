@@ -219,6 +219,151 @@
 	    and suggests a process to deal with this transition).
 	  </t>
 	</section>
+	<section title="Use cases">
+	  <t>
+	    Here are some cases where the use of BULK formats and protocols would make software
+	    engineers' and users' lives easier.
+	  </t>
+	  <table>
+	    <thead><tr><th>Without BULK</th><th>With BULK</th></tr></thead>
+	    <tbody>
+	      <tr>
+		<td>
+		  <t>
+		    If a user has a huge collection of pictures but many of them contain extended
+		    metadata that her image software doesn't support yet, there is no safe and easy
+		    way for her to access it.
+		  </t>
+		</td>
+		<td>
+		  <t>
+		    The user's BULK image software likely is able to show the existence of different
+		    metadata in every image file and, with safely autodiscovered data, can visualize
+		    the extended metata, at least in a raw form but with human-readable labels or,
+		    better yet, mapped into a form it knows.
+		  </t>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <t>
+		    If a userhas a collection of pictures with some in a file format her image
+		    software dosen't support yet, she cannot access the kind of common metadata that
+		    she can expect most images to contain (like author or copyright information).
+		  </t>
+		</td>
+		<td>
+		  <t>
+		    Generic BULK tools can let the user make queries about her whole image
+		    collection, and even her broader file collection, making use of either common
+		    metadata formats between different image or file formats, or the mapping between
+		    different metadata formats into a single one (e.g. all objects, whole files or
+		    entries inside files, that have been flagged "confidential" or belong to some
+		    entity, or all images or videos where some person has been tagged as visible).
+		  </t>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <t>
+		    If a new image or video compression has been designed, its designers usually
+		    need to create a whole custom container format, with custom metadata format. A
+		    lot of work is needed for the many image or video software to be able to
+		    accomodate reading or writing this new container, new metadata and new
+		    codec. Because this new work involves parsing binary data, it often is a source
+		    of security vulnerabilities.
+		  </t>
+		</td>
+		<td>
+		  <t>
+		    If a new image or video compression has been designed, its designers don't need
+		    to create anything more. If it has unusual features, it is still pretty easy to
+		    make what is backward-compatible with existing data models fit into the existing
+		    container structure.
+		  </t>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <t>
+		    If a new compression, signing or encryption algorithm has been designed, and its
+		    designers hope to see it used in existing formats, they have to work separately
+		    for each format where it may be used and in each case, they will face a
+		    chicken-and-egg problem where software projects may be reluctant to put effort
+		    into something users may not ultimately want or benefit from. The designers may
+		    also need to interact with one or several registries to get their algorithm
+		    registered, which may be a necessary upfront work. Users need to wait for each
+		    software to be updated to include the new algorithm and sometimes suffer from
+		    incompatible implementations at the format level (e.g. early adopters producing
+		    files with obsolete numbers allocated to the algorithm).
+		  </t>
+		</td>
+		<td>
+		  <t>
+		    If a new compression, signing or encryption algorithm has been designed, and its
+		    designers hope to see it used in existing BULK formats, their BULK vocabulary is
+		    guaranteed to uniquely describe the data produced by their algorithm and can be
+		    readily embedded in any existing BULK format. The only work needed is to
+		    implement their algorithm in a way that satisfies each software project, that
+		    just have to register the link between BULK vocabulary and software plugin (or
+		    may not even need to intervene, if a safe mechanism is implemented to
+		    autodiscover software plugins).
+		  </t>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <t>
+		    If a user encounters file of an unknown type, their system might give them
+		    useful media type identification or not, and based on that or file extension, an
+		    advanced user might search in her system's software registry or on the Internet
+		    and find some software that can visualize some or all of the file's content.
+		  </t>
+		</td>
+		<td>
+		  <t>
+		    If a user encounters a BULK file of a yet unknown type, generic BULK tools can
+		    safely autodiscover human-readable information about the structure of the file,
+		    and parts of the file that the user can readily use can be easily found and
+		    viewed or extracted.
+		  </t>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <t>
+		    When a communication protocol is designed, its designers have to choose a
+		    trade-off between latency caused by message size, ease of debugging and
+		    complexity of the parser. It's deceptively easy to make mistakes in the syntax
+		    that make it harder to use or implement, but using an existing syntax ties the
+		    protocole with this syntax' limitations.
+		  </t>
+		</td>
+		<td>
+		  <t>
+		    When a BULK-based communication protocol is designed, its designers can make it
+		    both very compact and easy to debug with very little effort. Generic tools can
+		    present data on the wire with the support of safey autodiscovered data about the
+		    protocol.
+		  </t>
+		</td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  <t>
+	    In a few of those cases, without BULK, a registry of executable software patches or
+	    plugins that can be automatically discovered could have been a solution, except that it
+	    couldn't be made safe in our current software architectures (because of the broad
+	    ambient authority given to most code).
+	  </t>
+	  <t>
+	    With BULK, there is immediately a strong incentive to provide discoverability, at first
+	    for just data, not executable code, with safeties already in place on that process. The
+	    data model of BULK then makes it more likely that code plugins are provided that are
+	    designed to work with extremely limited privileges, to act as transformers of BULK
+	    expressions.
+	  </t>
+	</section>
       </section>
       <section title="Format overview">
 	<t>
