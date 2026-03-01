@@ -46,14 +46,14 @@
         <t>
           This specification aims at finding an original trade-off between transparency, syntax
           complexity, generality, extensibility, decentralization, discoverability, compactness,
-          processing speed and processing footprint for a data format (see <xref target="concepts"
-          format="none">definitions</xref>). It is our opinion that every widely used existing
-          format occupy a different position than this one in the solution space for formats, that
-          none is better on all axes, and that this one is the current best on several axes, hence
-          this new design. It is also our opinion that some of those existing formats constitute an
-          optimal solution for their specific use case, either in a absolute sense, or at least at
-          the time of their design. But the ever-changing field of IT now faces new challenges that
-          call for a new approach.
+          streamability, processing speed and processing footprint for a data format (see <xref
+          target="concepts" format="none">definitions</xref>). It is our opinion that every widely
+          used existing format occupy a different position than this one in the solution space for
+          formats, that none is better on all axes, and that this one is the current best on several
+          axes, hence this new design. It is also our opinion that some of those existing formats
+          constitute an optimal solution for their specific use case, either in a absolute sense, or
+          at least at the time of their design. But the ever-changing field of IT now faces new
+          challenges that call for a new approach.
         </t>
 	<t>
 	  In particular, whereas the previous trend for Internet and Web standards and programming
@@ -96,7 +96,7 @@
 	    boilerplate code). Notable exceptions to this limitation of programming languages are
 	    Lisp languages (e.g. Common Lisp, Scheme or Clojure), languages with lazy evaluation
 	    (e.g. Haskell, Purescript or Agda) and stack (or concatenative) languages (e.g. Forth,
-	    Postscript, Factor).
+	    Postscript or Factor).
 	  </t>
 	  <t>
 	    On the other hand, stack languages are the canonical examples of non-transparent
@@ -136,6 +136,12 @@
 	    as possible with an overall size as small as possible.
 	  </t>
 	  <t>
+	    By streamability, we mean two levels. The first, being streamed, is the ability of a
+	    format to be transported in pieces that can be processed before the next piece is
+	    available. The second, being broadcasted, is, when a stream of data is cut in two at an
+	    arbitrary place, the ability of the second halt to be processed succesfully.
+	  </t>
+	  <t>
 	    By processing speed, we mean the property of a format that lends itself to benefit from
 	    current computing architectures to be processed at high speed overall (e.g. processing
 	    can be fast in itself, some shortcuts can be taken, or parallelization is possible).
@@ -168,9 +174,11 @@
 	  </t>
 	  <t>
 	    All the previously cited formats clearly lack compactness, although just applying
-	    standard compression techniques would sacrifice only very little processing time to
-	    gain huge size reductions on most of their intended use cases, but compression may not
-	    address their ineffectiveness at storing arbitrary bytes.
+	    standard compression techniques would sacrifice only very little processing time to gain
+	    huge size reductions on most of their intended use cases, but compression may not
+	    address their ineffectiveness at storing arbitrary bytes (and compression of the base64
+	    encoding of arbitrary bytes can be less efficient than compression of the arbitrary
+	    bytes).
 	  </t>
 	  <t>
 	    Neither JSON nor XML are suitable for streaming and the whole document must usually be
@@ -182,9 +190,9 @@
 	    high syntax complexity, low generality and low extensibility to achieve better
 	    compactness. Some are specifically designed for a great generality, but many lack
 	    extensibility. When they are extensible, it's never in a decentralized way nor are they
-	    discoverable, again for reasons that have to do with compactness. They are usually
-	    extremely fast to parse, and some are designed to be streamed or at least processed
-	    incrementally.
+	    discoverable, both for reasons that have to do with compactness. They are usually
+	    extremely fast to parse, and while some are designed to be streamed, few can be
+	    broadcasted.
 	  </t>
 	  <t>
 	    Actually, many binary formats are not so much formats as they are formats frameworks,
@@ -247,7 +255,7 @@
 	      <tr>
 		<td>
 		  <t>
-		    If a userhas a collection of pictures with some in a file format her image
+		    If a user has a collection of pictures with some in a file format her image
 		    software dosen't support yet, she cannot access the kind of common metadata that
 		    she can expect most images to contain (like author or copyright information).
 		  </t>
@@ -257,9 +265,10 @@
 		    Generic BULK tools can let the user make queries about her whole image
 		    collection, and even her broader file collection, making use of either common
 		    metadata formats between different image or file formats, or the mapping between
-		    different metadata formats into a single one (e.g. all objects, whole files or
-		    entries inside files, that have been flagged "confidential" or belong to some
-		    entity, or all images or videos where some person has been tagged as visible).
+		    different metadata formats into a single one. Queries could be for all objects,
+		    whole files or entries inside files, that have been flagged "confidential" or
+		    belong to some entity, or all images or videos where some person has been tagged
+		    as visible, for example.
 		  </t>
 		</td>
 	      </tr>
@@ -277,9 +286,10 @@
 		<td>
 		  <t>
 		    If a new image or video compression has been designed, its designers don't need
-		    to create anything more. If it has unusual features, it is still pretty easy to
-		    make what is backward-compatible with existing data models fit into the existing
-		    container structure.
+		    to create anything more to embed it in BULK. If it has unusual features, it is
+		    still pretty easy to make what is backward-compatible with existing data models
+		    fit into the existing container structure. Even new kinds of structures leverage
+		    existing parsing code, minimizing attack surface.
 		  </t>
 		</td>
 	      </tr>
@@ -288,14 +298,15 @@
 		  <t>
 		    If a new compression, signing or encryption algorithm has been designed, and its
 		    designers hope to see it used in existing formats, they have to work separately
-		    for each format where it may be used and in each case, they will face a
-		    chicken-and-egg problem where software projects may be reluctant to put effort
-		    into something users may not ultimately want or benefit from. The designers may
-		    also need to interact with one or several registries to get their algorithm
-		    registered, which may be a necessary upfront work. Users need to wait for each
-		    software to be updated to include the new algorithm and sometimes suffer from
-		    incompatible implementations at the format level (e.g. early adopters producing
-		    files with obsolete numbers allocated to the algorithm).
+		    for each format where it may be used and then for each software project
+		    implementing them and in each case, they will face a chicken-and-egg problem
+		    where software projects may be reluctant to put effort into something users may
+		    not ultimately want or benefit from. The designers may also need to interact
+		    with one or several registries to get their algorithm registered, which may be a
+		    necessary upfront work. Users need to wait for each software to be updated to
+		    include the new algorithm and sometimes suffer from incompatible implementations
+		    at the format level (e.g. early adopters producing files with obsolete numbers
+		    allocated to the algorithm).
 		  </t>
 		</td>
 		<td>
@@ -303,18 +314,19 @@
 		    If a new compression, signing or encryption algorithm has been designed, and its
 		    designers hope to see it used in existing BULK formats, their BULK vocabulary is
 		    guaranteed to uniquely describe the data produced by their algorithm and can be
-		    readily embedded in any existing BULK format. The only work needed is to
-		    implement their algorithm in a way that satisfies each software project, that
-		    just have to register the link between BULK vocabulary and software plugin (or
-		    may not even need to intervene, if a safe mechanism is implemented to
-		    autodiscover software plugins).
+		    readily embedded in any existing BULK format. The only work needed may be to
+		    implement their algorithm as a pure function that can be plugged into the BULK
+		    evaluation mechanism, for the relevant programming languages, so that software
+		    projects just have to register the link between BULK vocabulary and software
+		    plugin (or may not even need to intervene, if a safe mechanism is implemented to
+		    autodiscover software plugins providing pure functions).
 		  </t>
 		</td>
 	      </tr>
 	      <tr>
 		<td>
 		  <t>
-		    If a user encounters file of an unknown type, their system might give them
+		    If a user encounters a file of an unknown type, their system might give them
 		    useful media type identification or not, and based on that or file extension, an
 		    advanced user might search in her system's software registry or on the Internet
 		    and find some software that can visualize some or all of the file's content.
@@ -352,9 +364,9 @@
 	  </table>
 	  <t>
 	    In a few of those cases, without BULK, a registry of executable software patches or
-	    plugins that can be automatically discovered could have been a solution, except that it
-	    couldn't be made safe in our current software architectures (because of the broad
-	    ambient authority given to most code).
+	    plugins that can be automatically discovered could have been a solution, with the caveat
+	    that almost all of our current software architectures make that possibility more
+	    dangerous than it's worth (because of the broad ambient authority given to most code).
 	  </t>
 	  <t>
 	    With BULK, there is immediately a strong incentive to provide discoverability, at first
