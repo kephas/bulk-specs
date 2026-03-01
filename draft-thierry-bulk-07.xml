@@ -309,20 +309,25 @@
 	</t>
 	<t>
 	  In the grammar, a shape is a pattern of bytes, following the rules of the text notation
-	  for a BULK stream. Apart from mnemonics and fixed sequences of bytes, a shape can
-	  contain:
+	  for a BULK stream. Apart from mnemonics and fixed sequences of bytes, a shape can contain:
 	  <list style="symbols">
-	    <t>an arbitrary sequence of a fixed number of bytes, represented by its size, i.e. a
+	    <t>
+	      an arbitrary sequence of a fixed number of bytes, represented by its size, i.e. a
 	    number of bytes in decimal immediately followed by a B uppercase letter (e.g. <spanx
-	    style="verb">4B</spanx>)</t>
-	    <t>a typed sequence of bytes, represented by the name of its type, a capitalized word
-	    (e.g.  <spanx style="verb">Foo</spanx>); this means a sequence of bytes whose specific
-	    yield (see <xref target="parsing" format="title"/>) has this type</t>
-	    <t>a named sequence of bytes (of zero or more bytes), represented by a sequence of any
-	    character excluding '{}' between '{' and '}' (e.g. <spanx style="verb">{quux}</spanx>);
-	    a named sequence can be typed or sized, in which case it is immediately followed by ':'
-	    and a type or size (e.g. <spanx style="verb">{quux}:Bar</spanx> or <spanx
-	    style="verb">{quux}:12B</spanx>)</t>
+	    style="verb">4B</spanx>)
+	    </t>
+	    <t>
+	      a typed sequence of bytes, represented by the name of its type, a capitalized word
+	      (e.g.  <spanx style="verb">Foo</spanx>); this means a sequence of bytes whose specific
+	      yield (see <xref target="parsing" format="title"/>) has this type
+	    </t>
+	    <t>
+	      a named sequence of bytes (of zero or more bytes), represented by a sequence of any
+	      character excluding '{}' between '{' and '}' (e.g. <spanx
+	      style="verb">{quux}</spanx>); a named sequence can be typed or sized, in which case it
+	      is immediately followed by ':' and a type or size (e.g. <spanx
+	      style="verb">{quux}:Bar</spanx> or <spanx style="verb">{quux}:12B</spanx>)
+	    </t>
 	  </list>
 	</t>
 	<t>
@@ -336,8 +341,8 @@
 	  with forms of the shape <spanx style="verb">( string {enc}:Expr {string}:Expr
 	  )</spanx>. But the shapes <spanx style="verb">( string {arg1}:Int {arg2}:Int )</spanx> or
 	  <spanx style="verb">( {arg1}:Int string {arg2}:Int )</spanx> are syntactly valid. They
-	  just evaluate to themselves as lists of three expressions, as far as this specification
-	  is concerned.
+	  just evaluate to themselves as lists of three expressions, as far as this specification is
+	  concerned.
 	</t>
       </section>
     </section>
@@ -363,9 +368,9 @@
 	applying the events, discarding each of them as soon as it has been applied).
       </t>
       <t>
-	The abstract yield is a list of expressions. Expressions can be atoms or forms. Forms
-	are lists of expressions. If a byte sequence is parsed as an expression, this byte
-	sequence is said to encode this expression.
+	The abstract yield is a list of expressions. Expressions can be atoms or forms. Forms are
+	lists of expressions. If a byte sequence is parsed as an expression, this byte sequence is
+	said to encode this expression.
       </t>
       <t>
 	When a sequence of bytes is named in a shape, its name can be used in this specification to
@@ -377,8 +382,8 @@
       <section anchor="parsing" title="Parsing algorithm">
 	<t>
 	  The parser operates with a context, which is a list of expressions. Each time an
-	  expression is parsed, it is appended at the end of the context. The initial context is
-	  the abstract yield.
+	  expression is parsed, it is appended at the end of the context. The initial context is the
+	  abstract yield.
 	</t>
 	<t>
 	  At the beginning of a BULK stream and after having consumed the byte sequence encoding a
@@ -407,11 +412,11 @@
 	</t>
 	<t>
 	  Some forms have side-effects in their semantics. Those side-effects MUST not affect the
-	  parsing of any expression. They can affect evaluation, in which case they MUST only
-	  affect the evaluation of expressions in the scope of the form. The outer scope of an
-	  expression is the part of its context that follows the expression. Some forms MAY define
-	  an inner scope in their shape. The scope of an expression is the union of the outer and
-	  inner scopes. This makes BULK lexically scoped.
+	  parsing of any expression. They can affect evaluation, in which case they MUST only affect
+	  the evaluation of expressions in the scope of the form. The outer scope of an expression
+	  is the part of its context that follows the expression. Some forms MAY define an inner
+	  scope in their shape. The scope of an expression is the union of the outer and inner
+	  scopes. This makes BULK lexically scoped.
 	</t>
 	<t>
 	  Whenever a parsing error is encountered, parsing of the BULK stream MUST stop.
@@ -448,8 +453,8 @@
 	    namespace can have a value, which is what a reference associated to this name evaluates
 	    to. A reference whose marker value is associated to no namespace or whose name has no
 	    value evaluates to itself. How self-evaluating BULK expressions are represented in the
-	    concrete yield is application-dependent, but future specifications MAY define a
-	    standard API to access it, similar to the Document Object Model for XML.
+	    concrete yield is application-dependent, but future specifications MAY define a standard
+	    API to access it, similar to the Document Object Model for XML.
 	  </t>
 	  <t>
 	    The evaluation of a form obeys a special rule, though: if the operator of the form has
@@ -522,15 +527,18 @@
 	  </t>
 	  <t>
 	    <list style="symbols">
-	      <t>In the form <spanx style="verb">( foo nil nil nil )</spanx>, {bar} encodes 3
-	      expressions, and they are three atoms in the yield.</t>
-
-	      <t>In the form <spanx style="verb">( foo nil )</spanx>, {bar} is a single expression
-	      in the yield, and that expression is an atom.</t>
-
-	      <t>In the form <spanx style="verb">( foo ( nil nil nil ) )</spanx>, {bar} is also a
-	      single expression in the yield, and that expression is a form, a list in the
-	      yield.</t>
+	      <t>
+		In the form <spanx style="verb">( foo nil nil nil )</spanx>, {bar} encodes 3
+		expressions, and they are three atoms in the yield.
+	      </t>
+	      <t>
+		In the form <spanx style="verb">( foo nil )</spanx>, {bar} is a single expression in
+		the yield, and that expression is an atom.
+	      </t>
+	      <t>
+		In the form <spanx style="verb">( foo ( nil nil nil ) )</spanx>, {bar} is also a
+		single expression in the yield, and that expression is a form, a list in the yield.
+	      </t>
 	    </list>
 	  </t>
 	  <t>
@@ -625,8 +633,8 @@
 	    <t>
 	      In the text notation, some text notation enclosed between balanced <spanx
 	      style="verb">([</spanx> and <spanx style="verb">])</spanx> is the notation for a
-	      generic array containing the encoding of that text notation, except if the size of
-	      the encoding is below 64 bytes, cf. <xref target="smallarray" format="none">small
+	      generic array containing the encoding of that text notation, except if the size of the
+	      encoding is below 64 bytes, cf. <xref target="smallarray" format="none">small
 	      arrays</xref>.
 	    </t>
 	    <t>Types: <spanx style="verb">Bytes</spanx>, <spanx style="verb">Nat</spanx></t>
@@ -647,23 +655,23 @@
 	    </t>
 	    <t>
 	      In the text notation, the notation of the marker byte of a small array of size X is
-	      <spanx style="verb">#[X]</spanx>. For example, <spanx style="verb">#[2]
-	      0x1234</spanx> is a notation for the bytes <spanx style="verb">0xC2-1234</spanx>.
+	      <spanx style="verb">#[X]</spanx>. For example, <spanx style="verb">#[2] 0x1234</spanx>
+	      is a notation for the bytes <spanx style="verb">0xC2-1234</spanx>.
 	    </t>
 	    <t>
-	      In the text notation, a quoted string is the notation for a small array containing
-	      the encoding of that string in the current encoding if the size of the encoding is
-	      below 64 bytes. For example, <spanx style="verb">"abc"</spanx> and <spanx
-	      style="verb">#[3] 0x616263</spanx> are the notation for the same byte sequence if the
-	      current encoding is UTF-8.
+	      In the text notation, a quoted string is the notation for a small array containing the
+	      encoding of that string in the current encoding if the size of the encoding is below
+	      64 bytes. For example, <spanx style="verb">"abc"</spanx> and <spanx style="verb">#[3]
+	      0x616263</spanx> are the notation for the same byte sequence if the current encoding
+	      is UTF-8.
 	    </t>
 	    <t>
 	      In the text notation, some text notation enclosed between balanced <spanx
-	      style="verb">([</spanx> and <spanx style="verb">])</spanx> is the notation for a
-	      small array containing the encoding of that text notation if the size of the encoding
-	      is below 64 bytes. For example, <spanx style="verb">([ nil 0 1 256 ])</spanx> and
-	      <spanx style="verb">#[6] nil w6[0] w6[1] #[2] 0x0100</spanx> are the notation for the
-	      same byte sequence.
+	      style="verb">([</spanx> and <spanx style="verb">])</spanx> is the notation for a small
+	      array containing the encoding of that text notation if the size of the encoding is
+	      below 64 bytes. For example, <spanx style="verb">([ nil 0 1 256 ])</spanx> and <spanx
+	      style="verb">#[6] nil w6[0] w6[1] #[2] 0x0100</spanx> are the notation for the same
+	      byte sequence.
 	    </t>
 	    <t>Types: <spanx style="verb">Bytes</spanx>, <spanx style="verb">Nat</spanx></t>
 	  </section>
@@ -719,9 +727,9 @@
 	  </list>
 	  </t>
 	  <t>
-	    The <spanx style="verb">{ns}</spanx> byte is a value associated with a namespace,
-	    called the namespace marker. Values <spanx style="verb">0x10−0x13</spanx> are reserved
-	    for namespaces defined by BULK specifications. Greater values can be associated with
+	    The <spanx style="verb">{ns}</spanx> byte is a value associated with a namespace, called
+	    the namespace marker. Values <spanx style="verb">0x10−0x13</spanx> are reserved for
+	    namespaces defined by BULK specifications. Greater values can be associated with
 	    namespaces identified by a unique identifier.
 	  </t>
 	  <t>
@@ -731,33 +739,29 @@
 	  </t>
 	  <t>
 	    The specification of a namespace SHOULD include a mnemonic for the namespace and for
-	    each defined name. When descriptions use several namespaces, the mnemonic of a
-	    reference SHOULD be the concatenation of the namespace mnemonic, ":" and the name
-	    mnemonic if there can be an ambiguity. For example, the <spanx style="verb">fft</spanx>
-	    name in namespace <spanx style="verb">math</spanx> becomes <spanx
-	    style="verb">math:fft</spanx>.
+	    each defined name. When descriptions use several namespaces, the mnemonic of a reference
+	    SHOULD be the concatenation of the namespace mnemonic, ":" and the name mnemonic if
+	    there can be an ambiguity. For example, the <spanx style="verb">fft</spanx> name in
+	    namespace <spanx style="verb">math</spanx> becomes <spanx style="verb">math:fft</spanx>.
 	  </t>
 	  <t>Type: <spanx style="verb">Ref</spanx></t>
 	  <section title="Special case">
 	    <t>
-	      References have a second parsing rule. In case a BULK stream needs an important
-	      number of namespaces, if the marker byte is <spanx style="verb">0x7F</spanx>, the
-	      parser continues to read bytes until it finds a byte different than 0xFF. The sum of
-	      each of those bytes taken as unsigned integers is the namespace marker. For example,
-	      the reference encoded by the bytes <spanx style="verb">0x7F 0xFF 0x8C 0x1A</spanx> is
-	      the name 26 in the namespace associated with 522.
+	      References have a second parsing rule. In case a BULK stream needs an important number
+	      of namespaces, if the marker byte is <spanx style="verb">0x7F</spanx>, the parser
+	      continues to read bytes until it finds a byte different than 0xFF. The sum of each of
+	      those bytes taken as unsigned integers is the namespace marker. For example, the
+	      reference encoded by the bytes <spanx style="verb">0x7F 0xFF 0x8C 0x1A</spanx> is the
+	      name 26 in the namespace associated with 522.
 	    </t>
 	  </section>
 	</section>
-
       </section>
-
     </section>
 
     <section title="Kinds of namespaces">
       <t>
-	Standard namespaces have a fixed marker value and are not identified by a unique
-	identifier.
+	Standard namespaces have a fixed marker value and are not identified by a unique identifier.
       </t>
       <t>
 	Extension namespaces are defined with a unique identifier, to be associated to a marker
@@ -770,150 +774,174 @@
       </t>
     </section>
 
-      <section title="BULK core namespace">
+    <section title="BULK core namespace">
+      <t>
+	<list style="hanging">
+	  <t hangText="marker"><spanx style="verb">0x10</spanx><br/>namespace mnemonic: <spanx
+	  style="verb">bulk</spanx></t>
+	</list>
+      </t>
+      <table>
+	<thead><tr><th>name</th><th>mnemonic</th><th>type</th></tr></thead>
+	<tbody>
+	  <tr><td><spanx style="verb">00</spanx></td><td><spanx style="verb"><xref target="version"
+	  format="none">version</xref></spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">01</spanx></td><td><spanx style="verb">import</spanx> (<xref
+	  target="import-ns" format="none">namespace</xref>, <xref target="import-pkg"
+	  format="none">package</xref>)</td><td><spanx style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">02</spanx></td><td><spanx
+	  style="verb">namespace</spanx></td><td/></tr>
+	  <tr><td><spanx style="verb">03</spanx></td><td><spanx
+	  style="verb">package</spanx></td><td/></tr>
+	  <tr><td><spanx style="verb">04</spanx></td><td><spanx style="verb">define (<xref
+	  target="def-ns" format="none">namespace</xref>, <xref target="def-pkg"
+	  format="none">package</xref>, <xref target="def-name"
+	  format="none">name</xref>)</spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">05</spanx></td><td><spanx style="verb"><xref target="mnemonic"
+	  format="none">mnemonic</xref></spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">06</spanx></td><td><spanx style="verb"><xref target="explain"
+	  format="none">explain</xref></spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">07</spanx></td><td><spanx style="verb"><xref target="string"
+	  format="none">string</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">08</spanx></td><td><spanx style="verb"><xref
+	  target="iana-charset" format="none">iana-charset</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">09</spanx></td><td><spanx style="verb"><xref
+	  target="nested-bulk" format="none">bulk</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">0A</spanx></td><td><spanx style="verb"><xref target="blob"
+	  format="none">blob</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">0B</spanx></td><td><spanx style="verb"><xref target="concat"
+	  format="none">concat</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">0C</spanx></td><td><spanx style="verb"><xref
+	  target="indexed-bulk" format="none">indexed-bulk</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">0D</spanx></td><td><spanx style="verb"><xref
+	  target="indexed-array" format="none">indexed-array</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">0E</spanx></td><td><spanx style="verb"><xref target="booleans"
+	  format="none">true</xref></spanx></td><td><spanx style="verb">Boolean</spanx></td></tr>
+	  <tr><td><spanx style="verb">0F</spanx></td><td><spanx style="verb"><xref target="booleans"
+	  format="none">false</xref></spanx></td><td><spanx style="verb">Boolean</spanx></td></tr>
+	  <tr><td><spanx style="verb">10</spanx></td><td><spanx style="verb"><xref target="subst"
+	  format="none">subst</xref></spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">11</spanx></td><td><spanx style="verb"><xref target="arg"
+	  format="none">arg</xref></spanx></td><td/></tr>
+	  <tr><td><spanx style="verb">12</spanx></td><td><spanx style="verb"><xref target="rest"
+	  format="none">rest</xref></spanx></td><td/></tr>
+	  <tr><td><spanx style="verb">13</spanx></td><td><spanx style="verb"><xref target="with"
+	  format="none">with</xref></spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">14</spanx></td><td><spanx style="verb"><xref
+	  target="unsigned-int" format="none">unsigned-int</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">15</spanx></td><td><spanx style="verb"><xref
+	  target="signed-int" format="none">signed-int</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">16</spanx></td><td><spanx style="verb"><xref target="fraction"
+	  format="none">fraction</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">17</spanx></td><td><spanx style="verb"><xref
+	  target="binary-float" format="none">binary-float</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">18</spanx></td><td><spanx style="verb"><xref
+	  target="decimal-float" format="none">decimal-float</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">19</spanx></td><td><spanx style="verb"><xref
+	  target="binary-fixed" format="none">binary-fixed</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">1A</spanx></td><td><spanx style="verb"><xref
+	  target="decimal-fixed" format="none">decimal-fixed</xref></spanx></td><td><spanx
+	  style="verb">EagerFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">1B</spanx></td><td><spanx style="verb"><xref target="prefix"
+	  format="none">prefix</xref></spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">1C</spanx></td><td><spanx style="verb"><xref target="postfix"
+	  format="none">postfix</xref></spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	  <tr><td><spanx style="verb">1D</spanx></td><td><spanx style="verb"><xref target="arity"
+	  format="none">arity</xref></spanx></td><td><spanx
+	  style="verb">LazyFunction</spanx></td></tr>
+	</tbody>
+      </table>
+
+      <section anchor="version" title="Version">
 	<t>
 	  <list style="hanging">
-	    <t hangText="marker"><spanx style="verb">0x10</spanx><br/>namespace mnemonic: <spanx
-	    style="verb">bulk</spanx></t>
+	    <t hangText="shape"><spanx style="verb">( version {major}:Nat {minor}:Nat )</spanx></t>
 	  </list>
 	</t>
-	<table>
-	  <thead><tr><th>name</th><th>mnemonic</th><th>type</th></tr></thead>
-	  <tbody>
-	    <tr><td><spanx style="verb">00</spanx></td><td><spanx style="verb"><xref
-	    target="version" format="none">version</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">01</spanx></td><td><spanx style="verb">import</spanx> (<xref
-	    target="import-ns" format="none">namespace</xref>, <xref target="import-pkg"
-	    format="none">package</xref>)</td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">02</spanx></td><td><spanx style="verb">namespace</spanx></td><td/></tr>
-	    <tr><td><spanx style="verb">03</spanx></td><td><spanx style="verb">package</spanx></td><td/></tr>
-	    <tr><td><spanx style="verb">04</spanx></td><td><spanx style="verb">define (<xref
-	    target="def-ns" format="none">namespace</xref>, <xref target="def-pkg"
-	    format="none">package</xref>, <xref target="def-name"
-	    format="none">name</xref>)</spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">05</spanx></td><td><spanx style="verb"><xref
-	    target="mnemonic" format="none">mnemonic</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">06</spanx></td><td><spanx style="verb"><xref
-	    target="explain" format="none">explain</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">07</spanx></td><td><spanx style="verb"><xref target="string"
-	    format="none">string</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">08</spanx></td><td><spanx style="verb"><xref
-	    target="iana-charset" format="none">iana-charset</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">09</spanx></td><td><spanx style="verb"><xref
-	    target="nested-bulk" format="none">bulk</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">0A</spanx></td><td><spanx style="verb"><xref target="blob"
-	    format="none">blob</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">0B</spanx></td><td><spanx style="verb"><xref target="concat"
-	    format="none">concat</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">0C</spanx></td><td><spanx style="verb"><xref
-	    target="indexed-bulk" format="none">indexed-bulk</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">0D</spanx></td><td><spanx style="verb"><xref
-	    target="indexed-array" format="none">indexed-array</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">0E</spanx></td><td><spanx style="verb"><xref target="booleans"
-	    format="none">true</xref></spanx></td><td><spanx style="verb">Boolean</spanx></td></tr>
-	    <tr><td><spanx style="verb">0F</spanx></td><td><spanx style="verb"><xref target="booleans"
-	    format="none">false</xref></spanx></td><td><spanx style="verb">Boolean</spanx></td></tr>
-	    <tr><td><spanx style="verb">10</spanx></td><td><spanx style="verb"><xref target="subst"
-	    format="none">subst</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">11</spanx></td><td><spanx style="verb"><xref target="arg"
-	    format="none">arg</xref></spanx></td><td/></tr>
-	    <tr><td><spanx style="verb">12</spanx></td><td><spanx style="verb"><xref target="rest"
-	    format="none">rest</xref></spanx></td><td/></tr>
-	    <tr><td><spanx style="verb">13</spanx></td><td><spanx style="verb"><xref target="with"
-	    format="none">with</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">14</spanx></td><td><spanx style="verb"><xref
-	    target="unsigned-int" format="none">unsigned-int</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">15</spanx></td><td><spanx style="verb"><xref
-	    target="signed-int" format="none">signed-int</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">16</spanx></td><td><spanx style="verb"><xref
-	    target="fraction" format="none">fraction</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">17</spanx></td><td><spanx style="verb"><xref
-	    target="binary-float" format="none">binary-float</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">18</spanx></td><td><spanx style="verb"><xref
-	    target="decimal-float" format="none">decimal-float</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">19</spanx></td><td><spanx style="verb"><xref
-	    target="binary-fixed" format="none">binary-fixed</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">1A</spanx></td><td><spanx style="verb"><xref
-	    target="decimal-fixed" format="none">decimal-fixed</xref></spanx></td><td><spanx style="verb">EagerFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">1B</spanx></td><td><spanx style="verb"><xref target="prefix"
-	    format="none">prefix</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">1C</spanx></td><td><spanx style="verb"><xref
-	    target="postfix" format="none">postfix</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	    <tr><td><spanx style="verb">1D</spanx></td><td><spanx style="verb"><xref target="arity"
-	    format="none">arity</xref></spanx></td><td><spanx style="verb">LazyFunction</spanx></td></tr>
-	  </tbody>
-	</table>
-
-	<section anchor="version" title="Version">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="shape"><spanx style="verb">( version {major}:Nat {minor}:Nat
-	      )</spanx></t>
-	    </list>
-	  </t>
-	  <t>
-	    When parsing a BULK stream, a processing application MUST determine explicitely the
-	    major and minor version of the BULK specification that the stream obeys. This
-	    information MAY be exchanged out-of-band, if BULK is used to exchange a number a very
-	    small messages, where repeated headers of 6 bytes might become too big an overhead. A
-	    processing application MUST NOT assume a default version.
-	  </t>
-	  <t>
-	    If the version is expressed within a BULK stream, this form MUST be the first in the
-	    stream. In any other place, this form evaluates to itself. This specification defines
-	    BULK 1.0. When writing a BULK stream, an application MUST encode <spanx
-	    style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the smallest
-	    byte sequence as described in <xref target="nat-enc"></xref>.
-	  </t>
-	  <t>
-	    An application writing a BULK stream to long-term storage (e.g. in a file or a database
-	    record) SHOULD include a <spanx style="verb">version</spanx> form.
-	  </t>
-	  <t>
-	    Two BULK versions with the same major version MUST share the same parsing rules and the
-	    same definitions of marker bytes. Changing the syntax or semantics of existing marker
-	    bytes and using marker bytes in the reserved interval warrants a new major
-	    version. Changing the syntax or semantics of existing standard names (meaning names in
-	    standard namespaces) also warrants a new major version.
-	  </t>
-	  <t>
-	    It is a parsing error when a processing application encounters a major version that it
-	    doesn't explicitly support.
-	  </t>
-	  <t>
-	    Adding standard names, or adding new syntactic uses of existing standard names that
-	    don't overlap with existing uses warrants a new minor version.
-	  </t>
-	  <t>
-	    If version A and version B of BULK have a different default profile, and the change of
-	    profile would only affect evaluation of BULK streams that use new standard names or new
-	    syntactic uses of existing standard names, then the profile difference warrants a
-	    difference of minor version between A and B. Otherwise, the profile change warrants a
-	    difference of major version between A and B.
-	  </t>
-	  <t>
-	    Overall, the goal is that if an application writes a BULK stream of version 1.2 that
-	    only contains syntactic and semantic elements from BULK 1.1, a processing application
-	    that only supports BULK 1.1 will be able to parse and evaluate that stream. The writing
-	    application doesn't need to know the features that are specific to BULK 1.0 and BULK
-	    1.1, because as soon as the processing application encounters an unknown standard name
-	    or an unknown syntactic use of a known standard name, it can guess that it cannot
-	    correctly evaluate the stream.
-	  </t>
-	  <t>
-	    For that reason, it is an evaluation error for a processing application when there is an
-	    unknown syntactic use of a standard name, in a BULK stream with a major version
-	    supported by the processing application but a minor version not supported.
-	  </t>
-	  <t>
-	    As far as BULK 1.0 is concerned, using <spanx style="verb">import</spanx>, <spanx
-	    style="verb">define</spanx>, <spanx style="verb">mnemonic</spanx>, <spanx
-	    style="verb">explain</spanx>, and <spanx style="verb">arity</spanx>, when none of their
-	    operands are forms with a standard name as operator, doesn't constitute an unknown
-	    syntactic use. This makes it possible to overload those names in ways that don't
-	    interfere with backwards-compatibility.
-	  </t>
-	</section>
+	<t>
+	  When parsing a BULK stream, a processing application MUST determine explicitely the major
+	  and minor version of the BULK specification that the stream obeys. This information MAY be
+	  exchanged out-of-band, if BULK is used to exchange a number a very small messages, where
+	  repeated headers of 6 bytes might become too big an overhead. A processing application
+	  MUST NOT assume a default version.
+	</t>
+	<t>
+	  If the version is expressed within a BULK stream, this form MUST be the first in the
+	  stream. In any other place, this form evaluates to itself. This specification defines BULK
+	  1.0. When writing a BULK stream, an application MUST encode <spanx
+	  style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the smallest byte
+	  sequence as described in <xref target="nat-enc"></xref>.
+	</t>
+	<t>
+	  An application writing a BULK stream to long-term storage (e.g. in a file or a database
+	  record) SHOULD include a <spanx style="verb">version</spanx> form.
+	</t>
+	<t>
+	  Two BULK versions with the same major version MUST share the same parsing rules and the
+	  same definitions of marker bytes. Changing the syntax or semantics of existing marker
+	  bytes and using marker bytes in the reserved interval warrants a new major
+	  version. Changing the syntax or semantics of existing standard names (meaning names in
+	  standard namespaces) also warrants a new major version.
+	</t>
+	<t>
+	  It is a parsing error when a processing application encounters a major version that it
+	  doesn't explicitly support.
+	</t>
+	<t>
+	  Adding standard names, or adding new syntactic uses of existing standard names that don't
+	  overlap with existing uses warrants a new minor version.
+	</t>
+	<t>
+	  If version A and version B of BULK have a different default profile, and the change of
+	  profile would only affect evaluation of BULK streams that use new standard names or new
+	  syntactic uses of existing standard names, then the profile difference warrants a
+	  difference of minor version between A and B. Otherwise, the profile change warrants a
+	  difference of major version between A and B.
+	</t>
+	<t>
+	  Overall, the goal is that if an application writes a BULK stream of version 1.2 that only
+	  contains syntactic and semantic elements from BULK 1.1, a processing application that only
+	  supports BULK 1.1 will be able to parse and evaluate that stream. The writing application
+	  doesn't need to know the features that are specific to BULK 1.0 and BULK 1.1, because as
+	  soon as the processing application encounters an unknown standard name or an unknown
+	  syntactic use of a known standard name, it can guess that it cannot correctly evaluate the
+	  stream.
+	</t>
+	<t>
+	  For that reason, it is an evaluation error for a processing application when there is an
+	  unknown syntactic use of a standard name, in a BULK stream with a major version supported
+	  by the processing application but a minor version not supported.
+	</t>
+	<t>
+	  As far as BULK 1.0 is concerned, using <spanx style="verb">import</spanx>, <spanx
+	  style="verb">define</spanx>, <spanx style="verb">mnemonic</spanx>, <spanx
+	  style="verb">explain</spanx>, and <spanx style="verb">arity</spanx>, when none of their
+	  operands are forms with a standard name as operator, doesn't constitute an unknown
+	  syntactic use. This makes it possible to overload those names in ways that don't interfere
+	  with backwards-compatibility.
+	</t>
+      </section>
 
       <section anchor="nss-pkgs" title="Namespaces and packages">
 	<section anchor="import-ns" title="Importing a namespace">
@@ -1469,216 +1497,216 @@
 	  </t>
 	</section>
 
-	  <section anchor="fraction" title="Fraction">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( fraction {num}:Expr {div}:Expr
-		)</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      The semantics of this form is the fraction with denominator <spanx
-	      style="verb">{num}</spanx> and divisor <spanx style="verb">{div}</spanx>.
-	    </t>
-	    <t>
-	      Type: <spanx style="verb">Number</spanx>.
-	    </t>
-	  </section>
-
-	  <section anchor="binary-float" title="Binary floating-point number">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( binary-float {bits}:Expr )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      The semantics of this form is the floating-point number expressed in IEEE 754-2008
-	      binary interchange format by the bits contained in <spanx
-	      style="verb">{bits}</spanx>. <spanx style="verb">{bits}</spanx> can be of size 16, 32,
-	      64, 128 or any bigger multiple of 32 bits, as per IEEE 754-2008 rules.
-	    </t>
-	    <t>
-	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>, <spanx
-	      style="verb">Float</spanx>.
-	    </t>
-	  </section>
-
-	  <section anchor="decimal-float" title="Decimal floating-point number">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( decimal-float {bits}:Expr )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      The semantics of this form is the floating-point number expressed in IEEE 754-2008
-	      decimal interchange format by the bits contained in <spanx
-	      style="verb">{bits}</spanx>. <spanx style="verb">{bits}</spanx> can be of size 32, 64,
-	      128 or any bigger multiple of 32 bits, as per IEEE 754-2008 rules.
-	    </t>
-	    <t>
-	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>, <spanx
-	      style="verb">Float</spanx>.
-	    </t>
-	  </section>
-
-	  <section anchor="binary-fixed" title="Binary fixed point number">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( binary-fixed {point}:Expr {bits}:Expr
-		)</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      The semantics of this form is a fixed point binary number. <spanx
-	      style="verb">{bits}</spanx> contains an integer in two's complement. That integer
-	      divided by 2^<spanx style="verb">{point}</spanx> is the value of this form. For
-	      example, <spanx style="verb">( binary-fixed 2 15 )</spanx> has value <spanx
-	      style="verb">3.75<sub>10</sub></spanx> (<spanx
-	      style="verb">11.11<sub>2</sub></spanx>).
-	    </t>
-	    <t>
-	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>.
-	    </t>
-	  </section>
-
-	  <section anchor="decimal-fixed" title="Decimal fixed point number">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( decimal-fixed {point}:Expr {bits}:Expr
-		)</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      The semantics of this form is a fixed point decimal number. <spanx
-	      style="verb">{bits}</spanx> contains an integer in two's complement. That integer
-	      divided by 10^<spanx style="verb">{point}</spanx> is the value of this form. For
-	      example, <spanx style="verb">( decimal-fixed 2 123 )</spanx> has value <spanx
-	      style="verb">1.23</spanx>.
-	    </t>
-	    <t>
-	      Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>.
-	    </t>
-	  </section>
+	<section anchor="fraction" title="Fraction">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="shape"><spanx style="verb">( fraction {num}:Expr {div}:Expr )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    The semantics of this form is the fraction with denominator <spanx
+	    style="verb">{num}</spanx> and divisor <spanx style="verb">{div}</spanx>.
+	  </t>
+	  <t>
+	    Type: <spanx style="verb">Number</spanx>.
+	  </t>
 	</section>
 
-	<section title="Bytecodes">
+	<section anchor="binary-float" title="Binary floating-point number">
 	  <t>
-	    This specification and other official BULK specifications take the option to use as
-	    their basic building block a form with a discriminating reference as first element
-	    (basically, they are a binary representation of an abstract syntax tree). As noted
-	    previously, this means that most representations weigh 4 bytes plus their actual
-	    content, which will in turn have some overhead because of one or several marker bytes.
+	    <list style="hanging">
+	      <t hangText="shape"><spanx style="verb">( binary-float {bits}:Expr )</spanx></t>
+	    </list>
 	  </t>
 	  <t>
-	    But when there is a special need for compactness, BULK makes it possible to design
-	    protocols and formats with different trade-offs, while retaining its property of being
-	    parseable by processing applications not knowing the protocol in its entirety.
+	    The semantics of this form is the floating-point number expressed in IEEE 754-2008
+	    binary interchange format by the bits contained in <spanx
+	    style="verb">{bits}</spanx>. <spanx style="verb">{bits}</spanx> can be of size 16, 32,
+	    64, 128 or any bigger multiple of 32 bits, as per IEEE 754-2008 rules.
 	  </t>
 	  <t>
-	    On one end of the spectrum, a format might choose to use an array to encapsulate an ad
-	    hoc binary format. An extreme use of this scheme would be to use BULK just to make
-	    explicit the binary format used and for nothing else. With a known <xref
-	    target="profiles">profile</xref> (for example with a file extension and/or media type
-	    for such explicitly typed BLOBs), such a BULK stream can consist solely of the version
-	    form, a reference that describes the binary format and an array, which would amount to
-	    an overhead between 11 bytes and 20 bytes depending on the size of the content (11, 13,
-	    14, 16 and 20 bytes for contents of no more than 63B, 255B, 65kB, 4GB and 18EB
-	    respectively). Without a profile, with the namespaces associations in a package, the
-	    minimum overhead is only between 32 and 41 bytes (the difference is a single <spanx
-	    style="verb">import</spanx> form, assuming a digest of 64 bits).
+	    Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>, <spanx
+	    style="verb">Float</spanx>.
 	  </t>
-	  <t>
-	    Still, even this extreme in the design space retains the ability to insert expressions
-	    in the BULK stream, whatever their type. Thus metadata can be added about data that is
-	    represented in a format that doesn't allow for metadata or that allows only for limited
-	    metadata.
-	  </t>
-	  <t>
-	    In-between these two extremes, several options are available to produce a format that
-	    leverages the BULK parser a lot more while being more compact than a basic BULK
-	    format. The following forms provide a standard way to create such formats, called BULK
-	    bytecodes.
-	  </t>
-	  <t>
-	    A BULK bytecode is a flat sequence of expressions. The evaluation of a bytecode form
-	    transforms that sequence to an abstract syntax tree of its contents (and then the
-	    resulting expression can be evaluated with the normal BULK evaluation rules). The
-	    expressions of the bytecode are divided among operators and operands. Operators are
-	    references that will end up as the first expression of a form in the abstract syntax
-	    tree. Operands are all other expressions. Prefix bytecodes are those where operators
-	    come before their operands, postfix bytecodes are those where operators come after
-	    their operands. In the following forms, operators MUST be references.
-	  </t>
-	  <t>
-	    When evaluating a bytecode, it is an evaluation error when the processing application
-	    encounters a reference for which it cannot determine if it is an operator or its arity
-	    (the number of operands it will have). An expression that is not a reference is always
-	    an operand.
-	  </t>
+	</section>
 
-	  <section anchor="prefix" title="Prefix bytecode">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( prefix {bytecode} )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This is a prefix bytecode form. The bytecode to be transformed is the sequence of
-	      expressions in <spanx style="verb">{bytecode}</spanx>.
-	    </t>
-	    <t>
-	      To transform a prefix bytecode, a processing application creates an alternate
-	      context. If the first expression of the bytecode is an operand, it is removed from the
-	      beginning of the bytecode and appended at the end of the alternate context. If the
-	      first expression of the bytecode is an operator, it is removed from the beginning of
-	      the bytecode and a list is created with the operator as the first expression, then as
-	      many next expressions as its arity are removed from the beginning of the bytecode and
-	      appended at the end of this list. Then that resulting list is appended at the end of
-	      the alternate context. The transformation continues until the bytecode is empty, in
-	      which case the alternate context replaces the bytecode form and the transformation is
-	      complete. The resulting form can then be evaluated in turn.
-	    </t>
-	    <t>Example: the evaluation of</t>
-	    <t><figure><artwork>( define ( arity prefix )
+	<section anchor="decimal-float" title="Decimal floating-point number">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="shape"><spanx style="verb">( decimal-float {bits}:Expr )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    The semantics of this form is the floating-point number expressed in IEEE 754-2008
+	    decimal interchange format by the bits contained in <spanx
+	    style="verb">{bits}</spanx>. <spanx style="verb">{bits}</spanx> can be of size 32, 64,
+	    128 or any bigger multiple of 32 bits, as per IEEE 754-2008 rules.
+	  </t>
+	  <t>
+	    Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>, <spanx
+	    style="verb">Float</spanx>.
+	  </t>
+	</section>
+
+	<section anchor="binary-fixed" title="Binary fixed point number">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="shape"><spanx style="verb">( binary-fixed {point}:Expr {bits}:Expr
+	      )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    The semantics of this form is a fixed point binary number. <spanx
+	    style="verb">{bits}</spanx> contains an integer in two's complement. That integer
+	    divided by 2^<spanx style="verb">{point}</spanx> is the value of this form. For example,
+	    <spanx style="verb">( binary-fixed 2 15 )</spanx> has value <spanx
+	    style="verb">3.75<sub>10</sub></spanx> (<spanx style="verb">11.11<sub>2</sub></spanx>).
+	  </t>
+	  <t>
+	    Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>.
+	  </t>
+	</section>
+
+	<section anchor="decimal-fixed" title="Decimal fixed point number">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="shape"><spanx style="verb">( decimal-fixed {point}:Expr {bits}:Expr
+	      )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    The semantics of this form is a fixed point decimal number. <spanx
+	    style="verb">{bits}</spanx> contains an integer in two's complement. That integer
+	    divided by 10^<spanx style="verb">{point}</spanx> is the value of this form. For
+	    example, <spanx style="verb">( decimal-fixed 2 123 )</spanx> has value <spanx
+	    style="verb">1.23</spanx>.
+	  </t>
+	  <t>
+	    Types: <spanx style="verb">Number</spanx>, <spanx style="verb">Real</spanx>.
+	  </t>
+	</section>
+      </section>
+
+      <section title="Bytecodes">
+	<t>
+	  This specification and other official BULK specifications take the option to use as their
+	  basic building block a form with a discriminating reference as first element (basically,
+	  they are a binary representation of an abstract syntax tree). As noted previously, this
+	  means that most representations weigh 4 bytes plus their actual content, which will in
+	  turn have some overhead because of one or several marker bytes.
+	</t>
+	<t>
+	  But when there is a special need for compactness, BULK makes it possible to design
+	  protocols and formats with different trade-offs, while retaining its property of being
+	  parseable by processing applications not knowing the protocol in its entirety.
+	</t>
+	<t>
+	  On one end of the spectrum, a format might choose to use an array to encapsulate an ad hoc
+	  binary format. An extreme use of this scheme would be to use BULK just to make explicit
+	  the binary format used and for nothing else. With a known <xref
+	  target="profiles">profile</xref> (for example with a file extension and/or media type for
+	  such explicitly typed BLOBs), such a BULK stream can consist solely of the version form, a
+	  reference that describes the binary format and an array, which would amount to an overhead
+	  between 11 bytes and 20 bytes depending on the size of the content (11, 13, 14, 16 and 20
+	  bytes for contents of no more than 63B, 255B, 65kB, 4GB and 18EB respectively). Without a
+	  profile, with the namespaces associations in a package, the minimum overhead is only
+	  between 32 and 41 bytes (the difference is a single <spanx style="verb">import</spanx>
+	  form, assuming a digest of 64 bits).
+	</t>
+	<t>
+	  Still, even this extreme in the design space retains the ability to insert expressions in
+	  the BULK stream, whatever their type. Thus metadata can be added about data that is
+	  represented in a format that doesn't allow for metadata or that allows only for limited
+	  metadata.
+	</t>
+	<t>
+	  In-between these two extremes, several options are available to produce a format that
+	  leverages the BULK parser a lot more while being more compact than a basic BULK
+	  format. The following forms provide a standard way to create such formats, called BULK
+	  bytecodes.
+	</t>
+	<t>
+	  A BULK bytecode is a flat sequence of expressions. The evaluation of a bytecode form
+	  transforms that sequence to an abstract syntax tree of its contents (and then the
+	  resulting expression can be evaluated with the normal BULK evaluation rules). The
+	  expressions of the bytecode are divided among operators and operands. Operators are
+	  references that will end up as the first expression of a form in the abstract syntax
+	  tree. Operands are all other expressions. Prefix bytecodes are those where operators come
+	  before their operands, postfix bytecodes are those where operators come after their
+	  operands. In the following forms, operators MUST be references.
+	</t>
+	<t>
+	  When evaluating a bytecode, it is an evaluation error when the processing application
+	  encounters a reference for which it cannot determine if it is an operator or its arity
+	  (the number of operands it will have). An expression that is not a reference is always an
+	  operand.
+	</t>
+
+	<section anchor="prefix" title="Prefix bytecode">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="shape"><spanx style="verb">( prefix {bytecode} )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This is a prefix bytecode form. The bytecode to be transformed is the sequence of
+	    expressions in <spanx style="verb">{bytecode}</spanx>.
+	  </t>
+	  <t>
+	    To transform a prefix bytecode, a processing application creates an alternate
+	    context. If the first expression of the bytecode is an operand, it is removed from the
+	    beginning of the bytecode and appended at the end of the alternate context. If the first
+	    expression of the bytecode is an operator, it is removed from the beginning of the
+	    bytecode and a list is created with the operator as the first expression, then as many
+	    next expressions as its arity are removed from the beginning of the bytecode and
+	    appended at the end of this list. Then that resulting list is appended at the end of the
+	    alternate context. The transformation continues until the bytecode is empty, in which
+	    case the alternate context replaces the bytecode form and the transformation is
+	    complete. The resulting form can then be evaluated in turn.
+	  </t>
+	  <t>Example: the evaluation of</t>
+	  <t><figure><artwork>( define ( arity prefix )
   ( nil go:game ) ( 2 go:black ) )
 ( prefix go:game go:black 1 2 go:black 3 4 go:black 5 6 )
-	    </artwork></figure></t>
-	    <t>is</t>
-	    <t><figure><artwork>( go:game
+	  </artwork></figure></t>
+	  <t>is</t>
+	  <t><figure><artwork>( go:game
  ( go:black 1 2 )
  ( go:black 3 4 )
  ( go:black 5 6 ) )
-	    </artwork></figure></t>
-            <t>
-	      It is an evaluation error when there are less expressions remaining in the bytecode
-	      than the arity of the current operator.
-	    </t>
-	  </section>
-	  <section anchor="postfix" title="Postfix bytecode">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( postfix {bytecode} )</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This is a postfix bytecode form. The bytecode to be transformed is the sequence of
-	      expressions in <spanx style="verb">{bytecode}</spanx>.
-	    </t>
-	    <t>
-	      To transform a postfix bytecode, a processing application creates a data stack. If the
-	      first expression of the bytecode is an operand, it is removed from the beginning of
-	      the bytecode and pushed on top of the stack. If the first expression of the bytecode
-	      is an operator, it is removed from the beginning of the bytecode and a list is created
-	      with the operator as the first expression, then as many next expressions as its arity
-	      are popped from the stack and appended at the end of this list (with the top of the
-	      stack as the last element). Then that resulting list is pushed on top of the
-	      stack. The transformation continues until the bytecode is empty, in which case the
-	      list of the elements on the stack (with the top of the stack as the last element)
-	      replaces the bytecode form and the transformation is complete. The resulting form can
-	      then be evaluated in turn.
-	    </t>
-	    <t> Example: the evaluation of </t>
-	    <t><figure><artwork>( define ( arity postfix )
+	  </artwork></figure></t>
+          <t>
+	    It is an evaluation error when there are less expressions remaining in the bytecode than
+	    the arity of the current operator.
+	  </t>
+	</section>
+	<section anchor="postfix" title="Postfix bytecode">
+	  <t>
+	    <list style="hanging">
+	      <t hangText="shape"><spanx style="verb">( postfix {bytecode} )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This is a postfix bytecode form. The bytecode to be transformed is the sequence of
+	    expressions in <spanx style="verb">{bytecode}</spanx>.
+	  </t>
+	  <t>
+	    To transform a postfix bytecode, a processing application creates a data stack. If the
+	    first expression of the bytecode is an operand, it is removed from the beginning of the
+	    bytecode and pushed on top of the stack. If the first expression of the bytecode is an
+	    operator, it is removed from the beginning of the bytecode and a list is created with
+	    the operator as the first expression, then as many next expressions as its arity are
+	    popped from the stack and appended at the end of this list (with the top of the stack as
+	    the last element). Then that resulting list is pushed on top of the stack. The
+	    transformation continues until the bytecode is empty, in which case the list of the
+	    elements on the stack (with the top of the stack as the last element) replaces the
+	    bytecode form and the transformation is complete. The resulting form can then be
+	    evaluated in turn.
+	  </t>
+	  <t>
+	    Example: the evaluation of
+	  </t>
+	  <t><figure><artwork>( define ( arity postfix )
  ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
 ( postfix
   go:game
@@ -1688,148 +1716,146 @@
   go:alternative
   2 3 go:black
   4 5 go:white )</artwork></figure></t>
-            <t>is</t>
-	    <t><figure><artwork>( go:game
+          <t>is</t>
+	  <t><figure><artwork>( go:game
   ( go:black 1 2 )
   ( go:alternative
     ( go:comment "white tried an unorthodox opening" ( go:white 3 4 ) )
     ( go:comment "a more classical opening would be" ( go:white 8 9 ) ) )
   ( go:black 2 3 )
   ( go:white 4 5 ) )</artwork></figure>
-	    </t>
-            <t>
-	      The obvious advantage of postfix bytecode is that it makes it possible to compact
-	      nested forms when they have a known arity. When a reference in a vocabulary can be
-	      used in a form containing a variable number of expressions, if some arity is used
-	      frequently enough, an application can define a specific form for it. The trade-offs
-	      for this are explained in <xref target="arityForm"/>
-	    </t>
-            <t>
-	      It is an evaluation error when there are less expressions remaining on the data stack
-	      than the arity of the current operator.
-	    </t>
-	  </section>
-	  <section anchor="arity" title="Arity definition">
-	    <t>
-	      <list style="hanging">
-		<t hangText="shape"><spanx style="verb">( define ( arity {contexts} ) {arities}
-		)</spanx></t>
-	      </list>
-	    </t>
-	    <t>
-	      This form defines the arity of references in the context of bytecodes.
-	    </t>
-	    <t>
-	      <spanx style="verb">{contexts}</spanx> can contain <spanx
-	      style="verb">prefix</spanx>, <spanx style="verb">postfix</spanx>, or any other
-	      reference, to specifiy in the context of which kind of bytecode the arities are
-	      modified. If <spanx style="verb">{contexts}</spanx> is empty, the arities are
-	      modified in the context of all kinds of bytecodes.
-	    </t>
-	    <t>
-	      <spanx style="verb">{arities}</spanx> is a sequence of expressions that each can be
-	      shaped as such:
-	      <list style="symbols">
-		<t><spanx style="verb">nil</spanx>: meaning all known arities should be
-		forgotten</t>
-		<t>
-		  <spanx style="verb">( {kind}:Expr {target} )</spanx>:
-		  <list style="symbols">
-		    <t>
-		      if <spanx style="verb">{kind}</spanx> is <spanx style="verb">nil</spanx>, it
-		      sets all references designated by <spanx style="verb">{target}</spanx> as
-		      operands
-		    </t>
-		    <t>
-		      if <spanx style="verb">{kind}</spanx> is typed <spanx
-		      style="verb">Nat</spanx>, it sets all references designated by <spanx
-		      style="verb">{target}</spanx> as operators of arity <spanx
-		      style="verb">{kind}</spanx>
-		    </t>
-		    <t>
-		      if <spanx style="verb">{target}</spanx> is <spanx style="verb">nil</spanx>,
-		      it designates all references with unknown arity
-		    </t>
-		    <t>
-		      if <spanx style="verb">{target}</spanx> is a sequence of references, it
-		      designates each of those
-		    </t>
-		  </list>
-		</t>
-		
-	      </list>
-	    </t>
-	  </section>
-	</section>
-      </section>
-
-      <section title="Optimizing compactness">
-	<section anchor="packing" title="Packing">
+	  </t>
           <t>
-	    If the overhead of several marker bytes in some operands is too much, more compactness
-	    can be achieved by packing together small operands. For example, instead of an operator
-	    with two integers as its operands, one could specify an operator to take a single array
-	    as operand and extract the integers from it. When the processing application does this
-	    extraction, the format retains the ability to operate on many sizes of integers, because
-	    the processing application can still deduce the size of the integers by dividing the
-	    size of the array by two. This can be used outside or inside of bytecodes (to stack the
-	    compacting effects of both).
+	    The obvious advantage of postfix bytecode is that it makes it possible to compact nested
+	    forms when they have a known arity. When a reference in a vocabulary can be used in a
+	    form containing a variable number of expressions, if some arity is used frequently
+	    enough, an application can define a specific form for it. The trade-offs for this are
+	    explained in <xref target="arityForm"/>
 	  </t>
-	  <t>
-	    For example, a BULK format representing player moves with a pair of coordinates on a
-	    large board might represent a single move with the following shapes:
+          <t>
+	    It is an evaluation error when there are less expressions remaining on the data stack
+	    than the arity of the current operator.
 	  </t>
+	</section>
+	<section anchor="arity" title="Arity definition">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="basic (8 bytes)"><spanx style="verb">( game:move/2 #[1] 0x41 #[1] 0x5A
+	      <t hangText="shape"><spanx style="verb">( define ( arity {contexts} ) {arities}
 	      )</spanx></t>
-	      <t hangText="packed basic (7 bytes)"><spanx style="verb">( game:move/1 #[2] 0x41 0x5A
-	      )</spanx></t>
-	      <t hangText="bytecode (6 bytes)"><spanx style="verb">game:move/2 #[1] 0x41 #[1]
-	      0x5A</spanx></t>
-	      <t hangText="packed bytecode (5 bytes)"><spanx style="verb">game:move/1 #[2] 0x41
-	      0x5A</spanx></t>
 	    </list>
 	  </t>
 	  <t>
-	    Packing can also be done without adding its burden on the logic of the processing
-	    application, by using evaluation to transform packed forms into simpler forms (but they
-	    need to be created separately for each size of operands). For example, the following:
+	    This form defines the arity of references in the context of bytecodes.
 	  </t>
-	  <t><figure><artwork>( define game:move/1-16
+	  <t>
+	    <spanx style="verb">{contexts}</spanx> can contain <spanx style="verb">prefix</spanx>,
+	    <spanx style="verb">postfix</spanx>, or any other reference, to specifiy in the context
+	    of which kind of bytecode the arities are modified. If <spanx
+	    style="verb">{contexts}</spanx> is empty, the arities are modified in the context of all
+	    kinds of bytecodes.
+	  </t>
+	  <t>
+	    <spanx style="verb">{arities}</spanx> is a sequence of expressions that each can be
+	    shaped as such:
+	    <list style="symbols">
+	      <t><spanx style="verb">nil</spanx>: meaning all known arities should be forgotten</t>
+	      <t>
+		<spanx style="verb">( {kind}:Expr {target} )</spanx>:
+		<list style="symbols">
+		  <t>
+		    if <spanx style="verb">{kind}</spanx> is <spanx style="verb">nil</spanx>, it
+		    sets all references designated by <spanx style="verb">{target}</spanx> as
+		    operands
+		  </t>
+		  <t>
+		    if <spanx style="verb">{kind}</spanx> is typed <spanx style="verb">Nat</spanx>,
+		    it sets all references designated by <spanx style="verb">{target}</spanx> as
+		    operators of arity <spanx style="verb">{kind}</spanx>
+		  </t>
+		  <t>
+		    if <spanx style="verb">{target}</spanx> is <spanx style="verb">nil</spanx>, it
+		    designates all references with unknown arity
+		  </t>
+		  <t>
+		    if <spanx style="verb">{target}</spanx> is a sequence of references, it
+		    designates each of those
+		  </t>
+		</list>
+	      </t>
+		
+	    </list>
+	  </t>
+	</section>
+      </section>
+    </section>
+
+    <section title="Optimizing compactness">
+      <section anchor="packing" title="Packing">
+        <t>
+	  If the overhead of several marker bytes in some operands is too much, more compactness can
+	  be achieved by packing together small operands. For example, instead of an operator with
+	  two integers as its operands, one could specify an operator to take a single array as
+	  operand and extract the integers from it. When the processing application does this
+	  extraction, the format retains the ability to operate on many sizes of integers, because
+	  the processing application can still deduce the size of the integers by dividing the size
+	  of the array by two. This can be used outside or inside of bytecodes (to stack the
+	  compacting effects of both).
+	</t>
+	<t>
+	  For example, a BULK format representing player moves with a pair of coordinates on a large
+	  board might represent a single move with the following shapes:
+	</t>
+	<t>
+	  <list style="hanging">
+	    <t hangText="basic (8 bytes)"><spanx style="verb">( game:move/2 #[1] 0x41 #[1] 0x5A
+	    )</spanx></t>
+	    <t hangText="packed basic (7 bytes)"><spanx style="verb">( game:move/1 #[2] 0x41 0x5A
+	    )</spanx></t>
+	    <t hangText="bytecode (6 bytes)"><spanx style="verb">game:move/2 #[1] 0x41 #[1]
+	    0x5A</spanx></t>
+	    <t hangText="packed bytecode (5 bytes)"><spanx style="verb">game:move/1 #[2] 0x41
+	    0x5A</spanx></t>
+	  </list>
+	</t>
+	<t>
+	  Packing can also be done without adding its burden on the logic of the processing
+	  application, by using evaluation to transform packed forms into simpler forms (but they
+	  need to be created separately for each size of operands). For example, the following:
+	</t>
+	<t><figure><artwork>( define game:move/1-16
   ( subst ( game:move/2 ( indexed-array ( arg 0 ) 0 1 )
                          ( indexed-array ( arg 0 ) 1 1 ) ) ) )
 ( game:move/1-16 #[2] 0x415A )
 </artwork></figure></t> 
-	  <t>Would be evaluated into:</t>
-	  <t><figure><artwork>( game:move/2 #[1] 0x41 #[1] 0x5A )</artwork></figure></t>
-	  <t>
-	    More complex packing can be encoded as well. For example, this would be a form that
-	    packs two 16-bits unsigned integers, one 32-bits signed integer, one reference, and one
-	    variable-length string:
-	  </t>
-	  <t><figure><artwork>( define foo:pack-224-ref-str
+	<t>Would be evaluated into:</t>
+	<t><figure><artwork>( game:move/2 #[1] 0x41 #[1] 0x5A )</artwork></figure></t>
+	<t>
+	  More complex packing can be encoded as well. For example, this would be a form that packs
+	  two 16-bits unsigned integers, one 32-bits signed integer, one reference, and one
+	  variable-length string:
+	</t>
+	<t><figure><artwork>( define foo:pack-224-ref-str
   ( subst ( foo:bar ( indexed-array ( arg 0 ) 0 2 )
                     ( indexed-array ( arg 0 ) 2 2 )
                     ( signed-int ( indexed-array ( arg 0 ) 4 4 ) )
                     ( indexed-bulk ( arg 0 ) 8 )
                     ( indexed-array ( arg 0 ) 10 ) ) )</artwork></figure></t>
-	  <t>
-	    In essence, packing makes it possible to embed simple ad hoc binary formats described
-	    within the BULK framework.
-	  </t>
-	</section>
-	<section title="Mixing literals">
-	  <t>
-	    The transformation defined for the bytecode forms makes it possible to mix literal
-	    expressions and operations represented by a sequence of operators and operands. A
-	    typical example would be that instead of explicitly encoding which player is playing in
-	    turn, to only encode the move and let the player information be implicit, when the order
-	    of players is dictated by the game logic. In the previous go example, for instance, one
-	    might represent each alternating move by the two players as two integers, lowering the
-	    weight of each normal move to 2 bytes as coordinates are below 64:
-	  </t>
-	  <t><figure><artwork>( define ( arity postfix )
+	<t>
+	  In essence, packing makes it possible to embed simple ad hoc binary formats described
+	  within the BULK framework.
+	</t>
+      </section>
+      <section title="Mixing literals">
+	<t>
+	  The transformation defined for the bytecode forms makes it possible to mix literal
+	  expressions and operations represented by a sequence of operators and operands. A typical
+	  example would be that instead of explicitly encoding which player is playing in turn, to
+	  only encode the move and let the player information be implicit, when the order of players
+	  is dictated by the game logic. In the previous go example, for instance, one might
+	  represent each alternating move by the two players as two integers, lowering the weight of
+	  each normal move to 2 bytes as coordinates are below 64:
+	</t>
+	<t><figure><artwork>( define ( arity postfix )
  ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
 ( postfix
   ( ( nil go:game ) ( 2 go:white go:comment go:alternative ) )
@@ -1840,62 +1866,62 @@
   go:alternative
   2 3
   4 5 )</artwork></figure></t> 
-          <t>
-	    The difference between all these schemes and an array containing fixed-size elements is
-	    that you keep the ability to insert other forms, like here to represent comments on the
-	    game or variants.
-	  </t>
-	</section>
-	<section title="Trade-offs">
-	  <t>
-	    The most visible cost of the bytecode format is that if it contains operators whose
-	    arity is unknown to a processing application, the whole list after the first occurrence
-	    of them is unreadable to that processing application, whereas in the basic format, the
-	    processing application can still process all the forms it understands, and that requires
-	    no anticipation by the application creating the BULK stream.
-	  </t>
-	  <t>
-	    The only case where operators could have an unknown arity is when the application
-	    writing the stream didn't include the arities of every operator used in the stream to
-	    avoid the redundancy with their previous definition (typically in the definition of
-	    their respective namespaces). That redundancy would be offset by the space reduction of
-	    postfix bytecode for streams containing a few dozens forms. At that point, with all
-	    arities explicit, with packing and with literals for the most used forms, postfix
-	    bytecode gets on the Pareto front for size and generality, retaining the full generality
-	    of BULK while saving a lot of space.
-	  </t>
-	  <t>
-	    It is RECOMMENDED that whenever explicit arities would be a small fraction of the total
-	    stream size, they all ge given. A processing application MAY choose to never include
-	    explicit arities for the names of the main namespace of the format, if that namespace's
-	    definition includes arities, when processing the stream without knowledge of that
-	    definition wouldn't make sense.
-	  </t>
-	  <t>
-	    But another cost of the bytecode format is the loss of resilience. If a BULK stream ends
-	    up with errors in the content, whether during creation or transit, but those errors
-	    don't affect the syntactic structure of the stream, then those errors will only prevent
-	    processing the form they are in. If errors occur within a metadata form, the data is
-	    still readable. If errors occur within one entry in an archive, other entries are still
-	    readable. But a far wider class or errors will make a bytecode impossible to evaluate,
-	    and the blast radius is everything after the error.
-	  </t>
-	  <t>
-	    When a protocol needs the exchange of messages where every byte spared counts and there
-	    is no sense in trying to recover a partial message after corruption, then using a packed
-	    bytecode is probably an excellent solution. When writing large quantities of small data
-	    elements to long-term storage, when overhead adds up significantly, it is RECOMMENDED to
-	    use a mechanism to limit the blast radius of possible data corruption.
-	  </t>
-	  <t>
-	    There are several possible solutions to limit where bytecode errors propagage: one is
-	    chunking the bytecode into several bytecode forms, another is inserting at regular
-	    intervals a beacon expression that can never be an operand, and that can "reset" the
-	    bytecode transformation process that had been corrupted before. The former is simpler
-	    but the latter might be better suited when data is streamed.
-	  </t>
-	</section>
+        <t>
+	  The difference between all these schemes and an array containing fixed-size elements is
+	  that you keep the ability to insert other forms, like here to represent comments on the
+	  game or variants.
+	</t>
       </section>
+      <section title="Trade-offs">
+	<t>
+	  The most visible cost of the bytecode format is that if it contains operators whose arity
+	  is unknown to a processing application, the whole list after the first occurrence of them
+	  is unreadable to that processing application, whereas in the basic format, the processing
+	  application can still process all the forms it understands, and that requires no
+	  anticipation by the application creating the BULK stream.
+	</t>
+	<t>
+	  The only case where operators could have an unknown arity is when the application writing
+	  the stream didn't include the arities of every operator used in the stream to avoid the
+	  redundancy with their previous definition (typically in the definition of their respective
+	  namespaces). That redundancy would be offset by the space reduction of postfix bytecode
+	  for streams containing a few dozens forms. At that point, with all arities explicit, with
+	  packing and with literals for the most used forms, postfix bytecode gets on the Pareto
+	  front for size and generality, retaining the full generality of BULK while saving a lot of
+	  space.
+	</t>
+	<t>
+	  It is RECOMMENDED that whenever explicit arities would be a small fraction of the total
+	  stream size, they all ge given. A processing application MAY choose to never include
+	  explicit arities for the names of the main namespace of the format, if that namespace's
+	  definition includes arities, when processing the stream without knowledge of that
+	  definition wouldn't make sense.
+	</t>
+	<t>
+	  But another cost of the bytecode format is the loss of resilience. If a BULK stream ends
+	  up with errors in the content, whether during creation or transit, but those errors don't
+	  affect the syntactic structure of the stream, then those errors will only prevent
+	  processing the form they are in. If errors occur within a metadata form, the data is still
+	  readable. If errors occur within one entry in an archive, other entries are still
+	  readable. But a far wider class or errors will make a bytecode impossible to evaluate, and
+	  the blast radius is everything after the error.
+	</t>
+	<t>
+	  When a protocol needs the exchange of messages where every byte spared counts and there is
+	  no sense in trying to recover a partial message after corruption, then using a packed
+	  bytecode is probably an excellent solution. When writing large quantities of small data
+	  elements to long-term storage, when overhead adds up significantly, it is RECOMMENDED to
+	  use a mechanism to limit the blast radius of possible data corruption.
+	</t>
+	<t>
+	  There are several possible solutions to limit where bytecode errors propagage: one is
+	  chunking the bytecode into several bytecode forms, another is inserting at regular
+	  intervals a beacon expression that can never be an operand, and that can "reset" the
+	  bytecode transformation process that had been corrupted before. The former is simpler but
+	  the latter might be better suited when data is streamed.
+	</t>
+      </section>
+    </section>
 
 
     <section anchor="profiles" title="Profiles">
@@ -1924,8 +1950,8 @@
 	  protocol dictates the profile.
 	</t>
 	<t>
-	  In particular, long-term storage of a BULK stream SHOULD preserve profile information,
-	  for example with a media type that dictates the profile.
+	  In particular, long-term storage of a BULK stream SHOULD preserve profile information, for
+	  example with a media type that dictates the profile.
 	</t>
 	<t>
 	  Otherwise, an application writing a BULK stream in a long-term storage SHOULD include the
@@ -1936,8 +1962,8 @@
 
       <section title="Standard profile">
 	<t>
-	  This specification defines the default profile that a processing application MUST use
-	  when it is not using a specific profile:
+	  This specification defines the default profile that a processing application MUST use when
+	  it is not using a specific profile:
 	</t>
 	<t>
 	  <spanx style="verb">( define string ( iana-charset 106 ) )</spanx>
@@ -1968,8 +1994,8 @@
     <section title="Streaming">
       <t>
 	The parsing and evaluation algorithms allow for reading a BULK stream while it has not been
-      completely received by the processing application. Once the parser reaches the dispatch stage,
-      the fully parsed expression can be evaluated if evaluation is enabled.
+	completely received by the processing application. Once the parser reaches the dispatch
+	stage, the fully parsed expression can be evaluated if evaluation is enabled.
       </t>
       <t>
 	This makes BULK usable for streaming data, including in the case of a communication protocol
