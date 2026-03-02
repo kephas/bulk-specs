@@ -421,11 +421,11 @@
 	      within a BULK stream without modification.
 	    </t>
 	    <t>
-	      A BULK format could specify in its syntax the place for an expression holding
-	      metadata. Whether the specification provides its own metadata forms or not, an
-	      application could use a BULK serialization for MARC, TEI Header, XML or RDF for this
-	      metadata expression. The vocabulary selected would be univocally expressed by the
-	      namespace and every vocabulary would be parsed by the same mechanisms.
+	      A BULK format could specify in its syntax the place for a metadata expression. Whether
+	      the specification provides its own metadata forms or not, an application could use a
+	      BULK serialization for MARC, TEI Header, XML or RDF for this metadata expression. The
+	      vocabulary selected would be univocally expressed by the namespace and every
+	      vocabulary would be parsed by the same mechanisms.
 	    </t>
 	    <t>
 	      Whenever a content must be stored as-is instead of serialized, or a highly-optimized
@@ -519,7 +519,7 @@
 	some expressions in a BULK stream may have the semantics of a transformation of the abstract
 	yield. A processing application MAY thus not produce or retain the concrete yield but the
 	result of its transformation. This specification deals mainly with the byte sequence and the
-	abstract yield and occasionnally provide guidelines about the concrete yield. Of course, a
+	abstract yield and occasionnally provides guidelines about the concrete yield. Of course, a
 	processing application MAY not produce any concrete yield at all but produce various data
 	structures and side effects from parsing the BULK stream (for example, an event sourced
 	application may read its event log from a BULK stream and build its application state by
