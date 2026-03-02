@@ -1,0 +1,44 @@
+<referencegroup anchor="BCP13" target="https://www.rfc-editor.org/info/bcp13" xml:base="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.13.xml">
+  <reference anchor="RFC4289" target="https://www.rfc-editor.org/info/rfc4289">
+    <front>
+      <title>Multipurpose Internet Mail Extensions (MIME) Part Four: Registration Procedures</title>
+      <author fullname="N. Freed" initials="N." surname="Freed"/>
+      <author fullname="J. Klensin" initials="J." surname="Klensin"/>
+      <date month="December" year="2005"/>
+      <abstract>
+        <t>This document specifies IANA registration procedures for MIME external body access types and content-transfer-encodings. This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</t>
+      </abstract>
+    </front>
+    <seriesInfo name="BCP" value="13"/>
+    <seriesInfo name="RFC" value="4289"/>
+    <seriesInfo name="DOI" value="10.17487/RFC4289"/>
+  </reference>
+  <reference anchor="RFC6838" target="https://www.rfc-editor.org/info/rfc6838">
+    <front>
+      <title>Media Type Specifications and Registration Procedures</title>
+      <author fullname="N. Freed" initials="N." surname="Freed"/>
+      <author fullname="J. Klensin" initials="J." surname="Klensin"/>
+      <author fullname="T. Hansen" initials="T." surname="Hansen"/>
+      <date month="January" year="2013"/>
+      <abstract>
+        <t>This document defines procedures for the specification and registration of media types for use in HTTP, MIME, and other Internet protocols. This memo documents an Internet Best Current Practice.</t>
+      </abstract>
+    </front>
+    <seriesInfo name="BCP" value="13"/>
+    <seriesInfo name="RFC" value="6838"/>
+    <seriesInfo name="DOI" value="10.17487/RFC6838"/>
+  </reference>
+  <reference anchor="RFC9694" target="https://www.rfc-editor.org/info/rfc9694">
+    <front>
+      <title>Guidelines for the Definition of New Top-Level Media Types</title>
+      <author fullname="M.J. Dürst" initials="M.J." surname="Dürst"/>
+      <date month="March" year="2025"/>
+      <abstract>
+        <t>This document defines best practices for defining new top-level media types. It also introduces a registry for top-level media types, and contains a short history of top-level media types. It updates RFC 6838.</t>
+      </abstract>
+    </front>
+    <seriesInfo name="BCP" value="13"/>
+    <seriesInfo name="RFC" value="9694"/>
+    <seriesInfo name="DOI" value="10.17487/RFC9694"/>
+  </reference>
+</referencegroup>

@@ -4,16 +4,18 @@ txt = $(addsuffix .txt, $(names))
 cbor = $(addsuffix .cbor, $(basename $(wildcard *.diag-cbor)))
 protobuf = $(addsuffix .pb, $(basename $(wildcard *.txtpb)))
 
+xml2rfc = xml2rfc --cache .cache --v3 
+
 html: $(html)
 txt: $(txt)
 cbor: $(cbor)
 protobuf: $(protobuf)
 
 %.html: %.xml
-	xml2rfc --v3 --html $<
+	 $(xml2rfc) --html $<
 
 %.txt: %.xml
-	xml2rfc --v3 --text $<
+	$(xml2rfc) --text $<
 
 %.cbor: %.diag-cbor
 	diag2cbor.rb < $< > $@

@@ -1,0 +1,14 @@
+<reference anchor="RFC5334" target="https://www.rfc-editor.org/info/rfc5334" xml:base="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5334.xml">
+  <front>
+    <title>Ogg Media Types</title>
+    <author fullname="I. Goncalves" initials="I." surname="Goncalves"/>
+    <author fullname="S. Pfeiffer" initials="S." surname="Pfeiffer"/>
+    <author fullname="C. Montgomery" initials="C." surname="Montgomery"/>
+    <date month="September" year="2008"/>
+    <abstract>
+      <t>This document describes the registration of media types for the Ogg container format and conformance requirements for implementations of these types. This document obsoletes RFC 3534. [STANDARDS-TRACK]</t>
+    </abstract>
+  </front>
+  <seriesInfo name="RFC" value="5334"/>
+  <seriesInfo name="DOI" value="10.17487/RFC5334"/>
+</reference>
