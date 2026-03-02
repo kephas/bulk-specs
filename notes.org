@@ -51,19 +51,14 @@
      - =( string Encoding Bytes )=
      - =( define string Encoding )=
    - 0x08 :: =( iana-charset Nat ):Encoding=
-   - 0x09 :: =bulk=
-     - =( bulk Bytes )=
-     - =( bulk {exprs} )=
-       - the semantics is that this has the value of the last expression
-   - 0x0A :: ( blob Bytes )
+   - 0x09 :: =( bulk Bytes )=
+   - 0x0A :: =( blob Bytes )=
    - 
    - 0x0B :: =( concat {a1} {a2} )=
-   - 0x0C :: =indexed-bulk=
-     - =( indexed-bulk Nat Nat )=
-     - =( indexed-bulk Ref Nat )=
+   - 0x0C :: =( indexed-bulk Expr Expr )=
    - 0x0D :: =indexed-array=
-     - =( indexed-array Nat Nat Nat )=
-     - =( indexed-array Ref Nat Nat )=
+     - =( indexed-array Expr Expr Expr )=
+     - =( indexed-array Expr Expr )=
    - 
    - 0x0E :: =true=
    - 0x0F :: =false=
@@ -71,7 +66,7 @@
    - 0x10 :: ( subst {code} )
    - 0x11 :: ( arg Nat )
    - 0x12 :: ( rest Nat )
-   - 0x13 :: =( last )=
+   - 0x13 :: =( values {exprs} )=
    - 
    - 0x14 :: =( unsigned-int Bytes ):Nat=
    - 0x15 :: =( signed-int Bytes ):Int=
