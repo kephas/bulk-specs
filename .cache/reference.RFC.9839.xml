@@ -1,0 +1,13 @@
+<reference anchor="RFC9839" target="https://www.rfc-editor.org/info/rfc9839" xml:base="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9839.xml">
+  <front>
+    <title>Unicode Character Repertoire Subsets</title>
+    <author fullname="T. Bray" initials="T." surname="Bray"/>
+    <author fullname="P. Hoffman" initials="P." surname="Hoffman"/>
+    <date month="August" year="2025"/>
+    <abstract>
+      <t>This document discusses subsets of the Unicode character repertoire for use in protocols and data formats and specifies three subsets recommended for use in IETF specifications.</t>
+    </abstract>
+  </front>
+  <seriesInfo name="RFC" value="9839"/>
+  <seriesInfo name="DOI" value="10.17487/RFC9839"/>
+</reference>

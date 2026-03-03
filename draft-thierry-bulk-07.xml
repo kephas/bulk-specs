@@ -46,14 +46,14 @@
         <t>
           This specification aims at finding an original trade-off between transparency, syntax
           complexity, generality, extensibility, decentralization, discoverability, compactness,
-          streamability, processing speed and processing footprint for a data format (see <xref
-          target="concepts" format="none">definitions</xref>). It is our opinion that every widely
-          used existing format occupy a different position than this one in the solution space for
-          formats, that none is better on all axes, and that this one is the current best on several
-          axes, hence this new design. It is also our opinion that some of those existing formats
-          constitute an optimal solution for their specific use case, either in a absolute sense, or
-          at least at the time of their design. But the ever-changing field of IT now faces new
-          challenges that call for a new approach.
+          streamability, safety, processing speed and processing footprint for a data format (see
+          <xref target="concepts" format="none">definitions</xref>). It is our opinion that every
+          widely used existing format occupy a different position than this one in the solution
+          space for formats, that none is better on all axes, and that this one is the current best
+          on several axes, hence this new design. It is also our opinion that some of those existing
+          formats constitute an optimal solution for their specific use case, either in a absolute
+          sense, or at least at the time of their design. But the ever-changing field of IT now
+          faces new challenges that call for a new approach.
         </t>
 	<t>
 	  In particular, whereas the previous trend for Internet and Web standards and programming
@@ -140,6 +140,11 @@
 	    format to be transported in pieces that can be processed before the next piece is
 	    available. The second, being broadcasted, is, when a stream of data is cut in two at an
 	    arbitrary place, the ability of the second halt to be processed succesfully.
+	  </t>
+	  <t>
+	    By safety, we mean the ability for a format to have a parser implementing the full
+	    specification while having a default behaviour that doesn't expose the system where it
+	    runs to attacks triggered by malicious input.
 	  </t>
 	  <t>
 	    By processing speed, we mean the property of a format that lends itself to benefit from
@@ -2304,6 +2309,13 @@
 	  target="values" format="none">values</xref> form.
 	</t>
       </section>
+      <section title="BULK formats and protocols">
+	<t>
+	  This specification doesn't address in too much detail the security considerations that a
+	  BULK format or protocol would need to include, because of the wide diversity of use cases
+	  for BULK. But <xref target="design"/> gives some hints and resources on the subject.
+	</t>
+      </section>
     </section>
 
     <section title="IANA Considerations">
@@ -2449,6 +2461,7 @@
     <references title="Normative References">
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.13.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.14.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.BCP.18.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml-rfcsubseries/reference.STD.63.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6839.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml"/>
@@ -2470,8 +2483,12 @@
 
     <references title="Informative references">
 
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5234.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7540.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8610.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8949.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9839.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8264.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.bormann-cbor-draft-numbers.xml"/>
 
       <reference anchor="Avro" target="http://avro.apache.org/docs/1.7.4/spec.html">
@@ -2528,6 +2545,13 @@
 	</front>
       </reference>
 
+      <reference anchor="dhall-sec"
+		 target="https://docs.dhall-lang.org/discussions/Safety-guarantees.html">
+	<front>
+	  <title>Dhall Safety Guarantees</title>
+	  <author initials="G." surname="Gonzalez" fullname="Gabriella Gonzalez"/>
+	</front>
+      </reference>
 
     </references>
 
@@ -2737,6 +2761,79 @@
 	existing form defining arities. Which means that compared to the nested <spanx
 	style="verb">postfix</spanx> form, it pays for itself if it is used only 3 or 4 times.
       </t>
+    </section>
+
+    <section title="The difference between BULK and BULK formats" anchor="design">
+      <t>
+	BULK aims at being a useful framework for a wide variety of formats, including low-level
+	communication protocols, higher-level RPC or REST APIs, media files, rich documents,
+	archives and efficient serialization of existing data models (like XML, JSON or RDF).
+      </t>
+      <t>
+	This had several implications on its design.
+      </t>
+
+      <section title="Purposefully open: for generality">
+	<t>
+	  As such, BULK imposes no constraints on what kind of data can be represented. One is free
+	  to design a BULK format that mandates the use of EBCDIC. In keeping with <xref
+	  target="BCP18"/>, BULK chooses UTF-8 as the default string encoding and its core namespace
+	  only permits designating encodings from the IANA charset registry<xref
+	  target="IANA-Charsets"/>. But a BULK vocabulary would be free to define a new <spanx
+	  style="verb">windows-codepage</spanx> form to use Windows Codepages instead.
+	</t>
+	<t>
+	  Any protocol designed to transport human-readable text should be aware of <xref
+	  target="RFC9839"/>, but BULK could be used to transport text emitted in a terminal, making
+	  full use of control characters, or even to create a file with examples of ill-formed UTF-8
+	  strings containing surrogates. As such, BULK doesn't limit what code points are allowed in
+	  UTF-8 strings, or any other Unicode encoding.
+	</t>
+	<t>
+	  BULK doesn't include a grammar to define BULK formats, but a BULK grammar vocabulary, that
+	  could encode ABNF<xref target="RFC5234"/> or CDDL<xref target="RFC8610"/> in BULK, would
+	  do well to add the ability to express "Unicode Scalars", "XML Characters" and "Unicode
+	  Assignables" from <xref target="RFC9839"/>, as well as classes and profiles from
+	  PRECIS<xref target="RFC8264"/>.
+	</t>
+      </section>
+
+      <section title="Purposefully limited: for safety">
+	<t>
+	  For the same reason, BULK parsing and evaluation needed to be secure by default and
+	  feature a security model that would be safe enough that it can be a secure foundation
+	  almost everywhere.
+	</t>
+	<t>
+	  This is why BULK syntax and the BULK core namespace can't directly express notions like
+	  the inclusion of an outside BULK stream, or referencing a file or URI to access. This is
+	  also why this specifications mandates limitations on the discoverability of bootstrapping
+	  namespaces and strongly suggests limiting  discoverability to immutable namespaces.
+	</t>
+	<t>
+	  A BULK format that can express such a dangerous combination of actions as reading files
+	  and making network connections SHOULD carefully consider the attack surface they present
+	  and the threat models for the format's use cases, and explain those in detail in the
+	  format's documentation. Dhall's Safety Guarantees<xref target="dhall-sec"/> are a prime
+	  example.
+	</t>
+	<t>
+	  The BULK core namespace can't directly express Turing complete functions, and not even
+	  functions that can take different execution paths depending on their arguments. The
+	  functions that can be expressed can only use their arguments in a static transformation,
+	  by design. While this drastically limit BULK's expressivity, it also drastically limit the
+	  attack surface on what arbitrary input can make the BULK parser or evaluator do, while
+	  still offering a decent power of abstraction (e.g. one could write a substitution function
+	  to unpack an array containing an IPv6 header into its fields, but not a substitution
+	  function to unpack an IPv6 extension header according to its type).
+	</t>
+	<t>
+	  The goal is that a BULK protocol or format designer should be able to trust that if they
+	  use BULK in accordance with the safety recommandations of this specification, they don't
+	  need to carefully weigh the benefits of evaluation vs. their dangers, like it has been the
+	  case with a couple of previous formats.
+	</t>
+      </section>
     </section>
 
   </back>

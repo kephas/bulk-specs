@@ -1,0 +1,13 @@
+<reference anchor="RFC8264" target="https://www.rfc-editor.org/info/rfc8264" xml:base="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8264.xml">
+  <front>
+    <title>PRECIS Framework: Preparation, Enforcement, and Comparison of Internationalized Strings in Application Protocols</title>
+    <author fullname="P. Saint-Andre" initials="P." surname="Saint-Andre"/>
+    <author fullname="M. Blanchet" initials="M." surname="Blanchet"/>
+    <date month="October" year="2017"/>
+    <abstract>
+      <t>Application protocols using Unicode code points in protocol strings need to properly handle such strings in order to enforce internationalization rules for strings placed in various protocol slots (such as addresses and identifiers) and to perform valid comparison operations (e.g., for purposes of authentication or authorization). This document defines a framework enabling application protocols to perform the preparation, enforcement, and comparison of internationalized strings ("PRECIS") in a way that depends on the properties of Unicode code points and thus is more agile with respect to versions of Unicode. As a result, this framework provides a more sustainable approach to the handling of internationalized strings than the previous framework, known as Stringprep (RFC 3454). This document obsoletes RFC 7564.</t>
+    </abstract>
+  </front>
+  <seriesInfo name="RFC" value="8264"/>
+  <seriesInfo name="DOI" value="10.17487/RFC8264"/>
+</reference>
