@@ -2149,6 +2149,48 @@
       </section>
     </section>
 
+    <section anchor="discover" title="Discovery of namespaces and packages">
+      <t>
+	When a processing application encounters an unknown namespace or package identifier, it
+	could ask several sources to provide the definition. The possible sources include the agent
+	that made use of the unknown identifier, or known BULK registries (registries of definitions
+	for BULK namespaces or packages).
+      </t>
+      <t>
+	The fundamental security risk in this mechanism is when an attacker manages to be the first
+	to use some identifier and poison the processing application by giving it a malicious
+	definition, or managed to poison one or several BULK registries. To avoid that risk, it is
+	RECOMMENDED that a processing application or BULK registry only accept definitions for
+	immutable namespaces from untrusted agents.
+      </t>
+      <t>
+	With packages (because they MUST be immutable) and immutable namespaces, though, automatic
+	discovery can be a safe mechanism if some risks are mitigated:
+	<list style="symbol">
+	  <t>
+	    Asking untrusted registries might expose when agents communicate with the processing
+	    application. Making the request asynchronously, with noise in the timing, can mitigate
+	    that risk. Application operators need to consider the trade-off between latency and
+	    privacy, or give the option to agents to make that determination. Making the request in
+	    ways that hide the processing application's identity, like using The Onion Router, is
+	    another option.
+	  </t>
+	  <t>
+	    Asking untrusted registries might expose what kind of data is sent by its agents to the
+	    processing application. Making the request in ways that hide the processing
+	    application's identity, like using The Onion Router, is an option.
+	  </t>
+	  <t>
+	    Asking the agent or not might expose the fact that a namespace was already known or
+	    not. Some processing applications SHOULD provide configurable policies so that operators
+	    can choose one that is relevant to the sensitivity of the services they
+	    operate. Examples could include: always asking for namespaces that haven't been
+	    explicitly maked safe, always or never asking to some classes of agents.
+	  </t>
+	</list>
+      </t>
+    </section>
+
     <section title="Streaming">
       <t>
 	The parsing and evaluation algorithms allow for reading a BULK stream while it has not been
