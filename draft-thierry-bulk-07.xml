@@ -576,10 +576,8 @@
 	<t>
 	  Some forms have side-effects in their semantics. Those side-effects MUST not affect the
 	  parsing of any expression. They can affect evaluation, in which case they MUST only affect
-	  the evaluation of expressions in the scope of the form. The outer scope of an expression
-	  is the part of its context that follows the expression. Some forms MAY define an inner
-	  scope in their shape. The scope of an expression is the union of the outer and inner
-	  scopes. This makes BULK lexically scoped.
+	  the evaluation of expressions in the scope of the form. The scope of an expression is the
+	  part of its context that follows the expression. This makes BULK lexically scoped.
 	</t>
 	<t>
 	  Whenever a parsing error is encountered, parsing of the BULK stream MUST stop.
@@ -771,6 +769,12 @@
 	    Any array also has the type <spanx style="verb">String</spanx> if its contents can be
 	    decoded as a string in the current encoding.
 	  </t>
+	  <t>
+	    When this specification mentions "the bytes contained in the expression <spanx
+	    style="verb">{foo}</spanx>", it never means the bytes encoding that BULK expression, but
+	    the bytes that are the payload of that expression, which could be an array or some other
+	    byte container defined in a BULK vocabulary.
+	  </t>
 	  
 	  <section anchor="array" title="Generic array">
 	    <t>
@@ -782,7 +786,7 @@
 	    </t>
 	    <t>
 	      After consuming the marker byte, the parser returns to the dispatch stage. It is a
-	      parser error if the parsed expression is not of type <spanx style="verb">Nat</spanx>
+	      parsing error if the parsed expression is not of type <spanx style="verb">Nat</spanx>
 	      or if its value cannot be recognized. This integer is not added to any context, but
 	      the parser consumes as many bytes as this integer and they constitute the content of
 	      this array.
@@ -848,9 +852,8 @@
 	      </list>
 	    </t>
 	    <t>
-	      Small unsigned integers have a special parsing rule. The 6 least significant bits of
-	      the marker byte are the value encoded by this byte (as bits or as an unsigned integer
-	      in binary notation).
+	      The 6 least significant bits of the marker byte are the value encoded by this byte (as
+	      bits or as an unsigned integer in binary notation).
 	    </t>
 	    <t>
 	      In the text notation, the notation of the marker byte of a small unsigned integer of
@@ -874,8 +877,8 @@
 	<section anchor="reserved" title="Reserved marker bytes">
 	  <t>
 	    Marker bytes <spanx style="verb">0x04−0x0F</spanx> are reserved for future major
-	    versions of BULK. It is a parser error if a BULK stream with major version 1 contains
-	    such a marker byte.
+	    versions of BULK. It is a parsing error if a BULK stream with version 1.0 contains such
+	    a marker byte (see <xref target="version"/>).
 	  </t>
 	</section>
 
@@ -896,7 +899,7 @@
 	    namespaces identified by a unique identifier.
 	  </t>
 	  <t>
-	    The <spanx style="verb">{name}</spanx> byte is the name within the
+	    The <spanx style="verb">{name}</spanx> byte is the name index within the
 	    namespace. Vocabularies with more than 256 names thus need to be spread accross several
 	    namespaces.
 	  </t>
@@ -931,9 +934,9 @@
 	value.
       </t>
       <t>
-	By is decentralized nature, as far as a processing application is concerned, apart from
-	standard namespaces, there is no difference between a namespace defined as part of the
-	official BULK suite and a user-defined one.
+	By its decentralized nature, as far as a processing application is concerned, while standard
+	namespaces are a special case, there is no difference between an extension namespace defined
+	as part of the official BULK suite and any other one.
       </t>
     </section>
 
@@ -1051,10 +1054,11 @@
 	</t>
 	<t>
 	  If the version is expressed within a BULK stream, this form MUST be the first in the
-	  stream. In any other place, this form evaluates to itself. This specification defines BULK
-	  1.0. When writing a BULK stream, an application MUST encode <spanx
-	  style="verb">{major}</spanx> and <spanx style="verb">{minor}</spanx> by the smallest byte
-	  sequence as described in <xref target="nat-enc"></xref>.
+	  stream, where its semantics is the side-effect of declaring the version. In any other
+	  place, this form evaluates to itself. This specification defines BULK 1.0. When writing a
+	  BULK stream's version, an application MUST encode <spanx style="verb">{major}</spanx> and
+	  <spanx style="verb">{minor}</spanx> by the smallest byte sequence as described in <xref
+	  target="nat-enc"></xref>.
 	</t>
 	<t>
 	  An application writing a BULK stream to long-term storage (e.g. in a file or a database
@@ -1062,34 +1066,35 @@
 	</t>
 	<t>
 	  Two BULK versions with the same major version MUST share the same parsing rules and the
-	  same definitions of marker bytes. Changing the syntax or semantics of existing marker
-	  bytes and using marker bytes in the reserved interval warrants a new major
-	  version. Changing the syntax or semantics of existing standard names (meaning names in
-	  standard namespaces) also warrants a new major version.
+	  same definitions of marker bytes used by both. Changing the syntax or semantics of
+	  existing marker bytes warrants a new major version. Changing the syntax or semantics of
+	  existing standard names (meaning names in standard namespaces) also warrants a new major
+	  version.
 	</t>
 	<t>
 	  It is a parsing error when a processing application encounters a major version that it
 	  doesn't explicitly support.
 	</t>
 	<t>
-	  Adding standard names, or adding new syntactic uses of existing standard names that don't
-	  overlap with existing uses warrants a new minor version.
+	  Using marker bytes in the reserved interval, adding standard names, or adding new
+	  syntactic uses of existing standard names that don't overlap with existing uses warrants a
+	  new minor version.
 	</t>
 	<t>
 	  If version A and version B of BULK have a different default profile, and the change of
-	  profile would only affect evaluation of BULK streams that use new standard names or new
-	  syntactic uses of existing standard names, then the profile difference warrants a
-	  difference of minor version between A and B. Otherwise, the profile change warrants a
-	  difference of major version between A and B.
+	  profile would only affect evaluation of BULK streams that use new marker bytes, new
+	  standard names or new syntactic uses of existing standard names, then the profile
+	  difference warrants a difference of minor version between A and B. Otherwise, the profile
+	  change warrants a difference of major version between A and B.
 	</t>
 	<t>
 	  Overall, the goal is that if an application writes a BULK stream of version 1.2 that only
 	  contains syntactic and semantic elements from BULK 1.1, a processing application that only
 	  supports BULK 1.1 will be able to parse and evaluate that stream. The writing application
 	  doesn't need to know the features that are specific to BULK 1.0 and BULK 1.1, because as
-	  soon as the processing application encounters an unknown standard name or an unknown
-	  syntactic use of a known standard name, it can guess that it cannot correctly evaluate the
-	  stream.
+	  soon as the processing application encounters a reserved marker byte, an unknown standard
+	  name or an unknown syntactic use of a known standard name, it can detect that it cannot
+	  correctly evaluate the stream.
 	</t>
 	<t>
 	  For that reason, it is an evaluation error for a processing application when there is an
@@ -1100,9 +1105,10 @@
 	  As far as BULK 1.0 is concerned, using <spanx style="verb">import</spanx>, <spanx
 	  style="verb">define</spanx>, <spanx style="verb">mnemonic</spanx>, <spanx
 	  style="verb">explain</spanx>, and <spanx style="verb">arity</spanx>, when none of their
-	  operands are forms with a standard name as operator, doesn't constitute an unknown
-	  syntactic use. This makes it possible to overload those names in ways that don't interfere
-	  with backwards-compatibility.
+	  operands is either a standard name or a form with a standard name as operator, or using
+	  <spanx style="verb">version</spanx> somewhere else than as first expression, don't
+	  constitute an unknown syntactic use. This makes it possible to overload those names in
+	  ways that don't interfere with forward-compatibility.
 	</t>
       </section>
 
@@ -1118,6 +1124,15 @@
 	    The semantics of this form is the side-effect of associating the namespace identified by
 	    <spanx style="verb">{id}</spanx> to the namespace marker <spanx
 	    style="verb">{marker}</spanx>, within the scope of this expression.
+	  </t>
+	  <t>
+	    <spanx style="verb">{id}</spanx> can be a form using one or several names whose
+	    namespace marker has the value of <spanx style="verb">{marker}</spanx>. This is called
+	    importing a bootstrapping namespace, see <xref target="bootstrap"/>.
+	  </t>
+	  <t>
+	    It is not an evaluation error if the namespace is unknown to the processing
+	    application. A processing application MAY produce warnings when it encounters this case.
 	  </t>
 	</section>
 
@@ -1141,6 +1156,12 @@
 	    MAY produce warnings when it encounters those cases.
 	  </t>
 	  <t>
+	    This forms needs an explicit number of namespaces to import to preserve transparency: if
+	    the number was implicit, there could be issues when a processing application that
+	    doesn't known how many namespaces are in the package wanted to modify the BULK
+	    stream. This makes BULK overall simpler and more predictable.
+	  </t>
+	  <t>
 	    Example: <spanx style="verb">( import 21 ( package {foo} 3 ) )</spanx> associates the
 	    first 3 namespaces of the package identified by <spanx style="verb">{foo}</spanx> to the
 	    markers 21, 22 and 23.
@@ -1158,54 +1179,83 @@
 	  </t>
 	  <t>
 	    The semantics of this form is the side-effect of defining a new namespace and
-	    associating it to a namespace marker. <spanx style="verb">{def}</spanx> MUST contain a
-	    BULK stream. The state of the namespace associated to <spanx
+	    associating it to a namespace marker. The bytes contained in <spanx
+	    style="verb">{def}</spanx> MUST have the shape <spanx style="verb">{data}:Expr
+	    {definitions}</spanx>. The state of the namespace associated to <spanx
 	    style="verb">{marker}</spanx> after evaluating all expressions in <spanx
-	    style="verb">{def}</spanx> (starting with a namespace with no definitions, no mnemonics,
-	    and no documentations) is made the definition of the namespace identified by <spanx
-	    style="verb">{id}</spanx>, within the scope of this expression. This also associates
-	    that namespace to the namespace marker <spanx style="verb">{marker}</spanx>, within the
-	    scope of this expression.
+	    style="verb">{definitions}</spanx> (starting with a namespace with no definitions, no
+	    mnemonics, and no documentations) is made the definition of the namespace identified by
+	    <spanx style="verb">{id}</spanx>, within the scope of this expression. This also
+	    associates that namespace to the namespace marker <spanx style="verb">{marker}</spanx>,
+	    within the scope of this expression.
 	  </t>
 	  
 	  <section anchor="verifiable" title="Verifiable namespace definition">
 	    <t>
-	      When a processing application reckognizes that <spanx style="verb">{id}</spanx>
+	      When a processing application recognizes that <spanx style="verb">{id}</spanx>
 	      designates a digest that matches the bytes contained in <spanx
 	      style="verb">{def}</spanx>, this creates a verifiable namespace.
 	    </t>
 	    <t>
 	      If more data than <spanx style="verb">{id}</spanx> is needed to verify <spanx
-	      style="verb">{id}</spanx> against <spanx style="verb">{def}</spanx> (like the salt of
-	      a hash function, or the namespace of a UUID), this data should be provided by the
-	      first expression in <spanx style="verb">{def}</spanx>. If such information is not
-	      needed or when the namespace is not verifiable, the first expression MUST be <spanx
-	      style="verb">nil</spanx>.
+	      style="verb">{id}</spanx> against the bytes contained in <spanx
+	      style="verb">{def}</spanx> (like the salt of a hash function, or the namespace of a
+	      UUID), this data MUST be provided by <spanx style="verb">{data}</spanx>. If such
+	      information is not needed or when the namespace is not verifiable, <spanx
+	      style="verb">{data}</spanx> MUST be <spanx style="verb">nil</spanx>.
+	    </t>
+	    <t>
+	      It is an evaluation error if the processing application recognizes that <spanx
+	      style="verb">{id}</spanx> designates a digest but it doesn't match the bytes contained
+	      in <spanx style="verb">{def}</spanx>.
 	    </t>
 	    <t>
 	      Verifiable namespaces are meant to be immutable, but that would be circumvented if
 	      they were built upon namespaces that aren't. A verifiable namespace that doesn't use
 	      names from any other namespaces is an immutable namespace. A verifiable namespace that
 	      only uses names from immutable namespaces as imported within the verified definition
-	      is an immutable namespace..
+	      is also an immutable namespace (if those immutable namespaces are imported outside of
+	      the definition, the same verifiable definition could be used in different contexts,
+	      also defeating the immutability).
 	    </t>
 	    <section anchor="bootstrap" title="Bootstrapping verification">
 	      <t>
 		A verifiable namespace will use a form to express its digest. For immutable
 		namespaces to exist, this means that at least one namespace needs to express its own
-		digest with a name in itself. This is called a bootstrapping namespace.
+		digest with a name from within itself. This is called a bootstrapping namespace.
 	      </t>
 	      <t>
 		When importing a bootstrapping namespace, the processing application looks up in its
-		known namespaces if there is a namespace identified by a form whose first element is
-		a reference in itself with the same name number as the digest form in the import. If
-		the logic of the digest algorithm determines that the digest form in the import
-		matches the digest in the namespace definition (along with additional configuration
-		data provided there), then the boostrapping is successful.
+		known namespaces if there is a namespace identified by a form whose operator is a
+		name in itself with the same name index as the digest form in the import. If the
+		logic of the digest algorithm determines that the digest form in the import matches
+		the digest in the namespace definition (along with additional configuration data
+		provided there), then the boostrapping is successful.
+	      </t>
+	      <t>
+		It is not an evaluation error if bootstrapping fails. A processing application MAY
+		produce warnings when it encounters this case.
+	      </t>
+	      <t>
+		Not all digest algorithms will just match on equality of digests. For example, some
+		algorithms are extendable-output functions and can choose to match some prefix sizes
+		of the original digest (but a digest algorithm MUST NOT match an empty digest). This
+		makes it possible to define one bootstrapping namespace with a digest big enough to
+		have a good collision resistance, but to use a shorter version in use cases where
+		size matters more than collision resistance. Some digest algorigtms MAY use other
+		policies than full equality of prefix equality to decide matching.
 	      </t>
 	      <t>
 		The same logic can be used to import a bootstrapping package, which is a package
 		identified with a form from one of its own namespaces.
+	      </t>
+	      <t>
+		When using immutable namespaces, bootstrapping packages are likely to be norm, as
+		using almost any immutable namespace requires importing the bootstrapping namespace
+		used to identify the target namespace, then that namespace. Every definition of an
+		immutable namespace can be accompanied by the definition of a bootstrapping package
+		packaging that namespace, its bootstrapping namespace and any other namespaces that
+		are likely to be used with it.
 	      </t>
 	    </section>
 	  </section>
@@ -1222,16 +1272,17 @@
 	    The semantics of this form is the side-effect of creating a package identified by <spanx
 	    style="verb">{id}</spanx>. Packages MUST be immutable, <spanx style="verb">{id}</spanx>
 	    MUST be a digest verifiable against the bytes contained in <spanx
-	    style="verb">{def}</spanx>. <spanx style="verb">{def}</spanx> MUST contain a BULK stream
-	    with the shape <spanx style="verb">{data}:Expr {namespaces}</spanx>. <spanx
-	    style="verb">{namespaces}</spanx>. MUST be a sequence of expressions each identifying a
+	    style="verb">{def}</spanx>. The bytes contained in <spanx style="verb">{def}</spanx>
+	    MUST have the shape <spanx style="verb">{data}:Expr {namespaces}</spanx>. <spanx
+	    style="verb">{namespaces}</spanx> MUST be a sequence of expressions each identifying a
 	    BULK namespace.
 	  </t>
 	  <t>
 	    If more data than <spanx style="verb">{id}</spanx> is needed to verify <spanx
-	    style="verb">{id}</spanx> against <spanx style="verb">{def}</spanx> (like the salt of a
-	    hash function, or the namespace of a UUID), this data should be provided by <spanx
-	    style="verb">{data}</spanx>. Else <spanx style="verb">{data}</spanx> MUST be <spanx
+	    style="verb">{id}</spanx> against the bytes contained in <spanx
+	    style="verb">{def}</spanx> (like the salt of a hash function, or the namespace of a
+	    UUID), this data MUST be provided by <spanx style="verb">{data}</spanx>. If such
+	    information is not needed, <spanx style="verb">{data}</spanx> MUST be <spanx
 	    style="verb">nil</spanx>.
 	  </t>
 	</section>
@@ -1239,7 +1290,7 @@
 	<section anchor="def-name" title="Name definitions">
 	  <t>
 	    To define a reference is to make a value the semantics of any reference with the same
-	    associated namespace and the same name in its scope.
+	    associated namespace and the same name, in the scope of that definition.
 	  </t>
 	  <t>
 	    This change of semantics operates on the namespace as identified by its unique
@@ -1273,18 +1324,23 @@
 	<section anchor="mnemonic" title="Mnemonic">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="shape"><spanx style="verb">( mnemonic ( namespace {marker}:Expr )
+	      <t hangText="shape"><spanx style="verb">( mnemonic ( namespace {marker}:Nat )
 	      {mnemonic}:Expr )</spanx></t>
-	      <t hangText="shape"><spanx style="verb">( mnemonic Ref {mnemonic}:String )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
-	    The first shape declares <spanx style="verb">{mnemonic}</spanx> to be the mnemonic for
-	    the namespace associated with the marker <spanx style="verb">{marker}</spanx>.
+	    This shape declares the value of evaluating <spanx style="verb">{mnemonic}</spanx> to be
+	    the mnemonic for the namespace associated with the marker <spanx
+	    style="verb">{marker}</spanx>.
 	  </t>
 	  <t>
-	    The second shape declares <spanx style="verb">{mnemonic}</spanx> to be the mnemonic for
-	    the name designated by the reference.
+	    <list style="hanging">
+	      <t hangText="shape"><spanx style="verb">( mnemonic Ref {mnemonic}:Expr )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This shape declares the value of evaluating <spanx style="verb">{mnemonic}</spanx> to be
+	    the mnemonic for the name designated by the reference.
 	  </t>
 	</section>
 
@@ -1293,16 +1349,21 @@
 	    <list style="hanging">
 	      <t hangText="shape"><spanx style="verb">( explain ( namespace {marker}:Nat )
 	      {doc}:Expr )</spanx></t>
+	    </list>
+	  </t>
+	  <t>
+	    This shape declares the value of evaluating <spanx style="verb">{doc}</spanx> to be the
+	    documentation for the namespace associated with the marker <spanx
+	    style="verb">{marker}</spanx>.
+	  </t>
+	  <t>
+	    <list style="hanging">
 	      <t hangText="shape"><spanx style="verb">( explain Ref {doc}:Expr )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
-	    The first shape declares <spanx style="verb">{doc}</spanx> to be the documentation for
-	    the namespace associated with the marker <spanx style="verb">{marker}</spanx>.
-	  </t>
-	  <t>
-	    The second shape declares <spanx style="verb">{doc}</spanx> to be the documentation for
-	    the name designated by the reference.
+	    This shape declares the value of evaluating <spanx style="verb">{doc}</spanx> to be the
+	    documentation for the name designated by the reference.
 	  </t>
 	  <t>
 	    Documentation expressions can be strings with plain text or use any BULK vocabulary to
@@ -1316,22 +1377,22 @@
 	<section anchor="stringenc" title="Current encoding">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="shape"><spanx style="verb">( define string {enc}:Expr )</spanx></t>
+	      <t hangText="shape"><spanx style="verb">( define string {encoding}:Expr )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    The semantics of this form is the side-effect that, in the scope of this expression, the
 	    default encoding for expressions that are understood by the application as character
-	    strings is the encoding designated by <spanx style="verb">{enc}</spanx>.
+	    strings is the encoding designated by <spanx style="verb">{encoding}</spanx>.
 	  </t>
 	  <t>
 	    As the abstract yield doesn't contain strings but expressions that will be used as
 	    strings by the application, it is not a parsing error if the application doesn't
-	    recognize <spanx style="verb">{enc}</spanx>. In this situation, it is only a parsing
-	    error when the application actually needs to decode a byte sequence as a string with
-	    that encoding. It is not a parsing error when a processing application only transmits a
-	    byte sequence encoding a string, if it can accurately convey the encoding to the
-	    receiving application.
+	    recognize <spanx style="verb">{encoding}</spanx>. In this situation, it is only a
+	    parsing error when the application actually needs to decode a byte sequence as a string
+	    with that encoding. It is not a parsing error when a processing application only
+	    transmits a byte sequence encoding a string, if it can accurately convey the encoding to
+	    the receiving application.
 	  </t>
 	</section>
 
@@ -1351,14 +1412,14 @@
 	<section anchor="string*" title="String with explicit encoding">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="shape"><spanx style="verb">( string {enc}:Expr {string}:Epxr
+	      <t hangText="shape"><spanx style="verb">( string {encoding}:Expr {string}:Epxr
 	      )</spanx></t>
 	    </list>
 	  </t>
 	  <t>
 	    This form indicates that the bytes contained in the expression <spanx
 	    style="verb">{string}</spanx> are meant to be interpreted as a string encoded with the
-	    encoding designated by <spanx style="verb">{enc}</spanx>.
+	    encoding designated by <spanx style="verb">{encoding}</spanx>.
 	  </t>
 	</section>
 
@@ -1387,8 +1448,8 @@
 	  <t>
 	    This form indicates that the bytes contained in the expression <spanx
 	    style="verb">{bulk}</spanx> are meant to be interpreted as a BULK stream. If the stream
-	    doesn't start with a <spanx style="verb">version</spanx> form, the stream MUST be
-	    assumed to have the same version as the parent stream.
+	    doesn't start with a <spanx style="verb">version</spanx> form, the stream explicitly has
+	    the same version as the parent stream.
 	  </t>
 	  <t>
 	    The semantics of this form is the same as the evaluation of the BULK stream in <spanx
