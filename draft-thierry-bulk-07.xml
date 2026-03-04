@@ -1808,11 +1808,11 @@
 
       <section title="Bytecodes">
 	<t>
-	  This specification and other official BULK specifications take the option to use as their
-	  basic building block a form with a discriminating reference as first element (basically,
-	  they are a binary representation of an abstract syntax tree). As noted previously, this
-	  means that most representations weigh 4 bytes plus their actual content, which will in
-	  turn have some overhead because of one or several marker bytes.
+	  This specification and other official BULK specifications use forms with a reference
+	  operator as their basic building blocks. Basically, these are a binary representation of
+	  an abstract syntax tree. As noted previously, this means that most representations weigh 4
+	  bytes plus their actual content, which will in turn have some overhead because of one or
+	  several marker bytes.
 	</t>
 	<t>
 	  But when there is a special need for compactness, BULK makes it possible to design
@@ -1848,11 +1848,11 @@
 	  A BULK bytecode is a flat sequence of expressions. The evaluation of a bytecode form
 	  transforms that sequence to an abstract syntax tree of its contents (and then the
 	  resulting expression can be evaluated with the normal BULK evaluation rules). The
-	  expressions of the bytecode are divided among operators and operands. Operators are
-	  references that will end up as the first expression of a form in the abstract syntax
-	  tree. Operands are all other expressions. Prefix bytecodes are those where operators come
-	  before their operands, postfix bytecodes are those where operators come after their
-	  operands. In the following forms, operators MUST be references.
+	  expressions of the bytecode are divided among bytecode operators and bytecode
+	  operands. Operators are references that will end up as form operators in the abstract
+	  syntax tree. Operands are all other expressions. Prefix bytecodes are those where
+	  operators come before their operands, postfix bytecodes are those where operators come
+	  after their operands. In the following forms, operators MUST be references.
 	</t>
 	<t>
 	  When evaluating a bytecode, it is an evaluation error when the processing application
@@ -1880,8 +1880,8 @@
 	    next expressions as its arity are removed from the beginning of the bytecode and
 	    appended at the end of this list. Then that resulting list is appended at the end of the
 	    alternate context. The transformation continues until the bytecode is empty, in which
-	    case the alternate context replaces the bytecode form and the transformation is
-	    complete. The resulting form can then be evaluated in turn.
+	    case the transformation is complete and the alternate context is the value of evaluating
+	    the bytecode form. The resulting form can then be evaluated in turn.
 	  </t>
 	  <t>Example: the evaluation of</t>
 	  <t><figure><artwork>( define ( arity prefix )
@@ -1896,7 +1896,10 @@
 	  </artwork></figure></t>
           <t>
 	    It is an evaluation error when there are less expressions remaining in the bytecode than
-	    the arity of the current operator.
+	    the arity of the current operator. In the error information, a processing application
+	    MAY provide the alternate context and the remaining bytecode. The alternate context
+	    after a failed transformation MUST NOT appear in the abstract yield as if evaluation had
+	    succesfully transformed the bytecode.
 	  </t>
 	</section>
 	<section anchor="postfix" title="Postfix bytecode">
@@ -1917,10 +1920,10 @@
 	    the operator as the first expression, then as many next expressions as its arity are
 	    popped from the stack and appended at the end of this list (with the top of the stack as
 	    the last element). Then that resulting list is pushed on top of the stack. The
-	    transformation continues until the bytecode is empty, in which case the list of the
-	    elements on the stack (with the top of the stack as the last element) replaces the
-	    bytecode form and the transformation is complete. The resulting form can then be
-	    evaluated in turn.
+	    transformation continues until the bytecode is empty, in which case the transformation
+	    is complete and the list of expressions on the stack (with the top of the stack as the
+	    last element) is the value of evaluating the bytecode form. The resulting form can then
+	    be evaluated in turn.
 	  </t>
 	  <t>
 	    Example: the evaluation of
@@ -1953,7 +1956,10 @@
 	  </t>
           <t>
 	    It is an evaluation error when there are less expressions remaining on the data stack
-	    than the arity of the current operator.
+	    than the arity of the current operator. In the error information, a processing
+	    application MAY provide the data stack and the remaining bytecode. The data stack after
+	    a failed transformation MUST NOT appear in the abstract yield as if evaluation had
+	    succesfully transformed the bytecode.
 	  </t>
 	</section>
 	<section anchor="arity" title="Arity definition">
@@ -2060,7 +2066,7 @@
                     ( indexed-bulk ( arg 0 ) 8 )
                     ( indexed-array ( arg 0 ) 10 ) ) )</artwork></figure></t>
 	<t>
-	  In essence, packing makes it possible to embed simple ad hoc binary formats described
+	  In essence, packing makes it possible to embed very simple ad hoc binary formats described
 	  within the BULK framework.
 	</t>
       </section>
@@ -2779,9 +2785,11 @@
       <t>
 	One possible downside with aliasing is that if the number of aliasing namespaces grow, you
 	might end up with the implementation of an important namespace scattered across a bunch of
-	aliased legacy namespaces. In that case, a second tool is to reverse the direction of
-	aliasing: all the implementation lives in the current namespace, cohesively, and old
-	namespaces are aliases to the new:
+	aliased legacy namespaces. Also, the definition of the new namespace is tied to the old one,
+	which means that you need to keep the old definition around for the lifetime of the new
+	one. To prevent those issues, a second tool is to reverse the direction of aliasing: all
+	the implementation lives in the current namespace, cohesively, and its definition can be
+	used on its own, and the old namespace is aliased to the new:
       </t>
 
       <t><figure><artwork>( import 20 ( namespace ( oldhash:shake128 {oldhashid} ) ) )
@@ -2797,7 +2805,7 @@
 	One obvious design would be for the application to have a privileged storage for reverse
 	aliasing namespace definitions, with those namespaces given complete authority or, better
 	yet, each being given selective authority for a specific existing namespace (see <xref
-	target="robustNS"/>). Where this could still not be deemed safe enough, reverse aliasing
+	target="robustNS"/>). Where this could still not be deemed safe enough, reverse aliasing of
 	namespaces could be defined in the application's code.
       </t>
     </section>
