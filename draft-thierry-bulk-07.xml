@@ -629,6 +629,11 @@
 	    style="verb">EagerFunction</spanx> also has type <spanx style="verb">Function</spanx>.
 	  </t>
 	  <t>
+	    If the first expression produced as a value by evaluation has type
+	    <tt>EagerFunction</tt>, then after the whole abstact yield has been evaluated, the
+	    resulting sequence of expressions MUST be evaluated as a form.
+	  </t>
+	  <t>
 	    When this specification describes the evaluation of a form starting with a <spanx
 	    style="verb">LazyFunction</spanx>, by default, named shapes designate the unevaluated
 	    expressions. When this specification describes the evaluation of a form starting with an
