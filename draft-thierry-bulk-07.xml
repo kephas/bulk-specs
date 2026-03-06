@@ -1891,14 +1891,14 @@
 	  </t>
 	  <t>Example: the evaluation of</t>
 	  <t><figure><artwork>( define ( arity prefix )
-  ( nil go:game ) ( 2 go:black ) )
-( prefix go:game go:black 1 2 go:black 3 4 go:black 5 6 )
+  ( nil game ) ( 2 black ) )
+( prefix game black 1 2 black 3 4 black 5 6 )
 	  </artwork></figure></t>
 	  <t>is</t>
-	  <t><figure><artwork>( go:game
- ( go:black 1 2 )
- ( go:black 3 4 )
- ( go:black 5 6 ) )
+	  <t><figure><artwork>( game
+ ( black 1 2 )
+ ( black 3 4 )
+ ( black 5 6 ) )
 	  </artwork></figure></t>
           <t>
 	    It is an evaluation error when there are less expressions remaining in the bytecode than
@@ -1935,23 +1935,23 @@
 	    Example: the evaluation of
 	  </t>
 	  <t><figure><artwork>( define ( arity postfix )
- ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
+ ( nil game ) ( 2 black white comment alternative ) )
 ( postfix
-  go:game
-  1 2 go:black
-  "white tried an unorthodox opening" 3 4 go:white go:comment
-  "a more classical opening would be" 8 9 go:white go:comment
-  go:alternative
-  2 3 go:black
-  4 5 go:white )</artwork></figure></t>
+  game
+  1 2 black
+  "white tried an unorthodox opening" 3 4 white comment
+  "a more classical opening would be" 8 9 white comment
+  alternative
+  2 3 black
+  4 5 white )</artwork></figure></t>
           <t>is</t>
-	  <t><figure><artwork>( go:game
-  ( go:black 1 2 )
-  ( go:alternative
-    ( go:comment "white tried an unorthodox opening" ( go:white 3 4 ) )
-    ( go:comment "a more classical opening would be" ( go:white 8 9 ) ) )
-  ( go:black 2 3 )
-  ( go:white 4 5 ) )</artwork></figure>
+	  <t><figure><artwork>( game
+  ( black 1 2 )
+  ( alternative
+    ( comment "white tried an unorthodox opening" ( white 3 4 ) )
+    ( comment "a more classical opening would be" ( white 8 9 ) ) )
+  ( black 2 3 )
+  ( white 4 5 ) )</artwork></figure>
 	  </t>
           <t>
 	    The obvious advantage of postfix bytecode is that it makes it possible to compact nested
@@ -2038,13 +2038,13 @@
 	</t>
 	<t>
 	  <list style="hanging">
-	    <t hangText="basic (8 bytes)"><spanx style="verb">( game:move/2 #[1] 0x41 #[1] 0x5A
+	    <t hangText="basic (8 bytes)"><spanx style="verb">( move/2 #[1] 0x41 #[1] 0x5A
 	    )</spanx></t>
-	    <t hangText="packed basic (7 bytes)"><spanx style="verb">( game:move/1 #[2] 0x41 0x5A
+	    <t hangText="packed basic (7 bytes)"><spanx style="verb">( move/1 #[2] 0x41 0x5A
 	    )</spanx></t>
-	    <t hangText="bytecode (6 bytes)"><spanx style="verb">game:move/2 #[1] 0x41 #[1]
+	    <t hangText="bytecode (6 bytes)"><spanx style="verb">move/2 #[1] 0x41 #[1]
 	    0x5A</spanx></t>
-	    <t hangText="packed bytecode (5 bytes)"><spanx style="verb">game:move/1 #[2] 0x41
+	    <t hangText="packed bytecode (5 bytes)"><spanx style="verb">move/1 #[2] 0x41
 	    0x5A</spanx></t>
 	  </list>
 	</t>
@@ -2053,20 +2053,20 @@
 	  application, by using evaluation to transform packed forms into simpler forms (but they
 	  need to be created separately for each size of operands). For example, the following:
 	</t>
-	<t><figure><artwork>( define game:move/1-16
-  ( subst ( game:move/2 ( indexed-array ( arg 0 ) 0 1 )
+	<t><figure><artwork>( define move/1-16
+  ( subst ( move/2 ( indexed-array ( arg 0 ) 0 1 )
                          ( indexed-array ( arg 0 ) 1 1 ) ) ) )
-( game:move/1-16 #[2] 0x415A )
+( move/1-16 #[2] 0x415A )
 </artwork></figure></t> 
 	<t>Would be evaluated into:</t>
-	<t><figure><artwork>( game:move/2 #[1] 0x41 #[1] 0x5A )</artwork></figure></t>
+	<t><figure><artwork>( move/2 #[1] 0x41 #[1] 0x5A )</artwork></figure></t>
 	<t>
 	  More complex packing can be encoded as well. For example, this would be a form that packs
 	  two 16-bits unsigned integers, one 32-bits signed integer, one reference, and one
 	  variable-length string:
 	</t>
-	<t><figure><artwork>( define foo:pack-224-ref-str
-  ( subst ( foo:bar ( indexed-array ( arg 0 ) 0 2 )
+	<t><figure><artwork>( define pack-224-ref-str
+  ( subst ( bar ( indexed-array ( arg 0 ) 0 2 )
                     ( indexed-array ( arg 0 ) 2 2 )
                     ( signed-int ( indexed-array ( arg 0 ) 4 4 ) )
                     ( indexed-bulk ( arg 0 ) 8 )
@@ -2087,14 +2087,14 @@
 	  each normal move to 2 bytes as coordinates are below 64:
 	</t>
 	<t><figure><artwork>( define ( arity postfix )
- ( nil go:game ) ( 2 go:black go:white go:comment go:alternative ) )
+ ( nil game ) ( 2 black white comment alternative ) )
 ( postfix
-  ( ( nil go:game ) ( 2 go:white go:comment go:alternative ) )
-  go:game
+  ( ( nil game ) ( 2 white comment alternative ) )
+  game
   1 2
-  "white tried an unorthodox opening" 3 4 go:white go:comment
-  "a more classical opening would be" 8 9 go:white go:comment
-  go:alternative
+  "white tried an unorthodox opening" 3 4 white comment
+  "a more classical opening would be" 8 9 white comment
+  alternative
   2 3
   4 5 )</artwork></figure></t> 
         <t>
@@ -2822,18 +2822,18 @@
 	expressions. When such a form is used in postfix bytecode, the simplest solution is just to
 	use a nested <spanx style="verb">postfix</spanx> form:
       </t>
-      <t><figure><artwork>( define ( arity ) ( 2 go:black go:white go:comment ) )
+      <t><figure><artwork>( define ( arity ) ( 2 black white comment ) )
 ( postfix
-  go:game
-  1 2 go:black
-  ( postfix go:alternative
-    "white tried an unorthodox opening" 3 4 go:white go:comment
-    "a more classical opening would be" 8 9 go:white go:comment )
-  2 3 go:black
-  ( postfix go:alternative 
-    "white played a bad move" 4 5 go:white go:comment
-    "white could have played a decent move" 5 6 go:white go:comment
-    "white could have played a great move" 5 7 go:white go:comment ) )</artwork></figure></t>
+  game
+  1 2 black
+  ( postfix alternative
+    "white tried an unorthodox opening" 3 4 white comment
+    "a more classical opening would be" 8 9 white comment )
+  2 3 black
+  ( postfix alternative
+    "white played a bad move" 4 5 white comment
+    "white could have played a decent move" 5 6 white comment
+    "white could have played a great move" 5 7 white comment ) )</artwork></figure></t>
         <t>
         The nested <spanx style="verb">postfix</spanx> form costs 4 bytes, compared to an
 	equivalent postfix bytecode.
@@ -2845,33 +2845,33 @@
 	evaluating the postfix bytecode transformation and the resulting form of the last
 	expression of
       </t>
-      <t><figure><artwork>( define go2:alt/2 go:alternative )
-( define go2:alt/3 go:alternative )
-( define ( arity ) ( 2 go:black go:white go:comment go2:alt/2 ) ( 3 go2:alt/3 ) )
+      <t><figure><artwork>( define alt/2 alternative )
+( define alt/3 alternative )
+( define ( arity ) ( 2 black white comment alt/2 ) ( 3 alt/3 ) )
 ( postfix
-  go:game
-  1 2 go:black
-  "white tried an unorthodox opening" 3 4 go:white go:comment
-  "a more classical opening would be" 8 9 go:white go:comment
-  go2:alt/2
-  2 3 go:black
-  "white played a bad move" 4 5 go:white go:comment
-  "white could have played a decent move" 5 6 go:white go:comment
-  "white could have played a great move" 5 7 go:white go:comment
-  go2:alt/3
+  game
+  1 2 black
+  "white tried an unorthodox opening" 3 4 white comment
+  "a more classical opening would be" 8 9 white comment
+  alt/2
+  2 3 black
+  "white played a bad move" 4 5 white comment
+  "white could have played a decent move" 5 6 white comment
+  "white could have played a great move" 5 7 white comment
+  alt/3
   )</artwork></figure></t>
       <t>it would be transformed into</t>
-      <t><figure><artwork>( go:game
-  ( go:black 1 2 )
-  ( go:alternative
-    ( go:comment "white tried an unorthodox opening" ( go:white 3 4 ) )
-    ( go:comment "a more classical opening would be" ( go:white 8 9 ) ) )
-  ( go:black 2 3 )
-  ( go:alternative
-    ( go:comment "white played a bad move" ( go:white 4 5 ) )
-    ( go:comment "white could have played a decent move" ( go:white 5 6 ) )
-    ( go:comment "white could have played a great move" ( go:white 5 7 ) ) )
-  ( go:white 4 5 ) )</artwork></figure>
+      <t><figure><artwork>( game
+  ( black 1 2 )
+  ( alternative
+    ( comment "white tried an unorthodox opening" ( white 3 4 ) )
+    ( comment "a more classical opening would be" ( white 8 9 ) ) )
+  ( black 2 3 )
+  ( alternative
+    ( comment "white played a bad move" ( white 4 5 ) )
+    ( comment "white could have played a decent move" ( white 5 6 ) )
+    ( comment "white could have played a great move" ( white 5 7 ) ) )
+  ( white 4 5 ) )</artwork></figure>
       </t>
       <t>
 	Such an arity-carrying form costs 10 or 13 bytes to be usable when it is added to an
