@@ -1,0 +1,11 @@
+( version 1 0 )
+( import 20 ( package ( hash:shake128 #[8] 0x00000000-00000000 ) 3 ) )
+( card:game
+  ( boon:map
+    card:hands ( boon:map
+		 card:player1 ( boon:list ( hearts 1 ) ( clubs king ) )
+		 card:player2 ( boon:list ( diamonds jack ) ( clubs 10 ) ) )
+    card:turn card:player1
+    card:score ( boon:map
+		 card:player1 87
+		 card:player2 43 ) ) )

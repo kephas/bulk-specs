@@ -4,4 +4,6 @@
 ( explain ( namespace 21 ) "BULK's Own Object Notation" )
 ( mnemonic boon:map "map" )
 ( mnemonic boon:list "list" )
+( mnemonic boon:merge-maps "merge-maps" )
+( mnemonic boon:concat-lists "concat-lists" )
 ]) )

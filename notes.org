@@ -292,9 +292,9 @@
 ** BOON
    BULK's Own Object Notation
 
-   BOON adds names to be able to encode some common types of values found in JSON and formats with
-   a semantics derived from it, like MessagePack or CBOR. An expression that is one of BOON's cases
-   has type =Boon=.
+   BOON provides names to encode some common types of values found in JSON and formats with a
+   semantics derived from it, like MessagePack or CBOR do. An expression that is one of BOON's
+   cases has type =Boon=.
 
    BOON values can be:
 
@@ -304,9 +304,100 @@
    - scalars :: =nil=, =bulk:true=, =bulk:false=, numbers and strings are represented with the
      existing BULK syntax
 
-
    If values in maps and lists are only BOON values and if keys and strings are only UTF-8 strings,
    then an expression of type =Boon= also has type =Json=.
+
+*** Reconciling BOON and JSON
+    BOON can be used to encode data in a data model that is close to JSON's but more efficient and
+    flexible. But in the same way that many applications already use JSON to encode a data model
+    that doesn't completely fit JSON's, BULK's abstraction can be used to automatically reconcile
+    BOON and JSON.
+
+    For example, a card game that uses algebraic data types (like Haskell) or enums (like Rust) for
+    cards could serialize a game state object in BOON in a way that mirrors exactly the game's data
+    model:
+
+    #+BEGIN_SRC lisp
+      ( version 1 0 )
+      ( import 20 ( package ( shake128 #[8] 0x00000000-00000000 ) 3 ) )
+      ( game
+	( boon:map
+	  hands ( boon:map
+		       player1 ( boon:list ( hearts 1 ) ( clubs king ) )
+		       player2 ( boon:list ( diamonds jack ) ( clubs 10 ) ) )
+	  turn player1
+	  score ( boon:map
+		       player1 87
+		       player2 43 ) ) )
+    #+END_SRC
+
+    The same data would be far more verbose in JSON:
+
+    #+BEGIN_SRC json
+      {
+	"type": "game",
+	"hands": {
+	  "player1": [{"suit": "hearts", "value": 1}, {"suit": "clubs", "value": "king"}],
+	  "player1": [{"suit": "hearts", "value": 1}, {"suit": "clubs", "value": "king"}]
+	},
+	"turn": "player1",
+	"score": {
+	  "player1": 87,
+	  "player2": 43
+	}
+      }
+    #+END_SRC
+
+    The BOON data weighs 46 bytes, of which 29 bytes are the version and import and 17 bytes are
+    the actual data (in any use case where many game states would be serialized, either in a
+    client/server exchange or in a game history record, those 29 bytes would be present only
+    once). In comparison, the JSON data weighs 223 bytes. Readability can be traded off for size to
+    bring down the JSON to 158 bytes, and some data can be encoded in strings rather than JSON
+    objects, to get down to 100 bytes:
+
+    #+BEGIN_SRC json
+      {
+	"type":"game",
+	"hands": {
+	  "pl1": [{"s": "♥", "v": 1},{"s": "♣", "v": "K"}],
+	  "pl2": [{"s": "♥", "v": 1},{"s": "♣", "v": "K"}]
+	},
+	"turn": "p1",
+	"score": {
+	  "pl1": 87,
+	  "pl2": 43
+	}
+      }
+    #+END_SRC
+
+
+    #+BEGIN_SRC json
+      {
+	"type":"game",
+	"hands": {
+	  "1": ["♥1", "♣K"],
+	  "2": ["♥1", "♣K"]
+	},
+	"turn": 1,
+	"score": {
+	  "1": 87,
+	  "2": 43
+	}
+      }
+    #+END_SRC
+
+    The interesting thing is that the package for the game namespace could provide a translation
+    that automatically transform the BOON data into one of the two first JSON encodings.
+
+    #+BEGIN_SRC lisp
+      ( define card:game
+	  ( subst ( boon:merge-maps ( boon:map "type" "game" ) ( arg 0 ) ) ) )
+      ( define card:player1 "player1" )
+      ( define hearts
+	  ( subst ( boon:map "suit" "hearts" "value" ( arg 0 ) ) ) )
+      ( define king "king" )
+    #+END_SRC
+
 ** RDF 1.0
 
    - =( iri-reference String )=
