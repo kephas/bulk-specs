@@ -1215,7 +1215,7 @@
 	  </t>
 	  <t>
 	    The semantics of this form is the side-effect of creating a package identified by
-	    <tt>{id}</tt>. Packages MUST be immutable, <tt>{id}</tt> MUST be a digest verifiable
+	    <tt>{id}</tt>. Packages MUST be verifiable, <tt>{id}</tt> MUST be a digest verifiable
 	    against the bytes contained in <tt>{def}</tt>. The bytes contained in <tt>{def}</tt>
 	    MUST have the shape <tt>{data}:Expr {namespaces}</tt>. <tt>{namespaces}</tt> MUST be a
 	    sequence of expressions each identifying a BULK namespace.
@@ -1226,6 +1226,15 @@
 	    UUID), this data MUST be provided by <tt>{data}</tt>. If such information is not needed,
 	    <tt>{data}</tt> MUST be <tt>nil</tt>.
 	  </t>
+	  <t>
+	    It is an evaluation error if the processing application recognizes that <tt>{id}</tt>
+	    designates a digest but it doesn't match the bytes contained in <tt>{def}</tt>.
+	  </t>
+	  <t>
+	    Packages are meant to be immutable, but that would be circumvented if they were built
+	    upon namespaces that aren't. A package that only contains immutable namespaces is an
+	    immutable package.
+	    </t>
 	</section>
 
 	<section anchor="def-name" title="Name definitions">
@@ -2118,21 +2127,36 @@
 
     <section anchor="discover" title="Discovery of namespaces and packages">
       <t>
-	When a processing application encounters an unknown namespace or package identifier, it
-	could ask several sources to provide the definition. The possible sources include the agent
-	that made use of the unknown identifier, or known BULK registries (registries of definitions
-	for BULK namespaces or packages).
+	When a processing application encounters an unknown namespace or package identifier, it MAY
+	ask several sources to provide the definition. This is called discovery. The possible
+	sources include the agent that made use of the unknown identifier, or known BULK registries
+	(registries of definitions for BULK namespaces or packages).
       </t>
       <t>
 	The fundamental security risk in this mechanism is when an attacker manages to be the first
 	to use some identifier and poison the processing application by giving it a malicious
 	definition, or managed to poison one or several BULK registries. To avoid that risk, it is
-	RECOMMENDED that a processing application or BULK registry only accept definitions for
-	immutable namespaces from untrusted agents.
+	RECOMMENDED that a processing application only accept definitions for immutable namespaces
+	and immutable packages during discovery. It is also RECOMMENDED that a BULK registry only
+	store definitions for immutable namespaces and immutable packages.
       </t>
       <t>
-	With packages (because they MUST be immutable) and immutable namespaces, though, automatic
-	discovery can be a safe mechanism if some risks are mitigated:
+	When they come from an untrusted source, a processing application or a BULK registry MUST
+	NOT accept namespace or package definitions that are not immutable (including when the
+	digest doesn't match the data, or when the identifier form is not known to be a digest by
+	the processing application).
+      </t>
+      <t>
+	While discovery of bootstrapping namespaces and packages can be done, the digest algorithm
+	used in the identifier of a bootstrapping namespace of package MUST be known before
+	discovery. This is possible when a bootstrapping package uses a digest from a namespace that
+	was known by the processing application before discovery, or when the digest name comes from
+	a namespace where it is aliased to a digest name that was known by the processing
+	application before discovery.
+      </t>
+      <t>
+	With immutable namespaces and immutable packages, though, automatic discovery can be a safe
+	mechanism if some risks are mitigated:
 	<list style="symbol">
 	  <t>
 	    Asking untrusted registries might expose when agents communicate with the processing
@@ -2152,7 +2176,7 @@
 	    not. Some processing applications SHOULD provide configurable policies so that operators
 	    can choose one that is relevant to the sensitivity of the services they
 	    operate. Examples could include: always asking for namespaces that haven't been
-	    explicitly maked safe, always or never asking to some classes of agents.
+	    explicitly marked safe, always or never asking to some classes of agents.
 	  </t>
 	</list>
       </t>
