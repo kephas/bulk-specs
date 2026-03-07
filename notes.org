@@ -103,137 +103,107 @@
    When reading expressions as entries, ignore =nil= and process =description= forms. Entries and
    descriptions both are numbered (not =nil=).
 
-   - 0x00 :: ( bark {content} )
-     - can also be used as a reference after imports, to signal that the stream is a BARK stream
-   - 0x01 :: ( described {metadata}:Expr {content}:Expr )
-     - {content} can be an array (e.g. a file's content) or BULK expression
-   - 0x03 :: ( description {metadata}:Expr )
+   - =bark= (=EagerFunction=)
+   - =( described {metadata}:Expr {content}:Expr )=
+     - ={content}= can be an array (e.g. a file's content) or BULK expression
+   - =( description {metadata} )=
      - can be inserted in many places in a BULK stream to annotate virtually anything
-   - 0x04 :: ( metadata {data} )
-   - 0x05 :: ( count {num} )
-   - 0x06 :: ( about {what} )
-     - {what} is a sequence of expressions, each identifying the entry
-   - 0x25 :: ( entry {num} )
-   - 0x26 :: ( previous {skip} )
-     - within a metadata form, designates the expression before that metadata form (possibly after
-       skipping {skip} expressions)
-   - 0x27 :: ( next {skip} )
-     - within a metadata form, designates the expression after that metadata form (possibly after
-       skipping {skip} expressions)
-   - 0x28 :: everything-before
-     - within a metadata form, designates the whole sequence of expressions before that metadata
-       form
-   - 0x29 :: ( before {marker}:Ref {skip} )
-     - within a metadata form, designates the expression in the outer context of the metadata form
-       that is before the occurrence of {marker} (possibly after skipping {skip} expressions)
-       - undefined if multiple occurrences
-   - 0x2A :: ( after {marker}:Ref {skip} )
-     - like before, but after…
+     - can be used to group metadata expressions
+   - =( about {what} )=
+     - ={what}= is a sequence of identifiers, each identifying a subject of the metadata
+     - if there are N subjects, it is equivalent to N metadata forms each with one subject (it is
+       important for metadata like RDF where there is a notion of base URI)
+   - =( identified {ids} )=
+     - ={ids}= is a sequence of identifiers, each identifying the subject of the metadata
+     - an array as identifier is only valid within the BARK archive (and could be used as fragment
+       identifier)
+     - a =(bark:hash {hash} )= form as identifier is a global content-adressing identifier
+   - =next=
+     - as identifier, designates the first expression in the scope of the metadata form
+   - =( comment Expr )=
+   - =( path {components} ):Path=
+     - by design, there is no way to express an absolute FS path
+       - an application is free to define insecure forms to express absolute paths and links
+       - what if a component contain "/"?
+	 - implementation should not resolve the name but look it up in the directory entries
+           (that takes care of "/" but not of a ".." entry, this still needs checking, shame on
+           Unix)
    -
-   - 0x30 :: ( compressed {method}:MeTOD Bytes )
-   - 0x31 :: deflate
-   - 0x32 :: deflate64
-   - 0x33 :: lzma
-   - 0x34 :: lzma2
-   - Ox35 :: bz2
-   - 0x36 :: lzw
-   - 0x37 :: lzo
-   - 0x3D :: ( hash {signature}:Expr )
-   - 0x3F :: ( encrypted {method}:Expr Bytes )
-   - tar semantics
+   - =( compressed {method}:Expr {content}:Expr )=
+   - =deflate=
+   - =deflate64=
+   - =lzma=
+   - =lzma2=
+   - =bz2=
+   - =lzw=
+   - =lzo=
+   - =( hash {signature}:Expr )=
+   - =( encrypted {method}:Expr Bytes )=
+   - tar-inspired semantics
      - metadata
-       - Ox40 :: ( path {components} )
-	 - by design, there is no way to express an absolute FS path
-	   - an application is free to define insecure forms to express absolute paths and links
-	   - TODO: what if a component contain "/"?
-	     - implementation should not resolve the name but look it up in the directory entries
-               (that takes care of "/" but not of a ".." entry, this still needs checking, shame on
-               Unix)
-       - 0x41 :: ( user {id}:Expr )
-	 - {id} can be anything, incl. string and Nat
-	   - multiple entries (e.g. "pierre"/1000: =( user ( string "pierre" ) ) ( user (
-             unsigned-integer 1000 )=)
-       - 0x42 :: ( group {id}:Expr )
-       - 0x43 :: contiguous
-       - 0x44 :: ( access {time} )
-       - 0x45 :: ( modification {time} )
-       - 0x46 :: ( change {time} )
-       - 0x47 :: ( mode {mode} )
-       - 0x48 :: ( posix-acl {acls} )
-	 - 0x49 :: ( user {id} {mode} {default?} )
-	 - 0x4A :: ( group {id} {mode} {defaults?} )
-	 - 0x4B :: ( other {mode} {defaults?} )
-	 - 0x4C :: ( mask {mode} {defaults?} )
-       - 0x4D :: ( xattr {xattr} )
-	 - {xattrs} = ( {name} {value} )+
-       - Ox4E :: ( offsets Nat+ )
-	 - meant for forms not containing individual entries' metadata
-	 - TODO: base?
-       - 0x4F :: ( offset Nat )
-	 - meant for forms grouping an entry with its metadata
-	 - TODO: base?
+       - =( user {id}:Expr )=
+	 - ={id}= can be anything, incl. string and Nat
+	   - can appear multiple times
+	     - e.g. "pierre"/1000:
+	       - =( user ( string "pierre" ) )=
+	       - =( user 1000 )=
+       - =( group {id}:Expr )=
+       - =( accessed {time} )=
+       - =( modified {time} )=
+       - =( changed {time} )=
+       - =( mode {mode} )=
+       - =( posix-acl {acls} )=
+	 - =( user {id} {mode} {default?} )=
+	 - =( group {id} {mode} {defaults?} )=
+	 - =( other {mode} {defaults?} )=
+	 - =( mask {mode} {defaults?} )=
+       - =( xattr {xattr} )=
+	 - ={xattrs}= is a property list of ={name} {value}=
      - entry
        - an array as an entry is presumed to be a regular file
-       - 0x50 :: ( hard-link Path )
-       - 0x51 :: ( sym-link Path )
-       - 0x52 :: ( char-dev {major}:Nat {minor}:Nat )
-       - 0x53 :: ( block-dev {major}:Nat {minor}:Nat )
-       - 0x54 :: directory
-       - 0x55 :: fifo
-       - 0x56 :: ( sparse-file {segments} )
+       - =( hard-link Path )=
+       - =( sym-link Path )=
+       - =( char-dev {major}:Nat {minor}:Nat )=
+       - =( block-dev {major}:Nat {minor}:Nat )=
+       - =directory=
+       - =fifo=
+       - =( sparse-file {segments} )=
 	 - Bytes
-	 - 0x57 :: ( hole {size}:Nat )
-	   - {size} in bytes
-   - gzip semantics
-     - 0x60 :: ( binary Boolean )
-     - 0x61 :: ( comment Expr )
-     - 0x62 :: ( os Expr )
-       - vocabularies may provide additional expressions for OSes
-       - 0x70 :: FAT file system (DOS, OS/2, NT) + PKZIPW 2.50 VFAT, NTFS
-       - 0x71 :: Amiga
-       - 0x72 :: VMS (VAX or Alpha AXP)
-       - 0x73 :: Unix
-       - 0x74 :: VM/CMS
-       - 0x75 :: Atari
-       - 0x76 :: HPFS file system (OS/2, NT 3.x)
-       - 0x77 :: Macintosh
-       - 0x78 :: Z-System
-       - 0x79 :: CP/M
-       - 0x7A :: TOPS-20
-       - 0x7B :: NTFS file system (NT)
-       - 0x7C :: SMS/QDOS
-       - 0x7D :: Acorn RISC OS
-       - 0x7E :: VFAT file system (Win95, NT)
-       - 0x7F :: MVS (code also taken for PRIMOS)
-       - 0x80 :: BeOS (BeBox or PowerMac)
-       - 0x81 :: Tandem/NSK
-       - 0x82 :: THEOS
-     - 0x63 :: maximum-compression
-     - 0x64 :: fastest-compression
-     - 0x83 :: ( acorn-bbc-mos-file-type-info Bytes )
-     - 0x84 :: ( apollo-file-type-info Bytes )
-     - 0x85 :: ( cpio-compressed Bytes )
-     - gzsig extra field should be created from a compatible
-       cryptographic signature
-     - 0x86 :: ( keynote-assertion Bytes )
-     - 0x88 :: ( macintosh-info Bytes )
-     - 0x89 :: ( acorn-file-type-info Bytes )
-   - dar semantics
+	 - =( hole {size}:Nat )=
+	   - ={size}= in bytes
+   - tar-specific
+     - =contiguous=
+   - gzip-specific (cf. [[https://datatracker.ietf.org/doc/html/rfc1952][RFC 1952]])
+     - =( ascii-text Boolean )=
+     - =( os Expr )=
+       - other vocabularies may provide additional expressions for OSes
+       - =fat=
+       - =amiga=
+       - =vms=
+       - =unix=
+       - =vm/cms=
+       - =atari=
+       - =hpfs=
+       - =macintosh=
+       - =z-system=
+       - =cp/m=
+       - =tops-20=
+       - =ntfs=
+       - =qdos=
+       - =acorn=
+       - =unknown=
+     - =maximum-compression=
+     - =fastest-compression=
+     - =( extra-field {subfield-id}:Bytes Bytes )=
+     - ( cpio-compressed Bytes )
+   - dar-inspired semantics
      - split archives
        - advertised in container metadata
-	 - 0x90 :: ( split-archive {archive-id} {member-id} {members} )
-	   - members are *description* forms that MAY contain filename or hash
+	 - archive's ID
+	 - members' IDs
      - FS-specific attributes
      - incremental backup?
      - fast member extract? (how does DAR does that?)
-
-
-   One could define a whole namespace of compact versions, like
-   : about-num ⇔ ( lambda n ( about ( entry n ) ) )
-   : about-previous ⇔ ( about ( previous ) )
-   : about-previous* ⇔ ( lambda n ( about ( previous n ) ) )
-   : about-num[3] ⇔ ( about ( entry 3 ) )
-   : about-previous[2] ⇔ ( about ( previous 2 ) )
 
 *** BARK archive (.bark)
     A =foobar.bark= archive with multiple files:
@@ -575,6 +545,10 @@
    - serpent?
    - openpgp?
 
+** TODO BULK Web Token
+   Compare with CWT where claim keys are only documented in RFC, not CBOR, also CBOR cannot
+   compactly express different versions of fields that take tags or not.
+
 ** Asking input
    - test https://github.com/eishay/jvm-serializers?
 
@@ -594,26 +568,26 @@
 *** TODO Principle
 *** TODO Security implications
 * Minimal BULK
-  : ( version 1 0 ) ( import ( package 20 ( hash:shake128 #[8] 8B 2 ) ) ) some:type #[0–63] {content}
+  : ( version 1 0 ) ( import ( package 20 ( hash:shake128 #[8] 8B ) 2 ) ) some:type #[0–63] {content}
   : |<---- 6 ---->| |<----------------------- 23 ---------------------->| |<----- 3 ----->|
 
-  : ( version 1 0 ) ( import ( package 20 ( hash:shake128 #[8] 8B 2 ) ) ) some:type # {size} {content}
+  : ( version 1 0 ) ( import ( package 20 ( hash:shake128 #[8] 8B ) 2 ) ) some:type # {size} {content}
   : |<---- 6 ---->| |<----------------------- 23 ---------------------->| |<-- 3 -->| 2/3/5/9
 
 
   When a profile is known (like a specific file extension for typed blobs):
 
   : ( version 1 0 ) some:type #…
-  : |<---- 8 ---->| |<- 3 ->|
+  : |<---- 6 ---->| |<- 2 ->|
 
-  | content | BULK overhead | with profile |
-  |---------+---------------+--------------|
-  | 63B     | 32B           | 11B          |
-  | 255B    | 34B           | 13B          |
-  | 65kB    | 35B           | 14B          |
-  | 4GB     | 37B           | 16B          |
-  | 18EB    | 41B           | 20B          |
-  |         |               |              |
+  | content | array overhead | with profile | BULK overhead |
+  |---------+----------------+--------------+---------------|
+  | 63B     |              1 |            9 |            32 |
+  | 255B    |            2+1 |           11 |            34 |
+  | 65kB    |            2+2 |           12 |            35 |
+  | 4GB     |            2+4 |           14 |            37 |
+  | 18EB    |            2+8 |           18 |            41 |
+  |         |                |              |               |
 
 * The power of abstraction
 ** Explicit relationship between similar data
