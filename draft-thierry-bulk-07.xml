@@ -2846,26 +2846,26 @@
     <section title="Marking and extending media types with BULK" anchor="typing-medias">
       <t>
 	One possible use of BULK is the ability to add metadata around a file. The most basic
-	metadata is the media type and its parameters. Although many media type can be expressed
+	metadata is the media type and its parameters. Although many media types can be expressed
 	with a file extension, this usually doesn't encode parameters like the charset used for a
-	plain text file format. This is why most spreadsheet software present the user a preview of
-	a few rows while asking for the encoding when importing CSV data.
+	plain text file format. This is why most spreadsheet software present the user with a
+	preview of a few rows while asking them for the encoding, when importing CSV data.
       </t>
       <t>
 	A media type vocabulary would make it possible to encode parameters and provide names for
-	known parameter values.
+	some known parameter values.
       </t>
       <t>
-	While a <tt>.md</tt> file extension encodes the media type <tt>text/markdown</tt>, a short
-	BULK header could encode the media type <tt>text/markdown; charset=ISO-8859-15;
+	While a <tt>.md</tt> file extension only encodes the media type <tt>text/markdown</tt>, a
+	short BULK header could encode the full media type <tt>text/markdown; charset=ISO-8859-15;
 	variant=GFM</tt>:
       </t>
       <sourcecode>( version 1 0 )
 ( import 20 ( package ( shake128 #[8] 0xDABBED01 ) 2 ) )
 ( markdown ( iana-charset 111 ) "GFM" )</sourcecode>
       <t>
-	While a <tt>.csv</tt> file extension encodes the media type <tt>text/csv</tt>, a short BULK
-	header could encode the media type <tt>text/csv; charset=UTF-8; header=absent</tt>
+	While a <tt>.csv</tt> file extension only encodes the media type <tt>text/csv</tt>, a short
+	BULK header could encode the full media type <tt>text/csv; charset=UTF-8; header=absent</tt>
       </t>
       <sourcecode>( version 1 0 )
 ( import 20 ( package ( shake128 #[8] 0xDABBED01 ) 2 ) )
