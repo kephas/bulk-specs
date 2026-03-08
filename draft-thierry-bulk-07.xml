@@ -2307,6 +2307,86 @@
 	</section>
       </section>
       <section anchor="full-duplex" title="Full-duplex communication">
+	<section title="Separate channels">
+	  <t>
+	    At the BULK level, the simplest way to do full-duplex communication is when the
+	    underlying protocol can create separate channels for each direction. Each agent streams
+	    its own BULK stream that is fully independant from the other agent's stream. There is no
+	    restriction on the semantics used in the streams and an agent can use namespace
+	    associations and definitions to build a complex data model.
+	  </t>
+	  <t>
+	    Each agent is faced with the usual security considerations of BULK processing (see <xref
+	    target="sec"/>). An agent faced with BULK data that crosses a safety threshold SHOULD
+	    stop processing the other agent's stream. For that reason, a protocol using separate
+	    channels for BULK full-duplex communication SHOULD provide a way for an agent to end a
+	    channel. This SHOULD include the reason for ending the channel, and if the agent offers
+	    the option to restart the channel from scratch. It MAY also include the option to
+	    restart the channel up to a previous safe dispatch point.
+	  </t>
+	</section>
+	<section title="Shared channel">
+	  <t>
+	    When two agents want to communicate over a bidirectional channel and reference data sent
+	    by each other, one naive way to do it would be to consider a virtual BULK stream acting
+	    as a kind of shared whiteboard. Each agent sending a BULK expression would add that
+	    expression to the white board. When the agents have a mechanism to ensure some
+	    transactional safety, meaning that one agent cannot write without having properly read
+	    what the other agent had written, this is a valid option. This can even work for more
+	    than two agents.
+	  </t>
+	  <t>
+	    For when this safety is not available, this specification defines BULK's basic
+	    full-duplex protocol. In the basic protocol, the fact that it is used is an out-of-band
+	    information, which could be part of the underlying protocol statically or conveyed
+	    during connection establishment. Another BULK full-duplex protocol could instead define
+	    a namespace to convey its use and some configuration parameters.
+	  </t>
+	  <t>
+	    In the basic protocol, the agent that initiates the communication is called the
+	    initiating agent and the other agent is called the responding agent. The iniitiating
+	    agent and the responding agents each have a set of namespace markers designated for
+	    their use. The initiating agent's designated markers are markers <tt>m</tt> such that
+	    <tt>m AND 0x10 = 0x0</tt>. The responding agent's designated markers are markers
+	    <tt>m</tt> such that <tt>m AND 0x10 = 0x10</tt>. Agents MUST only associate immutable
+	    namespaces and MUST only associate them to their designated markers and MUST not
+	    associate a namespace to a marker that already is associated to a namespace. Agents MUST
+	    only define names that don't already have a definition, and only to references whose
+	    namespace marker is in their designated markers. It is a protocol error when any of
+	    those rules is broken by either agent.
+	  </t>
+	  <t>
+	    There is a separate virtual BULK stream associated with each agent. Each agent has a
+	    <em>pull position</em>, which is an offset in the other agent's virtual stream. At the
+	    beginning of the exchange, each agent's pull position is 0, the beginning of the stream.
+	  </t>
+	  <t>
+	    Let Alice and Bob be two agents in a full-duplex communication. When Alice streams a
+	    BULK expression A1 that only contains references with standard namespaces or Alice's
+	    designated markers, this expression A1 is appended to Alice's virtual stream. But when
+	    Alice streams a BULK expression A2 that contains one or several references with Bob's
+	    designated markers, that got a a definition, through namespace association or by
+	    definition, after Alice's pull position, those definitions are <em>pulled</em>, i.e. the
+	    content of Bob's virtual stream between Alice's pull position and the first dispatch
+	    point where all those references have a definiton gets appended to Alice's virtual
+	    stream, Alice's pull position becomes that dispatch point, then A2 is appended to
+	    Alice's virtual stream. When Alice streams a BULK expression A3 that contains one or
+	    several references with Bob's designated markers, but all those references got a
+	    definition before the pull position, only A3 is appended to Alice's virtual stream.
+	  </t>
+	  <t>
+	    If both agents have associated a single namespace to correct designated markers for each
+	    one, and both agents have independently defined a name that wasn't defined in the
+	    namespaces's immutable definition, it is a protocol error when either agent pulls the
+	    other agent's definition of that name.
+	  </t>
+	  <t>
+	    Whenever an agent sees a protocol error, it MUST end the connection. Before ending the
+	    connection, the agent MAY stream an expression shaped <tt>( explain false
+	    {reason}:String )</tt>, in which case <tt>{reason}</tt> MUST contain a human-readable
+	    description of the issue that triggered the disconnect.
+	  </t>
+	</section>
       </section>
     </section>
 
