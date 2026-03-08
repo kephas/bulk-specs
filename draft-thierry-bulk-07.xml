@@ -598,10 +598,15 @@
 	  <t>
 	    A processing application MAY implement evaluation of BULK expressions and streams. When
 	    evaluating a BULK stream, when the parser gets to the dispatch stage and the context is
-	    the abstract yield, the last expression in the context is replaced by what it evaluates
-	    to. (of course, this description is supposed to provide the semantics of BULK
-	    evaluation, but a processing application MAY implement evaluation with a different
-	    algorithm as long as it provides the same semantics)
+	    the abstract yield (this is called a <em>dispatch point</em>), the last expression in
+	    the context is replaced by what it evaluates to. (of course, this description is
+	    supposed to provide the semantics of BULK evaluation, but a processing application MAY
+	    implement evaluation with a different algorithm as long as it provides the same
+	    semantics)
+	  </t>
+	  <t>
+	    Evaluation cannot affect parsing, which means that parsing and evaluation can be done in
+	    parallel.
 	  </t>
 	  <t>
 	    The default evaluation rule is that an expression evaluates to itself. A name within a
@@ -622,9 +627,12 @@
 	    <tt>Function</tt>.
 	  </t>
 	  <t>
-	    If the first expression produced as a value by evaluation has type
-	    <tt>EagerFunction</tt>, then after the whole abstact yield has been evaluated, the
-	    resulting sequence of expressions MUST be evaluated as a form.
+	    In the abstract yield, if the first expression produced as a value by evaluation has
+	    type <tt>EagerFunction</tt>, then after the whole abstact yield has been evaluated, the
+	    resulting sequence of expressions MAY be evaluated as a form. This is called whole
+	    stream evaluation, and MAY be a configuration option. In particular, a processing
+	    application MAY choose to disable whole stream evaluation during <xref
+	    target="streaming">streaming</xref>.
 	  </t>
 	  <t>
 	    When this specification describes the evaluation of a form starting with a
@@ -2182,11 +2190,12 @@
       </t>
     </section>
 
-    <section title="Streaming">
+    <section anchor="streaming" title="Streaming">
       <t>
 	The parsing and evaluation algorithms allow for reading a BULK stream while it has not been
-	completely received by the processing application. Once the parser reaches the dispatch
-	stage, the fully parsed expression can be evaluated if evaluation is enabled.
+	completely received by the processing application. Once the parser reaches a dispatch point
+	(see <xref target="eval"/>), the fully parsed expression can be evaluated if evaluation is
+	enabled.
       </t>
       <t>
 	This makes BULK usable for streaming data, including in the case of a communication protocol
@@ -2206,29 +2215,28 @@
 	  produce different results for a common portion of the concrete yield.
 	</t>
 	<t>
-	  This means that a protocol that employs BULK broadcasting MUST provide a profile, either
-	  in the protocol specification, or during connection establishment. For the latter, when a
-	  BULK stream is broadcasted by HTTP, the server can use the <tt>bulk-profile</tt> link
-	  relation in headers. The target of the link MUST be a BULK stream that contains the
-	  provided profile.
+	  This means that a protocol that employs BULK broadcasting and uses any extension namespace
+	  MUST provide a profile, either in the protocol specification, or during connection
+	  establishment. For the latter, when a BULK stream is broadcasted by HTTP, the server can
+	  use the <tt>bulk-profile</tt> link relation in headers. The target of the link MUST be a
+	  BULK stream that contains the provided profile.
 	</t>
 	<t>
 	  When broadcasting BULK, one issue is stream capture, to discover an offset in the stream
-	  that correpond to the dispatch stage (called a dispatch point). This specification
-	  describes three ways: server clipping, beacon expressions and Ogg encapsulation, but
-	  others are possible.
+	  that is a dispatch point. This specification describes four ways: server clipping, beacon
+	  expressions, Ogg encapsulation and Magrat encapsulation, but others are possible.
 	</t>
 	<section title="Server clipping">
 	  <t>
 	    Conceptually, the simplest solution to stream capture is just for the server to always
 	    start sending data from a dispatch point. If the server streaming data can be aware of
 	    the internal structure of the BULK stream, it can make new clients wait until the next
-	    dispatch point.
+	    dispatch point to start sending them data.
 	  </t>
 	</section>
 	<section title="Beacon expressions">
 	  <t>
-	    To signal some dispatch points, the abstract yield of the BULK stream contains an
+	    To signal some of the dispatch points, the abstract yield of the BULK stream contains an
 	    expression whose byte pattern is unique in the stream, repeated frequently enough to
 	    minimize the length of bytes that a processing application must go through before
 	    achieving stream capture. After reading that byte pattern, the processing application
@@ -2249,21 +2257,52 @@
 	    )</tt>.
 	  </t>
 	</section>
-	<section title="Ogg encapsulation">
+	<section anchor="ogg" title="Ogg encapsulation">
 	  <t>
 	    The Ogg format<xref target="RFC3533"/> already provides an efficient mechanism for
 	    stream capture with a relatively low overhead. It can stream and multiplex data from
 	    multiple media types.
 	  </t>
 	  <t>
-	    The BULK stream MUST begin with a version form, and that form
-	    constitutes the codec identifier.
+	    The BULK stream MUST begin with a version form, and the beginning of that form
+	    constitutes the codec identifier: <tt>( version 1</tt> (see <xref target="iana-ogg"/>).
 	  </t>
 	  <t>
 	    Ogg packets provided to the Ogg encoder MUST start and end at dispatch points. This
 	    ensures than any complete Ogg packet provided to the processing application by the Ogg
-	    decoder can be parsed into one or several expressions. Granule position SHOULD be the
-	    number of expressions parsed in the abstract yield after parsing the Ogg packet.
+	    decoder is a valid BULK stream and can be parsed into zero or more expressions. Granule
+	    position SHOULD be the number of expressions parsed in the abstract yield after parsing
+	    the Ogg packet.
+	  </t>
+	</section>
+	<section title="Magrat encapsulation">
+	  <t>
+	    The Magrat encapsulation is inspired by the Ogg format and has similar properties,
+	    except that it is less concerned with audio and video, is less powerful, and takes less
+	    space (hence the name).
+	  </t>
+	  <t>
+	    A Magrat broadcast stream is a sequence of Magrat forms. The BULK stream that is
+	    encapsulated inside a Magrat broadcast stream is called the Magrat embedded stream. This
+	    specification documents basic Magrat encapsulation. In this version, a Magrat form has
+	    the following shape:
+	  </t>
+	  <sourcecode>( values ( bulk {chunk}:Bytes ) {checksum}:Expr )</sourcecode>
+	  <t>
+	    This means that a processing application can look for the sequence of six bytes
+	    <tt>0x01-1013-01-1009</tt> to mark the beginning of a Magrat form. In case those bytes
+	    were in a BULK array, there are several features that work to verify that they actually
+	    started a Magrat form: first, they must be followed by an array <tt>{chunk}</tt>, a form
+	    end, a single exression <tt>{checksum}</tt> and another form end, second,
+	    <tt>{checksum}</tt> MUST be a digest that matches the bytes contained in
+	    <tt>{chunk}</tt>. Those bytes are called the Magrat chunk and they MUST be a valid BULK
+	    stream. A protocol using Magrat encapsulation MAY specify which kind of checksum can be
+	    used.
+	  </t>
+	  <t>
+	    In the basic Magrat encapsulation, the concatenation of chunks is the embedded
+	    stream. An extension of basic Magrat encapsulation MAY add metadata forms inside the
+	    chunk that are removed before the chunks are concatenated as the embedded stream.
 	  </t>
 	</section>
       </section>
@@ -2445,7 +2484,7 @@
 	  </list>
 	</t>
       </section>
-      <section title="Ogg media mapping">
+      <section anchor="iana-ogg" title="Ogg media mapping">
 	<t>
 	  This specification defines a new Ogg logical bitsream type<xref target="RFC5334"/>, for
 	  the media type <tt>application/bulk</tt>:
@@ -2455,6 +2494,9 @@
 	    <t hangText="Codec identifier"><tt>char[4]: '\x01\x10\x00\x81'</tt></t>
 	    <t hangText="Codecs parameter">bulk1</t>
 	  </list>
+	</t>
+	<t>
+	  For more details, see <xref target="ogg"/>.
 	</t>
 	<t>
 	  A BULK-aware Ogg decoder could anticipate future BULK versions and recognize any version
