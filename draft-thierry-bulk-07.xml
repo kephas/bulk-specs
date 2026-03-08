@@ -139,7 +139,7 @@
 	    By streamability, we mean two levels. The first, being streamed, is the ability of a
 	    format to be transported in pieces that can be processed before the next piece is
 	    available. The second, being broadcasted, is, when a stream of data is cut in two at an
-	    arbitrary place, the ability of the second halt to be processed succesfully.
+	    arbitrary place, the ability of the second halt to be processed successfully.
 	  </t>
 	  <t>
 	    By safety, we mean the ability for a format to have a parser implementing the full
@@ -187,7 +187,7 @@
 	  </t>
 	  <t>
 	    Neither JSON nor XML are suitable for streaming and the whole document must usually be
-	    parsed entirely before its content can be processed, which impacts processsing speed and
+	    parsed entirely before its content can be processed, which impacts processing speed and
 	    footprint.
 	  </t>
 	  <t>
@@ -251,9 +251,9 @@
 		<td>
 		  <t>
 		    The user's BULK image software likely is able to show the existence of different
-		    metadata in every image file and, with safely autodiscovered data, can visualize
-		    the extended metata, at least in a raw form but with human-readable labels or,
-		    better yet, mapped into a form it knows.
+		    metadata in every image file and, with safely auto-discovered data, can
+		    visualize the extended metadata, at least in a raw form but with human-readable
+		    labels or, better yet, mapped into a form it knows.
 		  </t>
 		</td>
 	      </tr>
@@ -261,7 +261,7 @@
 		<td>
 		  <t>
 		    If a user has a collection of pictures with some in a file format her image
-		    software dosen't support yet, she cannot access the kind of common metadata that
+		    software doesn't support yet, she cannot access the kind of common metadata that
 		    she can expect most images to contain (like author or copyright information).
 		  </t>
 		</td>
@@ -283,7 +283,7 @@
 		    If a new image or video compression has been designed, its designers usually
 		    need to create a whole custom container format, with custom metadata format. A
 		    lot of work is needed for the many image or video software to be able to
-		    accomodate reading or writing this new container, new metadata and new
+		    accommodate reading or writing this new container, new metadata and new
 		    codec. Because this new work involves parsing binary data, it often is a source
 		    of security vulnerabilities.
 		  </t>
@@ -324,7 +324,7 @@
 		    evaluation mechanism, for the relevant programming languages, so that software
 		    projects just have to register the link between BULK vocabulary and software
 		    plugin (or may not even need to intervene, if a safe mechanism is implemented to
-		    autodiscover software plugins providing pure functions).
+		    auto-discover software plugins providing pure functions).
 		  </t>
 		</td>
 	      </tr>
@@ -340,7 +340,7 @@
 		<td>
 		  <t>
 		    If a user encounters a BULK file of a yet unknown type, generic BULK tools can
-		    safely autodiscover human-readable information about the structure of the file,
+		    safely auto-discover human-readable information about the structure of the file,
 		    and parts of the file that the user can readily use can be easily found and
 		    viewed or extracted.
 		  </t>
@@ -353,15 +353,15 @@
 		    trade-off between latency caused by message size, ease of debugging and
 		    complexity of the parser. It's deceptively easy to make mistakes in the syntax
 		    that make it harder to use or implement, but using an existing syntax ties the
-		    protocole with this syntax' limitations.
+		    protocol with this syntax' limitations.
 		  </t>
 		</td>
 		<td>
 		  <t>
 		    When a BULK-based communication protocol is designed, its designers can make it
 		    both very compact and easy to debug with very little effort. Generic tools can
-		    present data on the wire with the support of safey autodiscovered data about the
-		    protocol.
+		    present data on the wire with the support of safely auto-discovered data about
+		    the protocol.
 		  </t>
 		</td>
 	      </tr>
@@ -435,7 +435,7 @@
 	    <t>
 	      Whenever a content must be stored as-is instead of serialized, or a highly-optimized
 	      ad hoc serialization exists for some data, anything can always be stored within an
-	      array. They can contain arbitray bytes and there is no limit to their size.
+	      array. They can contain arbitrary bytes and there is no limit to their size.
 	    </t>
 	  </list>
 	</t>
@@ -500,8 +500,8 @@
 	  For example, this specification defines a way do encode a string with explicit encoding
 	  with forms of the shape <tt>( string {enc}:Expr {string}:Expr )</tt>. But the shapes <tt>(
 	  string {arg1}:Int {arg2}:Int )</tt> or <tt>( {arg1}:Int string {arg2}:Int )</tt> are
-	  syntactly valid. They just evaluate to themselves as lists of three expressions, as far as
-	  this specification is concerned.
+	  syntactically valid. They just evaluate to themselves as lists of three expressions, as
+	  far as this specification is concerned.
 	</t>
       </section>
     </section>
@@ -520,7 +520,7 @@
 	some expressions in a BULK stream may have the semantics of a transformation of the abstract
 	yield. A processing application MAY thus not produce or retain the concrete yield but the
 	result of its transformation. This specification deals mainly with the byte sequence and the
-	abstract yield and occasionnally provides guidelines about the concrete yield. Of course, a
+	abstract yield and occasionally provides guidelines about the concrete yield. Of course, a
 	processing application MAY not produce any concrete yield at all but produce various data
 	structures and side effects from parsing the BULK stream (for example, an event sourced
 	application may read its event log from a BULK stream and build its application state by
@@ -628,7 +628,7 @@
 	  </t>
 	  <t>
 	    In the abstract yield, if the first expression produced as a value by evaluation has
-	    type <tt>EagerFunction</tt>, then after the whole abstact yield has been evaluated, the
+	    type <tt>EagerFunction</tt>, then after the whole abstract yield has been evaluated, the
 	    resulting sequence of expressions MAY be evaluated as a form. This is called whole
 	    stream evaluation, and MAY be a configuration option. In particular, a processing
 	    application MAY choose to disable whole stream evaluation during <xref
@@ -660,7 +660,7 @@
 	    When an evaluation error is encountered, a processing application MAY not stop
 	    processing with an error. If the processing application produces a partially evaluated
 	    concrete yield, it MUST convey enough information for the using agent to know the order
-	    of all expressions in the original BULK stream, which expressions were sucessfully
+	    of all expressions in the original BULK stream, which expressions were successfully
 	    evaluated, and which were not because of evaluation errors. A processing application MAY
 	    stop evaluation at the first evaluation error and produce the concrete yield in two
 	    separated sections, the successfully evaluated part, followed by the unevaluated one. A
@@ -893,7 +893,7 @@
 	  </t>
 	  <t>
 	    The <tt>{name}</tt> byte is the name index within the namespace. Vocabularies with more
-	    than 256 names thus need to be spread accross several namespaces.
+	    than 256 names thus need to be spread across several namespaces.
 	  </t>
 	  <t>
 	    The specification of a namespace SHOULD include a mnemonic for the namespace and for
@@ -1012,7 +1012,7 @@
 	  </list>
 	</t>
 	<t>
-	  When parsing a BULK stream, a processing application MUST determine explicitely the major
+	  When parsing a BULK stream, a processing application MUST determine explicitly the major
 	  and minor version of the BULK specification that the stream obeys. This information MAY be
 	  exchanged out-of-band, if BULK is used to exchange a number a very small messages, where
 	  repeated headers of 6 bytes might become too big an overhead. A processing application
@@ -1184,7 +1184,7 @@
 		name in itself with the same name index as the digest form in the import. If the
 		logic of the digest algorithm determines that the digest form in the import matches
 		the digest in the namespace definition (along with additional configuration data
-		provided there), then the boostrapping is successful.
+		provided there), then the bootstrapping is successful.
 	      </t>
 	      <t>
 		It is not an evaluation error if bootstrapping fails. A processing application MAY
@@ -1196,7 +1196,7 @@
 		of the original digest (but a digest algorithm MUST NOT match an empty digest). This
 		makes it possible to define one bootstrapping namespace with a digest big enough to
 		have a good collision resistance, but to use a shorter version in use cases where
-		size matters more than collision resistance. Some digest algorigtms MAY use other
+		size matters more than collision resistance. Some digest algorithms MAY use other
 		policies than full equality of prefix equality to decide matching.
 	      </t>
 	      <t>
@@ -1610,7 +1610,7 @@
 	  specification that have the type Nat, but an application MAY consider a number as having
 	  an unknown value if it can't decode its value or has no adequate data type to store it. It
 	  is only a parsing error if the number is needed by the parsing algorithm. It is only an
-	  evaluation error if the numberis needed by the evaluation algorithm.
+	  evaluation error if the number is needed by the evaluation algorithm.
 	</t>
 	<t>
 	  In the text notation of a BULK stream, a decimal integer is the notation for the smallest
@@ -1826,7 +1826,7 @@
 	    the arity of the current operator. In the error information, a processing application
 	    MAY provide the alternate context and the remaining bytecode. The alternate context
 	    after a failed transformation MUST NOT appear in the abstract yield as if evaluation had
-	    succesfully transformed the bytecode.
+	    successfully transformed the bytecode.
 	  </t>
 	</section>
 	<section anchor="postfix" title="Postfix bytecode">
@@ -1886,7 +1886,7 @@
 	    than the arity of the current operator. In the error information, a processing
 	    application MAY provide the data stack and the remaining bytecode. The data stack after
 	    a failed transformation MUST NOT appear in the abstract yield as if evaluation had
-	    succesfully transformed the bytecode.
+	    successfully transformed the bytecode.
 	  </t>
 	</section>
 	<section anchor="arity" title="Arity definition">
@@ -1900,7 +1900,7 @@
 	  </t>
 	  <t>
 	    <tt>{contexts}</tt> can contain <tt>prefix</tt>, <tt>postfix</tt>, or any other
-	    reference, to specifiy in the context of which kind of bytecode the arities are
+	    reference, to specify in the context of which kind of bytecode the arities are
 	    modified. If <tt>{contexts}</tt> is empty, the arities are modified in the context of
 	    all kinds of bytecodes.
 	  </t>
@@ -2034,7 +2034,7 @@
 	</t>
 	<t>
 	  It is RECOMMENDED that whenever explicit arities would be a small fraction of the total
-	  stream size, they all ge given. A processing application MAY choose to never include
+	  stream size, they all be given. A processing application MAY choose to never include
 	  explicit arities for the names of the main namespace of the format, if that namespace's
 	  definition includes arities, when processing the stream without knowledge of that
 	  definition wouldn't make sense.
@@ -2056,7 +2056,7 @@
 	  use a mechanism to limit the blast radius of possible data corruption.
 	</t>
 	<t>
-	  There are several possible solutions to limit where bytecode errors propagage: one is
+	  There are several possible solutions to limit where bytecode errors propagate: one is
 	  chunking the bytecode into several bytecode forms, another is inserting at regular
 	  intervals a beacon expression that can never be an operand, and that can "reset" the
 	  bytecode transformation process that had been corrupted before. The former is simpler but
@@ -2118,11 +2118,12 @@
       <section title="Fixed BULK: all profile, no evaluation">
 	<t>
 	  Fixed BULK is a mode of processing for a format or protocol where evaluation has been
-	  deemed too expensive computationnally. In Fixed BULK mode, a processing application uses a
-	  profile that contains one or several namespace associations and possibly
-	  definitions. Because evaluation is disabled, no namespace association or definition will
-	  be executed during processing and namespaces are "fixed" to their markers as per the
-	  profile.
+	  deemed detrimental (it could be that it's too expensive computationally, or that it adds
+	  too much complexity in the processing application's code or the protocol). In Fixed BULK
+	  mode, a processing application uses a profile that contains one or several namespace
+	  associations and possibly definitions. Because evaluation is disabled, no namespace
+	  association or definition will be executed during processing and namespaces are "fixed" to
+	  their markers as per the profile.
 	</t>
 	<t>
 	  Fixed BULK mode lets a format or protocol use BULK's syntax while operating more like
@@ -2249,7 +2250,7 @@
 	    preclude a byte pattern to appear in the stream, and chose that expression as
 	    beacon. Second, an application could choose a byte pattern that can only appear in a
 	    BULK array and, whenever a BULK array contains that byte pattern, represent it in the
-	    broadcasted BULK stream as the concatenation of its split accros the beacon pattern.
+	    broadcasted BULK stream as the concatenation of its split across the beacon pattern.
 	  </t>
 	  <t>
 	    For example, if the beacon pattern is <tt>0x01040F02</tt>, the expression <tt>#[8]
@@ -2293,7 +2294,7 @@
 	    <tt>0x01-1013-01-1009</tt> to mark the beginning of a Magrat form. In case those bytes
 	    were in a BULK array, there are several features that work to verify that they actually
 	    started a Magrat form: first, they must be followed by an array <tt>{chunk}</tt>, a form
-	    end, a single exression <tt>{checksum}</tt> and another form end, second,
+	    end, a single expression <tt>{checksum}</tt> and another form end, second,
 	    <tt>{checksum}</tt> MUST be a digest that matches the bytes contained in
 	    <tt>{chunk}</tt>. Those bytes are called the Magrat chunk and they MUST be a valid BULK
 	    stream. A protocol using Magrat encapsulation MAY specify which kind of checksum can be
@@ -2311,7 +2312,7 @@
 	  <t>
 	    At the BULK level, the simplest way to do full-duplex communication is when the
 	    underlying protocol can create separate channels for each direction. Each agent streams
-	    its own BULK stream that is fully independant from the other agent's stream. There is no
+	    its own BULK stream that is fully independent from the other agent's stream. There is no
 	    restriction on the semantics used in the streams and an agent can use namespace
 	    associations and definitions to build a complex data model.
 	  </t>
@@ -2344,7 +2345,7 @@
 	  </t>
 	  <t>
 	    In the basic protocol, the agent that initiates the communication is called the
-	    initiating agent and the other agent is called the responding agent. The iniitiating
+	    initiating agent and the other agent is called the responding agent. The initiating
 	    agent and the responding agents each have a set of namespace markers designated for
 	    their use. The initiating agent's designated markers are markers <tt>m</tt> such that
 	    <tt>m AND 0x10 = 0x0</tt>. The responding agent's designated markers are markers
@@ -2368,7 +2369,7 @@
 	    designated markers, that got a a definition, through namespace association or by
 	    definition, after Alice's pull position, those definitions are <em>pulled</em>, i.e. the
 	    content of Bob's virtual stream between Alice's pull position and the first dispatch
-	    point where all those references have a definiton gets appended to Alice's virtual
+	    point where all those references have a definition gets appended to Alice's virtual
 	    stream, Alice's pull position becomes that dispatch point, then A2 is appended to
 	    Alice's virtual stream. When Alice streams a BULK expression A3 that contains one or
 	    several references with Bob's designated markers, but all those references got a
@@ -2398,7 +2399,7 @@
 	</t>
 	<t>
 	  Arrays in BULK carry their size, to avoid the need for escaping their content. A malicious
-	  software, however, may announce an array with a size choosen to get an application to
+	  software, however, may announce an array with a size chosen to get an application to
 	  exhaust its available memory. When a BULK stream has been completely received, an array
 	  bigger than the remaining data is a parsing error. When a BULK stream's size is not known
 	  in advance, the application SHOULD use a growable data structure.
@@ -2453,7 +2454,7 @@
 	<t>
 	  For that security reason, there isn't a <tt>( bulk-with-size Nat Expr )</tt> form to make
 	  the expression skippable, because it would open up that risk when the size given is not
-	  the actual size of the enclosed expression, accidently or maliciously.
+	  the actual size of the enclosed expression, accidentally or maliciously.
 	</t>
 	<t>
 	  Whenever BULK data is selectively parseable, it MUST be enclosed in a <xref
@@ -2532,7 +2533,7 @@
 	      <t hangText="Additional information"><br/>
 	      <list style="hanging">
 		<t hangText="Magic numbers">
-		  The text notation allows for arbitary number and kinds of whitespaces around
+		  The text notation allows for arbitrary number and kinds of whitespaces around
 		  lexical elements, so there are no "magic numbers" as such but, in most cases, BULK
 		  streams in text notation will not have leading whitespace and use a single space
 		  within the first version form, so the first characters can identify classes of
@@ -2566,7 +2567,7 @@
       </section>
       <section anchor="iana-ogg" title="Ogg media mapping">
 	<t>
-	  This specification defines a new Ogg logical bitsream type<xref target="RFC5334"/>, for
+	  This specification defines a new Ogg logical bitstream type<xref target="RFC5334"/>, for
 	  the media type <tt>application/bulk</tt>:
 	</t>
 	<t>
@@ -2718,7 +2719,7 @@
 	is easy to author in the absence of any tooling, because it is plain text. On the other
 	hand, it is less robust in several ways: it is more dependent on the processing application
 	knowing the definitions of namespaces and packages, it is rigid with respect to encoding (it
-	MUST be encoded in UTF-8), and it is limited and ineffcient in its representation of
+	MUST be encoded in UTF-8), and it is limited and inefficient in its representation of
 	arbitrary bytes and strings. While parsing BULK text notation is a bit more involved than
 	parsing binary BULK, the syntax of the text notation is still deliberately simple so as to
 	limit even that part's processing footprint.
@@ -2726,7 +2727,7 @@
       <t>
 	Conceptually, parsing text notation involves translating the notation into binary BULK and
 	then processing that. Each lexical element of BULK's text notation is separated from other
-	elements by whitespace. Apart from <tt>([</tt> and <tt>])</tt>, deliminiting an array
+	elements by whitespace. Apart from <tt>([</tt> and <tt>])</tt>, delimiting an array
 	containing a BULK stream, every lexeme can be immediately translated into its binary
 	representation.
       </t>
@@ -2776,8 +2777,8 @@
       </t>
       <section title="Complete authority">
 	<t>
-	  When the amended definitions of all namespaces constitue lasting namespaces, it means that
-	  the evaluation of the BULK stream can modify any existing namespace. This level of
+	  When the amended definitions of all namespaces constitute lasting namespaces, it means
+	  that the evaluation of the BULK stream can modify any existing namespace. This level of
 	  authority might be useful for a handful of privileged BULK streams acting as configuration
 	  of the application (e.g. to achieve reverse aliasing, see <xref target="fwdCompat"/>).
 	</t>
@@ -3017,7 +3018,7 @@
 	</t>
 	<t>
 	  The goal is that a BULK protocol or format designer should be able to trust that if they
-	  use BULK in accordance with the safety recommandations of this specification, they don't
+	  use BULK in accordance with the safety recommendations of this specification, they don't
 	  need to carefully weigh the benefits of evaluation vs. their dangers, like it has been the
 	  case with a couple of previous formats.
 	</t>
