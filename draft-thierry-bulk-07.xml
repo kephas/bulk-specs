@@ -2523,7 +2523,7 @@
 	      <t hangText="Encoding considerations">content MUST be encoded in UTF-8 <xref target="STD63"/></t>
 	      <t hangText="Security considerations">cf. <xref target="sec"/></t>
 	      <t hangText="Interoperability considerations">N/A</t>
-	      <t hangText="Published specification">this document</t>
+	      <t hangText="Published specification">this document, <xref target="bulktext"/></t>
 	      <t hangText="Applications that use this media type">the BARK manifest prototype</t>
 	      <t hangText="Fragment identifier considerations">this specification defines no
 	      semantics for addressing the data with a fragment identifier; a future specification
@@ -2706,6 +2706,41 @@
       </reference>
 
     </references>
+
+
+    <section anchor="bulktext" title="Using the text notation as a format">
+      <t>
+	BULK's text notation can be used as a full-fledged format alongside BULK's binary
+	syntax.
+      </t>
+      <t>
+	The text format has a different trade-off. On one hand, it is readily human-readable and it
+	is easy to author in the absence of any tooling, because it is plain text. On the other
+	hand, it is less robust in several ways: it is more dependent on the processing application
+	knowing the definitions of namespaces and packages, it is rigid with respect to encoding (it
+	MUST be encoded in UTF-8), and it is limited and ineffcient in its representation of
+	arbitrary bytes and strings. While parsing BULK text notation is a bit more involved than
+	parsing binary BULK, the syntax of the text notation is still deliberately simple so as to
+	limit even that part's processing footprint.
+      </t>
+      <t>
+	Conceptually, parsing text notation involves translating the notation into binary BULK and
+	then processing that. Each lexical element of BULK's text notation is separated from other
+	elements by whitespace. Apart from <tt>([</tt> and <tt>])</tt>, deliminiting an array
+	containing a BULK stream, every lexeme can be immediately translated into its binary
+	representation.
+      </t>
+      <t>
+	Translating reference mnemonics involves knowing the mnemonics of previously imported
+	namespaces, which means that as complete expressions are produced by the parser, they need
+	to be evaluated. Reference mnemonics can appear without a namespace mnemonic if there aren't
+	two namespaces with that mnemonic for a name. When a reference mnemonic appears with a known
+	namespace mnemonic but an unknown name mnemonic, a processing application MAY associate that
+	mnemonic with the first name in that namespace that doesn't already have a mnemonic. This
+	mode of operation makes it easy to author a namespace definition without having to manually
+	number names.
+      </t>
+    </section>
 
     <section anchor="robustNS" title="Robust namespace definition">
       <t>
