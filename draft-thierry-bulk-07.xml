@@ -1102,15 +1102,13 @@
 	<section anchor="import-pkg" title="Importing a package">
 	  <t>
 	    <list style="hanging">
-	      <t hangText="shape"><tt>( import {base}:Nat ( package {id}:Expr {count}:Nat )
-	      )</tt></t>
+	      <t hangText="shape"><tt>( import {base}:Nat ( package {id}:Expr ) {count}:Nat )</tt></t>
 	    </list>
 	  </t>
-	  
 	  <t>
 	    The semantics of this form is the side-effect of associating the first <tt>{count}</tt>
 	    namespaces in the package identified by <tt>{id}</tt> with a continuous range of marker
-	    bytes starting at <tt>{base}</tt> within the scope of this expression.
+	    bytes starting at <tt>{base}</tt>, within the scope of this expression.
 	  </t>
 	  <t>
 	    It is not an evaluation error if the package is unknown to the processing application,
@@ -1124,8 +1122,25 @@
 	    stream. This makes BULK overall simpler and more predictable.
 	  </t>
 	  <t>
-	    Example: <tt>( import 21 ( package {foo} 3 ) )</tt> associates the first 3 namespaces of
+	    Example: <tt>( import 21 ( package {foo} ) 3 )</tt> associates the first 3 namespaces of
 	    the package identified by <tt>{foo}</tt> to the markers 21, 22 and 23.
+	  </t>
+
+	  <t>
+	    <list style="hanging">
+	      <t hangText="shape"><tt>( import {base}:Nat ( package {id}:Expr ) {count}:Nat
+	      {increment}:Nat )</tt></t>
+	    </list>
+	  </t>
+	  <t>
+	    The semantics of this form is the side-effect of associating the first <tt>{count}</tt>
+	    namespaces in the package identified by <tt>{id}</tt> with a range of marker bytes
+	    starting at <tt>{base}</tt> at <tt>{increment}</tt> increments, within the scope of this
+	    expression.
+	  </t>
+	  <t>
+	    Example: <tt>( import 21 ( package {foo} ) 3 2 )</tt> associates the first 3 namespaces
+	    of the package identified by <tt>{foo}</tt> to the markers 21, 23 and 25.
 	  </t>
 	</section>
 	  
@@ -2347,9 +2362,8 @@
 	    In the basic protocol, the agent that initiates the communication is called the
 	    initiating agent and the other agent is called the responding agent. The initiating
 	    agent and the responding agents each have a set of namespace markers designated for
-	    their use. The initiating agent's designated markers are markers <tt>m</tt> such that
-	    <tt>m AND 0x10 = 0x0</tt>. The responding agent's designated markers are markers
-	    <tt>m</tt> such that <tt>m AND 0x10 = 0x10</tt>. Agents MUST only associate immutable
+	    their use. The initiating agent's designated markers are even numbers. The responding
+	    agent's designated markers are odd numbers. Agents MUST only associate immutable
 	    namespaces and MUST only associate them to their designated markers and MUST not
 	    associate a namespace to a marker that already is associated to a namespace. Agents MUST
 	    only define names that don't already have a definition, and only to references whose
