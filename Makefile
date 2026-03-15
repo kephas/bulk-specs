@@ -6,10 +6,13 @@ protobuf = $(addsuffix .pb, $(basename $(wildcard *.txtpb)))
 
 xml2rfc = xml2rfc --cache .cache --v3 
 
-html: $(html)
+html: $(html) draft-bulk.html
 txt: $(txt)
 cbor: $(cbor)
 protobuf: $(protobuf)
+
+draft-bulk.html: draft-thierry-bulk-07.html
+	ln -s $< $@
 
 %.html: %.xml
 	 $(xml2rfc) --html $<
