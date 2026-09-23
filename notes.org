@@ -73,14 +73,12 @@
    - 0x16 :: =( fraction Int Int )=
    - 0x17 :: =( binary-float Bytes )=
    - 0x18 :: =( decimal-float Bytes )=
-   - 0x19 :: =( binary-fixed Nat Bytes )=
-   - 0x1A :: =( decimal-fixed Nat Bytes )=
    - 
-   - 0x1B :: =prefix=
+   - 0x19 :: =prefix=
      - =( prefix {bytecode} )=
-   - 0x1C :: =postfix=
+   - 0x1A :: =postfix=
      - =( postfix {bytecode} )=
-   - 0x1D :: =arity=
+   - 0x1B :: =arity=
      - =( define ( arity {contexts} ) {arities} )=
        - ={contexts}= can contain =prefix=, =postfix=, or any other reference
        - ={arities}= is a sequence of expressions that can be shaped:

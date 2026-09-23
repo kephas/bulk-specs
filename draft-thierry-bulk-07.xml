@@ -992,15 +992,11 @@
 	  format="none">binary-float</xref></spanx></td><td><tt>EagerFunction</tt></td></tr>
 	  <tr><td><tt>18</tt></td><td><spanx style="verb"><xref target="decimal-float"
 	  format="none">decimal-float</xref></spanx></td><td><tt>EagerFunction</tt></td></tr>
-	  <tr><td><tt>19</tt></td><td><spanx style="verb"><xref target="binary-fixed"
-	  format="none">binary-fixed</xref></spanx></td><td><tt>EagerFunction</tt></td></tr>
-	  <tr><td><tt>1A</tt></td><td><spanx style="verb"><xref target="decimal-fixed"
-	  format="none">decimal-fixed</xref></spanx></td><td><tt>EagerFunction</tt></td></tr>
-	  <tr><td><tt>1B</tt></td><td><spanx style="verb"><xref target="prefix"
+	  <tr><td><tt>19</tt></td><td><spanx style="verb"><xref target="prefix"
 	  format="none">prefix</xref></spanx></td><td><tt>LazyFunction</tt></td></tr>
-	  <tr><td><tt>1C</tt></td><td><spanx style="verb"><xref target="postfix"
+	  <tr><td><tt>1A</tt></td><td><spanx style="verb"><xref target="postfix"
 	  format="none">postfix</xref></spanx></td><td><tt>LazyFunction</tt></td></tr>
-	  <tr><td><tt>1D</tt></td><td><spanx style="verb"><xref target="arity"
+	  <tr><td><tt>1B</tt></td><td><spanx style="verb"><xref target="arity"
 	  format="none">arity</xref></spanx></td><td><tt>LazyFunction</tt></td></tr>
 	</tbody>
       </table>
@@ -1678,6 +1674,25 @@
 	  <t>
 	    Type: <tt>Number</tt>.
 	  </t>
+	  <section title="Fixed-point numbers">
+	    <t>
+	      <tt>fraction</tt> makes it possible to express fixed-point numbers in BULK:
+	      <list style="symbols">
+		<t>
+		  <tt>( fraction 15 4 )</tt> has value <tt>11.11<sub>2</sub></tt>
+		  (<tt>3.75<sub>10</sub></tt>)
+		</t>
+		<t>
+		  <tt>( fraction 123 100 )</tt> has value <tt>1.23</tt>
+		</t>
+	      </list>
+	    </t>
+	    <t>
+	      A more extensive arithmetic vocabulary could define forms to express fixed-point
+	      numbers according to a given base, as well as predefined fixed points (e.g. the use of
+	      fixed-point numbers with two decimals is pretty common with financial data).
+	    </t>
+	  </section>
 	</section>
 
 	<section anchor="binary-float" title="Binary floating-point number">
@@ -1710,39 +1725,6 @@
 	  </t>
 	  <t>
 	    Types: <tt>Number</tt>, <tt>Real</tt>, <tt>Float</tt>.
-	  </t>
-	</section>
-
-	<section anchor="binary-fixed" title="Binary fixed point number">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="shape"><tt>( binary-fixed {point}:Expr {bits}:Expr )</tt></t>
-	    </list>
-	  </t>
-	  <t>
-	    The semantics of this form is a fixed point binary number. <tt>{bits}</tt> contains an
-	    integer in two's complement. That integer divided by 2^<tt>{point}</tt> is the value of
-	    this form. For example, <tt>( binary-fixed 2 15 )</tt> has value <spanx
-	    style="verb">3.75<sub>10</sub></spanx> (<spanx style="verb">11.11<sub>2</sub></spanx>).
-	  </t>
-	  <t>
-	    Types: <tt>Number</tt>, <tt>Real</tt>.
-	  </t>
-	</section>
-
-	<section anchor="decimal-fixed" title="Decimal fixed point number">
-	  <t>
-	    <list style="hanging">
-	      <t hangText="shape"><tt>( decimal-fixed {point}:Expr {bits}:Expr )</tt></t>
-	    </list>
-	  </t>
-	  <t>
-	    The semantics of this form is a fixed point decimal number. <tt>{bits}</tt> contains an
-	    integer in two's complement. That integer divided by 10^<tt>{point}</tt> is the value of
-	    this form. For example, <tt>( decimal-fixed 2 123 )</tt> has value <tt>1.23</tt>.
-	  </t>
-	  <t>
-	    Types: <tt>Number</tt>, <tt>Real</tt>.
 	  </t>
 	</section>
       </section>
