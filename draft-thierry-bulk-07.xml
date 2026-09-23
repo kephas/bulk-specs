@@ -917,7 +917,7 @@
       </section>
     </section>
 
-    <section title="Kinds of namespaces">
+    <section anchor="kinds" title="Kinds of namespaces">
       <t>
 	Standard namespaces have a fixed marker value and are not identified by a unique
 	identifier.
@@ -1149,14 +1149,16 @@
 	  <t>
 	    <list style="hanging">
 	      <t hangText="shape">
-		<tt>( define ( namespace {id}:Expr {marker}:Nat ) {def}:Bytes )</tt>
+		<tt>( define ( namespace {id}:Expr ) {def}:Bytes )</tt>
 	      </t>
 	    </list>
 	  </t>
 	  <t>
-	    The semantics of this form is the side-effect of defining a new namespace and
-	    associating it to a namespace marker. The bytes contained in <tt>{def}</tt> MUST have
-	    the shape <tt>{config}:Expr {definitions}</tt>. The state of the namespace associated to
+	    The semantics of this form is the side-effect of defining a new namespace. The bytes
+	    contained in <tt>{def}</tt> MUST be a BULK stream with a version form, and have the
+	    shape <tt>( version {major}:Nat {minor}:Nat ) {config}:Expr
+	    {definitions}</tt>. <tt>{config}</tt> MUST be a form and its first element MUST have the
+	    shape <tt>( namespace {marker}:Nat )</tt>. The state of the namespace associated to
 	    <tt>{marker}</tt> after evaluating all expressions in <tt>{definitions}</tt> (starting
 	    with a namespace with no definitions, no mnemonics, and no documentations) is made the
 	    definition of the namespace identified by <tt>{id}</tt>, within the scope of this
@@ -1172,9 +1174,7 @@
 	    <t>
 	      If more data than <tt>{id}</tt> is needed to verify <tt>{id}</tt> against the bytes
 	      contained in <tt>{def}</tt> (like the salt of a hash function, or the namespace of a
-	      UUID), this data MUST be provided by <tt>{config}</tt>. If such information is not
-	      needed or when the namespace is not verifiable, <tt>{config}</tt> MUST be
-	      <tt>nil</tt>.
+	      UUID), this data MUST be provided in <tt>{config}</tt>.
 	    </t>
 	    <t>
 	      It is an evaluation error if the processing application recognizes that <tt>{id}</tt>
@@ -1183,10 +1183,16 @@
 	    <t>
 	      Verifiable namespaces are meant to be immutable, but that would be circumvented if
 	      they were built upon namespaces that aren't. A verifiable namespace that only uses
-	      names from standard namespaces and immutable namespaces imported within the verified
-	      definition is an immutable namespace (if it used immutable namespaces imported outside
-	      of the definition, the same verifiable definition could be used in different contexts,
-	      also defeating the immutability).
+	      names from immutable namespaces is an immutable namespace (see <xref
+	      target="kinds"/>).
+	    </t>
+	    <t>
+	      The BULK stream in <tt>{def}</tt> has a version form to prevent the possibility that a
+	      verified namespace definition could be evaluated to different results by applications
+	      using different BULK versions. The definitions are in a nested BULK stream because if
+	      the definition could use immutable namespaces imported outside of the definition, the
+	      same verifiable definition could be used in different contexts, also defeating the
+	      immutability.
 	    </t>
 	    <section anchor="bootstrap" title="Bootstrapping verification">
 	      <t>
@@ -1248,16 +1254,20 @@
 	  </t>
 	  <t>
 	    The semantics of this form is the side-effect of creating a package identified by
-	    <tt>{id}</tt>. Packages MUST be verifiable, <tt>{id}</tt> MUST be a digest verifiable
-	    against the bytes contained in <tt>{def}</tt>. The bytes contained in <tt>{def}</tt>
-	    MUST have the shape <tt>{config}:Expr {namespaces}</tt>. <tt>{namespaces}</tt> MUST be a
-	    sequence of expressions each identifying a BULK namespace.
+	    <tt>{id}</tt>. The bytes contained in <tt>{def}</tt> MUST be a BULK stream with a
+	    version form and have the shape <tt>( version {major}:Nat {minor}:Nat ) {config}:Expr
+	    {preamble} {namespaces}:Expr</tt>. <tt>{config}</tt> MUST be a
+	    form. <tt>{namespaces}</tt> MUST be a form containing a sequence of expressions each
+	    identifying a BULK namespace.
+	  </t>
+	  <t>
+	    When a processing application recognizes that <tt>{id}</tt> designates a digest that
+	    matches the bytes contained in <tt>{def}</tt>, this creates a verifiable package.
 	  </t>
 	  <t>
 	    If more data than <tt>{id}</tt> is needed to verify <tt>{id}</tt> against the bytes
 	    contained in <tt>{def}</tt> (like the salt of a hash function, or the namespace of a
-	    UUID), this data MUST be provided by <tt>{config}</tt>. If such information is not
-	    needed, <tt>{config}</tt> MUST be <tt>nil</tt>.
+	    UUID), this data MUST be provided in <tt>{config}</tt>.
 	  </t>
 	  <t>
 	    It is an evaluation error if the processing application recognizes that <tt>{id}</tt>
@@ -1265,8 +1275,8 @@
 	  </t>
 	  <t>
 	    Packages are meant to be immutable, but that would be circumvented if they were built
-	    upon namespaces that aren't. A package that only contains immutable namespaces is an
-	    immutable package.
+	    upon namespaces that aren't. A verifiable package that only contains immutable
+	    namespaces is an immutable package.
 	    </t>
 	</section>
 

@@ -38,7 +38,7 @@
    - 0x02 :: =namespace=
    - 0x03 :: =package=
    - 0x04 :: =( define {thing}:Expr Expr )=
-     - =( define ( namespace {id}:Expr {marker}:Nat ) {defs}:Bytes )=
+     - =( define ( namespace {id}:Expr ) {defs}:Bytes )=
      - =( define ( package {id} ) {namespaces}:Bytes )=
      - =( define Ref {value}:Expr )=
    - 0x05 :: =( mnemonic {thing}:Expr {mnemonic}:String )=
