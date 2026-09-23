@@ -568,7 +568,7 @@
 	  are called the operands of that form.
 	</t>
 	<t>
-	  Some forms have side-effects in their semantics. Those side-effects MUST not affect the
+	  Some forms have side-effects in their semantics. Those side-effects MUST NOT affect the
 	  parsing of any expression. They can affect evaluation, in which case they MUST only affect
 	  the evaluation of expressions in the scope of the form. The scope of an expression is the
 	  part of its context that follows the expression. This makes BULK lexically scoped.
@@ -692,22 +692,22 @@
 	  <t>
 	    <list style="symbols">
 	      <t>
-		In the form <tt>( foo nil nil nil )</tt>, {bar} encodes 3 expressions, and they are
-		three atoms in the yield.
+		In the form <tt>( foo nil nil nil )</tt>, <tt>{bar}</tt> encodes 3 expressions, and
+		they are three atoms in the yield.
 	      </t>
 	      <t>
-		In the form <tt>( foo nil )</tt>, {bar} is a single expression in the yield, and
-		that expression is an atom.
+		In the form <tt>( foo nil )</tt>, <tt>{bar}</tt> is a single expression in the
+		yield, and that expression is an atom.
 	      </t>
 	      <t>
-		In the form <tt>( foo ( nil nil nil ) )</tt>, {bar} is also a single expression in
-		the yield, and that expression is a form, a list in the yield.
+		In the form <tt>( foo ( nil nil nil ) )</tt>, <tt>{bar}</tt> is also a single
+		expression in the yield, and that expression is a form, a list in the yield.
 	      </t>
 	    </list>
 	  </t>
 	  <t>
 	    In a shape, when a byte sequence must yield a single expression, it has the type
-	    <tt>Expr</tt>. So the last two examples fit the shape <tt>( foo {seq}:Expr )</tt> but
+	    <tt>Expr</tt>. So the last two examples fit the shape <tt>( foo {bar}:Expr )</tt> but
 	    not the first.
 	  </t>
 	</section>
@@ -887,7 +887,7 @@
 	  </t>
 	  <t>
 	    The <tt>{ns}</tt> byte is a value associated with a namespace, called the namespace
-	    marker. Values <tt>0x10−0x13</tt> are reserved for namespaces defined by BULK
+	    marker. Values <tt>0x10−0x13</tt> are reserved for standard namespaces defined by BULK
 	    specifications. Greater values can be associated with namespaces identified by a unique
 	    identifier.
 	  </t>
@@ -919,7 +919,12 @@
 
     <section title="Kinds of namespaces">
       <t>
-	Standard namespaces have a fixed marker value and are not identified by a unique identifier.
+	Standard namespaces have a fixed marker value and are not identified by a unique
+	identifier.
+      </t>
+      <t>
+	Standard namespaces are immutable. It is an evaluation error when the reference in a name
+	definition is in a standard namespace.
       </t>
       <t>
 	Extension namespaces are defined with a unique identifier, to be associated to a marker
@@ -1151,7 +1156,7 @@
 	  <t>
 	    The semantics of this form is the side-effect of defining a new namespace and
 	    associating it to a namespace marker. The bytes contained in <tt>{def}</tt> MUST have
-	    the shape <tt>{data}:Expr {definitions}</tt>. The state of the namespace associated to
+	    the shape <tt>{config}:Expr {definitions}</tt>. The state of the namespace associated to
 	    <tt>{marker}</tt> after evaluating all expressions in <tt>{definitions}</tt> (starting
 	    with a namespace with no definitions, no mnemonics, and no documentations) is made the
 	    definition of the namespace identified by <tt>{id}</tt>, within the scope of this
@@ -1167,8 +1172,9 @@
 	    <t>
 	      If more data than <tt>{id}</tt> is needed to verify <tt>{id}</tt> against the bytes
 	      contained in <tt>{def}</tt> (like the salt of a hash function, or the namespace of a
-	      UUID), this data MUST be provided by <tt>{data}</tt>. If such information is not
-	      needed or when the namespace is not verifiable, <tt>{data}</tt> MUST be <tt>nil</tt>.
+	      UUID), this data MUST be provided by <tt>{config}</tt>. If such information is not
+	      needed or when the namespace is not verifiable, <tt>{config}</tt> MUST be
+	      <tt>nil</tt>.
 	    </t>
 	    <t>
 	      It is an evaluation error if the processing application recognizes that <tt>{id}</tt>
@@ -1176,11 +1182,10 @@
 	    </t>
 	    <t>
 	      Verifiable namespaces are meant to be immutable, but that would be circumvented if
-	      they were built upon namespaces that aren't. A verifiable namespace that doesn't use
-	      names from any other namespaces is an immutable namespace. A verifiable namespace that
-	      only uses names from immutable namespaces as imported within the verified definition
-	      is also an immutable namespace (if those immutable namespaces are imported outside of
-	      the definition, the same verifiable definition could be used in different contexts,
+	      they were built upon namespaces that aren't. A verifiable namespace that only uses
+	      names from standard namespaces and immutable namespaces imported within the verified
+	      definition is an immutable namespace (if it used immutable namespaces imported outside
+	      of the definition, the same verifiable definition could be used in different contexts,
 	      also defeating the immutability).
 	    </t>
 	    <section anchor="bootstrap" title="Bootstrapping verification">
@@ -1192,10 +1197,19 @@
 	      <t>
 		When importing a bootstrapping namespace, the processing application looks up in its
 		known namespaces if there is a namespace identified by a form whose operator is a
-		name in itself with the same name index as the digest form in the import. If the
-		logic of the digest algorithm determines that the digest form in the import matches
-		the digest in the namespace definition (along with additional configuration data
-		provided there), then the bootstrapping is successful.
+		name in itself with the same name index as the operator in the identifier in the
+		import. If that name is associated with a digest algorithm and the logic of the
+		digest algorithm determines that the digest form in the import matches the digest in
+		the namespace definition (along with additional configuration data provided there),
+		then the bootstrapping is successful.
+	      </t>
+	      <t>
+		This process doesn't rely just on the digest in the import being identical to the
+		digest in the known definition, because some digests algorithms have been designed
+		to be secure when using a prefix of the digest, so a definition could contain a 256
+		or 512 bits wide digest, but some BULK streams could import it with the first 64 or
+		128 bits, when it is worth the trade-off between stream size and collision
+		resistance.
 	      </t>
 	      <t>
 		It is not an evaluation error if bootstrapping fails. A processing application MAY
@@ -1236,14 +1250,14 @@
 	    The semantics of this form is the side-effect of creating a package identified by
 	    <tt>{id}</tt>. Packages MUST be verifiable, <tt>{id}</tt> MUST be a digest verifiable
 	    against the bytes contained in <tt>{def}</tt>. The bytes contained in <tt>{def}</tt>
-	    MUST have the shape <tt>{data}:Expr {namespaces}</tt>. <tt>{namespaces}</tt> MUST be a
+	    MUST have the shape <tt>{config}:Expr {namespaces}</tt>. <tt>{namespaces}</tt> MUST be a
 	    sequence of expressions each identifying a BULK namespace.
 	  </t>
 	  <t>
 	    If more data than <tt>{id}</tt> is needed to verify <tt>{id}</tt> against the bytes
 	    contained in <tt>{def}</tt> (like the salt of a hash function, or the namespace of a
-	    UUID), this data MUST be provided by <tt>{data}</tt>. If such information is not needed,
-	    <tt>{data}</tt> MUST be <tt>nil</tt>.
+	    UUID), this data MUST be provided by <tt>{config}</tt>. If such information is not
+	    needed, <tt>{config}</tt> MUST be <tt>nil</tt>.
 	  </t>
 	  <t>
 	    It is an evaluation error if the processing application recognizes that <tt>{id}</tt>
@@ -2216,8 +2230,7 @@
 	  This means that a protocol that employs BULK broadcasting and uses any extension namespace
 	  MUST provide a profile, either in the protocol specification, or during connection
 	  establishment. For the latter, when a BULK stream is broadcasted by HTTP, the server can
-	  use the <tt>bulk-profile</tt> link relation in headers. The target of the link MUST be a
-	  BULK stream that contains the provided profile.
+	  use the <tt>bulk-profile</tt> link relation in headers (see <xref target="link"/>).
 	</t>
 	<t>
 	  When broadcasting BULK, one issue is stream capture, to discover an offset in the stream
@@ -2250,8 +2263,8 @@
 	    broadcasted BULK stream as the concatenation of its split across the beacon pattern.
 	  </t>
 	  <t>
-	    For example, if the beacon pattern is <tt>0x01040F02</tt>, the expression <tt>#[8]
-	    0x0000-01040F02-0000</tt> would become <tt>( concat #[4] 0x0000-0104 #[4] 0x0F02-0000
+	    For example, if the beacon expression is <tt>0xC3AABBCC</tt>, the expression <tt>#[8]
+	    0x0000-C3AABBCC-0000</tt> would become <tt>( concat #[4] 0x0000-C3AA #[4] 0xBBCC-0000
 	    )</tt>.
 	  </t>
 	</section>
@@ -2346,7 +2359,7 @@
 	    agent and the responding agents each have a set of namespace markers designated for
 	    their use. The initiating agent's designated markers are even numbers. The responding
 	    agent's designated markers are odd numbers. Agents MUST only associate immutable
-	    namespaces and MUST only associate them to their designated markers and MUST not
+	    namespaces and MUST only associate them to their designated markers and MUST NOT
 	    associate a namespace to a marker that already is associated to a namespace. Agents MUST
 	    only define names that don't already have a definition, and only to references whose
 	    namespace marker is in their designated markers. It is a protocol error when any of
@@ -2362,14 +2375,15 @@
 	    BULK expression A1 that only contains references with standard namespaces or Alice's
 	    designated markers, this expression A1 is appended to Alice's virtual stream. But when
 	    Alice streams a BULK expression A2 that contains one or several references with Bob's
-	    designated markers, that got a a definition, through namespace association or by
-	    definition, after Alice's pull position, those definitions are <em>pulled</em>, i.e. the
-	    content of Bob's virtual stream between Alice's pull position and the first dispatch
-	    point where all those references have a definition gets appended to Alice's virtual
-	    stream, Alice's pull position becomes that dispatch point, then A2 is appended to
-	    Alice's virtual stream. When Alice streams a BULK expression A3 that contains one or
-	    several references with Bob's designated markers, but all those references got a
-	    definition before the pull position, only A3 is appended to Alice's virtual stream.
+	    designated markers that got a definition in Bob's virtual stream, through namespace
+	    association or by definition, after Alice's pull position, those definitions are
+	    <em>pulled</em>, i.e. the content of Bob's virtual stream between Alice's pull position
+	    and the first dispatch point where all those references have a definition gets appended
+	    to Alice's virtual stream, Alice's pull position becomes that dispatch point, then A2 is
+	    appended to Alice's virtual stream. When Alice streams a BULK expression A3 that
+	    contains one or several references with Bob's designated markers, but all those
+	    references got a definition before the pull position, only A3 is appended to Alice's
+	    virtual stream.
 	  </t>
 	  <t>
 	    If both agents have associated a single namespace to correct designated markers for each
@@ -2547,9 +2561,9 @@
 	  </t>
 	</section>
       </section>
-      <section title="Link relation">
+      <section anchor="link" title="Link relation">
 	<t>
-	  This specification defines a new media type, <tt>application/bulk</tt>. Here are the
+	  This specification defines a new link relation type, <tt>bulk-profile</tt>. Here are the
 	  informations for its registration to IANA <xref target="RFC8288"/>:
 	</t>
 	<t>
@@ -2731,11 +2745,11 @@
 	Translating reference mnemonics involves knowing the mnemonics of previously imported
 	namespaces, which means that as complete expressions are produced by the parser, they need
 	to be evaluated. Reference mnemonics can appear without a namespace mnemonic if there aren't
-	two namespaces with that mnemonic for a name. When a reference mnemonic appears with a known
-	namespace mnemonic but an unknown name mnemonic, a processing application MAY associate that
-	mnemonic with the first name in that namespace that doesn't already have a mnemonic. This
-	mode of operation makes it easy to author a namespace definition without having to manually
-	number names.
+	two imported namespaces that both use that mnemonic for a name. When a reference mnemonic
+	appears with a known namespace mnemonic but an unknown name mnemonic, a processing
+	application MUST associate that mnemonic with the first name in that namespace that doesn't
+	already have a mnemonic. This makes it easy to author a namespace definition without having
+	to manually number names.
       </t>
     </section>
 
@@ -3015,7 +3029,7 @@
 	<t>
 	  The goal is that a BULK protocol or format designer should be able to trust that if they
 	  use BULK in accordance with the safety recommendations of this specification, they don't
-	  need to carefully weigh the benefits of evaluation vs. their dangers, like it has been the
+	  need to carefully weigh the benefits of evaluation vs. its dangers, like it has been the
 	  case with a couple of previous formats.
 	</t>
       </section>

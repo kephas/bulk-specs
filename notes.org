@@ -349,25 +349,9 @@
     The BOON data weighs 46 bytes, of which 29 bytes are the version and import and 17 bytes are
     the actual data (in any use case where many game states would be serialized, either in a
     client/server exchange or in a game history record, those 29 bytes would be present only
-    once). In comparison, the JSON data weighs 223 bytes. Readability can be traded off for size to
-    bring down the JSON to 158 bytes, and some data can be encoded in strings rather than JSON
-    objects, to get down to 100 bytes:
-
-    #+BEGIN_SRC json
-      {
-	"type":"game",
-	"hands": {
-	  "pl1": [{"s": "♥", "v": 1},{"s": "♣", "v": "K"}],
-	  "pl2": [{"s": "♥", "v": 1},{"s": "♣", "v": "K"}]
-	},
-	"turn": "p1",
-	"score": {
-	  "pl1": 87,
-	  "pl2": 43
-	}
-      }
-    #+END_SRC
-
+    once). In comparison, the JSON data weighs 223 bytes. Readability can be traded off for size
+    and some data can be encoded in strings rather than JSON objects, to bring down the size to 100
+    bytes:
 
     #+BEGIN_SRC json
       {
@@ -580,7 +564,7 @@
 
 ** Hash
    #+BEGIN_SRC bulktext
-     ( define ( namespace ( hash:shake128 {id} 20 ) ([ nil
+     ( define ( namespace ( hash:shake128 {id} ) 20 ) ([ nil
       ( mnemonic ( namespace 20 ) "hash" )
       ( explain ( namespace 20 ) "The forms in this vocabulary can be used to represent hashes along with the hashing algorithm instead of using an unmarked byte sequence. When an algorithm has other inputs than the message, they can be provided after the hash itself as a property list.
 
