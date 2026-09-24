@@ -610,6 +610,32 @@
       ( mnemonic hash:salt "salt" ) ]) )
    #+END_SRC
 
+** Auto-concat
+   Use when strings are needed as prefix as well as values.
+
+   Without `auto-concat`:
+
+   #+BEGIN_SRC bulktext
+     ( define url1 "http://example.com/" )
+     ( define url1-prefix ( subst ( concat url1 ( arg 0 ) ) ) )
+     ( define url2 ( url1-prefix "foo/" )
+     ( define url2-prefix ( subst ( concat url2 ( arg 0 ) ) ) )
+     ( define url3 ( url2-prefix "bar/" )
+     ( define url3-prefix ( subst ( concat url3 ( arg 0 ) ) ) )
+     ( define url4 ( url2-prefix "baz/" )
+     ( define url5 ( url3-prefix "quux/" )
+   #+END_SRC
+
+   With `auto-concat`:
+
+   #+BEGIN_SRC bulktext
+     ( define url1 ( http "example.com/" ) )
+     ( define url2 ( url1 "foo/" )
+     ( define url3 ( url2 "bar/" )
+     ( define url4 ( url2 "baz/" )
+     ( define url5 ( url3 "quux/" )
+   #+END_SRC
+
 ** Encryption
    - blowfish?
    - camellia?
