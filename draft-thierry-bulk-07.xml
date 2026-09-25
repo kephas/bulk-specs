@@ -2001,7 +2001,7 @@
 	</t>
 	<t><figure><artwork>( define move/1-16
   ( subst ( move/2 ( indexed-array ( arg 0 ) 0 1 )
-                         ( indexed-array ( arg 0 ) 1 1 ) ) ) )
+                   ( indexed-array ( arg 0 ) 1 1 ) ) ) )
 ( move/1-16 #[2] 0x415A )
 </artwork></figure></t> 
 	<t>Would be evaluated into:</t>
@@ -2035,7 +2035,6 @@
 	<t><figure><artwork>( define ( arity postfix )
  ( nil game ) ( 2 black white comment alternative ) )
 ( postfix
-  ( ( nil game ) ( 2 white comment alternative ) )
   game
   1 2
   "white tried an unorthodox opening" 3 4 white comment
@@ -2095,7 +2094,7 @@
 	  chunking the bytecode into several bytecode forms, another is inserting at regular
 	  intervals a beacon expression that can never be an operand, and that can "reset" the
 	  bytecode transformation process that had been corrupted before. The former is simpler but
-	  the latter might be better suited when data is streamed.
+	  the latter might be better suited when data is streamed (see <xref target="streaming"/>).
 	</t>
       </section>
     </section>
