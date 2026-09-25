@@ -1145,6 +1145,22 @@
 	  </t>
 	</section>
 	  
+	<section anchor="canonid" title="Canonical identifiers">
+	  <t>
+	    A processing application MAY use any BULK expression as a namespace or package
+	    identifier, including atoms like numbers or arrays, but it is RECOMMENDED to use one
+	    kind of expression called a <em>canonical identifier</em>. Canonical identifiers have
+	    the shape <tt>( {type}:Ref {content}:Bytes )</tt>. The role of <tt>{type}</tt> is to
+	    describe how to interpret <tt>{content}</tt>: is it a URI, a UUID, a SHA-3 checksum?
+	  </t>
+	  <t>
+	    Canonical identifiers can be used to efficiently encode IPLD's Content IDentifiers in
+	    BULK, but they have a broader use. Where IPLD's CIDs can only encode content-adressing,
+	    canonical identifiers can encode arbitrary identifiers, including some that can be
+	    created independently of the content, like UUIDs.
+	  </t>
+	</section>
+
 	<section anchor="def-ns" title="Namespace definition">
 	  <t>
 	    <list style="hanging">
@@ -1194,11 +1210,14 @@
 	      same verifiable definition could be used in different contexts, also defeating the
 	      immutability.
 	    </t>
+
 	    <section anchor="bootstrap" title="Bootstrapping verification">
 	      <t>
-		A verifiable namespace will use a form to express its digest. For immutable
-		namespaces to exist, this means that at least one namespace needs to express its own
-		digest with a name from within itself. This is called a bootstrapping namespace.
+		When using canonical identifiers (see <xref target="canonid"/>), a verifiable
+		namespace will use a form to express its digest. For immutable namespaces to exist,
+		this means that at least one namespace needs to express its own digest with a name
+		from within itself. This is called a bootstrapping namespace. A bootstrapping
+		namespace MUST use a canonical identifier.
 	      </t>
 	      <t>
 		When importing a bootstrapping namespace, the processing application looks up in its
@@ -1207,28 +1226,23 @@
 		import. If that name is associated with a digest algorithm and the logic of the
 		digest algorithm determines that the digest form in the import matches the digest in
 		the namespace definition (along with additional configuration data provided there),
-		then the bootstrapping is successful.
+		then the bootstrapping is successful (meaning that the definition has been found and
+		can be imported).
 	      </t>
 	      <t>
 		This process doesn't rely just on the digest in the import being identical to the
-		digest in the known definition, because some digests algorithms have been designed
-		to be secure when using a prefix of the digest, so a definition could contain a 256
-		or 512 bits wide digest, but some BULK streams could import it with the first 64 or
-		128 bits, when it is worth the trade-off between stream size and collision
+		digest in the known definition, because some digests algorithms
+		(e.g. extended-output functions) have been designed to retain some collision
+		resistance when using a prefix of the digest, so a definition could contain a 256 or
+		512 bits wide digest, but some small BULK streams could import it with the first 64
+		or 128 bits, when it is worth the trade-off between stream size and collision
 		resistance.
 	      </t>
 	      <t>
-		It is not an evaluation error if bootstrapping fails. A processing application MAY
+		It is not an evaluation error if bootstrapping fails. The only consequence is that
+		the bootstrapping namespace is not known, and any other namespace using this
+		namespace for its identifier will not be known either. A processing application MAY
 		produce warnings when it encounters this case.
-	      </t>
-	      <t>
-		Not all digest algorithms will just match on equality of digests. For example, some
-		algorithms are extendable-output functions and can choose to match some prefix sizes
-		of the original digest (but a digest algorithm MUST NOT match an empty digest). This
-		makes it possible to define one bootstrapping namespace with a digest big enough to
-		have a good collision resistance, but to use a shorter version in use cases where
-		size matters more than collision resistance. Some digest algorithms MAY use other
-		policies than full equality of prefix equality to decide matching.
 	      </t>
 	      <t>
 		The same logic can be used to import a bootstrapping package, which is a package
@@ -2158,23 +2172,34 @@
     <section anchor="discover" title="Discovery of namespaces and packages">
       <t>
 	When a processing application encounters an unknown namespace or package identifier, it MAY
-	ask several sources to provide the definition. This is called discovery. The possible
-	sources include the agent that made use of the unknown identifier, or known BULK registries
-	(registries of definitions for BULK namespaces or packages).
+	ask several sources to provide the definition. This is called <em>discovery</em>. The
+	possible sources include the agent that made use of the unknown identifier, known BULK
+	registries (registries of definitions for BULK namespaces or packages), or protocols based
+	on content-addressing. When discovery is done without user intervention while processing a
+	BULK stream, in order to evaluate it fully, it is called <em>immediate discovery</em>. When
+	missing identifiers are collected to be retrieved later, under human supervision, it is
+	called <em>deferred discovery</em>.
       </t>
       <t>
 	The fundamental security risk in this mechanism is when an attacker manages to be the first
 	to use some identifier and poison the processing application by giving it a malicious
-	definition, or managed to poison one or several BULK registries. To avoid that risk, it is
-	RECOMMENDED that a processing application only accept definitions for immutable namespaces
-	and immutable packages during discovery. It is also RECOMMENDED that a BULK registry only
-	store definitions for immutable namespaces and immutable packages.
+	definition, or managed to poison one or several BULK registries. To avoid that risk, a
+	processing application MUST only accept definitions for immutable namespaces and immutable
+	packages during immediate discovery. It is also RECOMMENDED that a BULK registry only store
+	definitions for immutable namespaces and immutable packages.
       </t>
       <t>
-	When they come from an untrusted source, a processing application or a BULK registry MUST
-	NOT accept namespace or package definitions that are not immutable (including when the
-	digest doesn't match the data, or when the identifier form is not known to be a digest by
-	the processing application).
+	During deferred discovery, a processing application MUST NOT accept namespace or package
+	definitions from an untrusted source when they are not immutable (including when the digest
+	doesn't match the data, or when the identifier form is not known to be a digest by the
+	processing application). A BULK registry MUST NOT store namespace or package definitions
+	from an untrusted source when they are not immutable.
+      </t>
+      <t>
+	A processing application SHOULD only consider digest algorithms that are currently known to
+	be cryptographically secure for the determination of namespace and package immutability. For
+	example, a processing application could check that a namespace with an MD5 identifier is
+	verifiable, but it SHOULD NOT determine it to be immutable.
       </t>
       <t>
 	While discovery of bootstrapping namespaces and packages can be done, the digest algorithm
@@ -2189,16 +2214,16 @@
 	mechanism if some risks are mitigated:
 	<list style="symbol">
 	  <t>
-	    Asking untrusted registries might expose when agents communicate with the processing
-	    application. Making the request asynchronously, with noise in the timing, can mitigate
-	    that risk. Application operators need to consider the trade-off between latency and
-	    privacy, or give the option to agents to make that determination. Making the request in
-	    ways that hide the processing application's identity, like using The Onion Router, is
+	    Asking untrusted registries might expose when other agents communicate with the
+	    processing application. Making the request asynchronously, with noise in the timing, can
+	    mitigate that risk. Application operators need to consider the trade-off between latency
+	    and privacy, or give the option to agents to make that determination. Making the request
+	    in ways that hide the processing application's identity, like using The Onion Router, is
 	    another option.
 	  </t>
 	  <t>
-	    Asking untrusted registries might expose what kind of data is sent by its agents to the
-	    processing application. Making the request in ways that hide the processing
+	    Asking untrusted registries might expose what kind of data is sent by other agents to
+	    the processing application. Making the request in ways that hide the processing
 	    application's identity, like using The Onion Router, is an option.
 	  </t>
 	  <t>
