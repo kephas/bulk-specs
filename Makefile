@@ -11,10 +11,10 @@ txt: $(txt)
 cbor: $(cbor)
 protobuf: $(protobuf)
 
-index.html: draft-thierry-bulk-07.html
+index.html: draft-thierry-bulk-08.html
 	ln -s $< $@
 
-draft-bulk.html: draft-thierry-bulk-07.html
+draft-bulk.html: draft-thierry-bulk-08.html
 	ln -s $< $@
 
 %.html: %.xml
